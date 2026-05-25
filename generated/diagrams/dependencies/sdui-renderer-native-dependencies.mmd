@@ -1,0 +1,15 @@
+graph LR
+  sdui-renderer-native[sdui-renderer-native]
+  sdui-renderer-native --> design-tokens-mobile[design-tokens-mobile]
+  sdui-renderer-native --> ui-icons[ui-icons]
+  sdui-renderer-native --> sdui-protocol[sdui-protocol]
+  driver-app[driver-app] --> sdui-renderer-native
+  merchant-app-mobile[merchant-app-mobile] --> sdui-renderer-native
+  mobile[mobile] --> sdui-renderer-native
+  mobile-driver[mobile-driver] --> sdui-renderer-native
+  mobile-government[mobile-government] --> sdui-renderer-native
+  mobile-inspector[mobile-inspector] --> sdui-renderer-native
+  mobile-merchant[mobile-merchant] --> sdui-renderer-native
+  mobile-pos[mobile-pos] --> sdui-renderer-native
+  superapp[superapp] --> sdui-renderer-native
+  mobile-core[mobile-core] --> sdui-renderer-native

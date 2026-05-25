@@ -1,0 +1,24 @@
+graph TD
+  direction TB
+
+  car-app[car-app]
+
+  subgraph Components[
+    Shared Components
+  end
+  DummyConsumer[DummyConsumer]
+  MetricGauge[MetricGauge]
+  SafetyDashboard[SafetyDashboard]
+  SduiScreen[SduiScreen]
+  KuzzleProvider[KuzzleProvider]
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef layout fill:#fff3e0,stroke:#e65100,stroke-width:1px
+  classDef page fill:#e8f5e9,stroke:#1b5e20,stroke-width:1px
+  classDef component fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class car-app app
+  class DummyConsumer component
+  class MetricGauge component
+  class SafetyDashboard component
+  class SduiScreen component
+  class KuzzleProvider component

@@ -1,0 +1,20 @@
+graph LR
+  mobile-core[mobile-core]
+  mobile-core --> design-tokens[design-tokens]
+  mobile-core --> design-tokens-mobile[design-tokens-mobile]
+  mobile-core --> api-client[api-client]
+  mobile-core --> auth[auth]
+  mobile-core --> sdui-renderer-native[sdui-renderer-native]
+  mobile-core --> sdui-protocol[sdui-protocol]
+  car-app[car-app] --> mobile-core
+  driver-app[driver-app] --> mobile-core
+  merchant-app-mobile[merchant-app-mobile] --> mobile-core
+  mobile[mobile] --> mobile-core
+  mobile-driver[mobile-driver] --> mobile-core
+  mobile-government[mobile-government] --> mobile-core
+  mobile-inspector[mobile-inspector] --> mobile-core
+  mobile-merchant[mobile-merchant] --> mobile-core
+  mobile-pos[mobile-pos] --> mobile-core
+  superapp[superapp] --> mobile-core
+  tv-app[tv-app] --> mobile-core
+  watch-app[watch-app] --> mobile-core

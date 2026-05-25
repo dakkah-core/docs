@@ -1,0 +1,36 @@
+classDiagram
+  direction TB
+
+  class KioskActionHandlerConfig ~interface~ {
+    -onNavigate: KioskNavigateHandler
+    -onMutation: KioskMutationHandler
+    -onFormSubmit: KioskFormSubmitHandler
+    -onIdle: KioskIdleHandler
+    -onActivityDetected: () = void
+    -onReset: KioskResetHandler
+    -homeScreenId: string
+  }
+
+  class KioskNavigateHandler  {
+  }
+
+  class KioskMutationHandler  {
+  }
+
+  class KioskFormSubmitHandler  {
+  }
+
+  class KioskIdleHandler  {
+  }
+
+  class KioskResetHandler  {
+  }
+
+  class KioskSduiRendererProps ~interface~ {
+    +node: SdNode
+    -theme: "light" | "dark"
+    -idleTimeoutMs: number
+    -highContrast: boolean
+    -currentPage: number
+    -onPageChange: (page: number) = void
+  }

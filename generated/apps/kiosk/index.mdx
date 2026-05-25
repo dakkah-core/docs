@@ -1,0 +1,344 @@
+---
+title: "Kiosk"
+description: "Deep dive into the kiosk application"
+icon: "monitor"
+---
+
+> **Type:** Mobile App (React Native / Expo) | **Framework:** Expo/React Native | **Version:** 0.1.0
+> **Path:** `apps/kiosk` | **Architectural Role:** Mobile App, Kiosk Runtime
+
+[Back to Generated Apps](/generated/apps)
+> **Dependencies:** [auth](/generated/packages/auth), [sdui-renderer-kiosk](#)
+
+## Overview & Purpose
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 34 | — |
+| Lines of Code | 2,158 | — |
+| Test Coverage | 100.0% | 🟢 |
+| Oversized Files | 0 | 🟢 |
+| Components | 8 | — |
+| Hooks | 4 | — |
+| Types & Interfaces | 28 | — |
+| API Routes | 0 | — |
+| Page Routes | 0 | — |
+| Internal Deps | 2 | — |
+| Dependents | 0 | — |
+
+## Architecture
+
+### File Structure
+
+```
+env.test.ts (8L, 0C, 0T)
+env.ts (23L, 0C, 0T)
+components/
+  KioskAuthGate.test.tsx (16L, 0C, 0T)
+  KioskAuthGate.tsx (91L, 1C, 2T)
+  SduiScreen.test.tsx (16L, 0C, 0T)
+  SduiScreen.tsx (102L, 1C, 2T)
+  SduiTvErrorBoundary.test.tsx (16L, 0C, 0T)
+  SduiTvErrorBoundary.tsx (251L, 0C, 6T)
+hooks/
+  use-kiosk-idle-watchdog.test.ts (16L, 0C, 0T)
+  use-kiosk-idle-watchdog.ts (166L, 0C, 3T)
+  use-kiosk-offline.test.ts (16L, 0C, 0T)
+  use-kiosk-offline.ts (126L, 0C, 1T)
+  useNetworkStatus.test.ts (8L, 0C, 0T)
+  useNetworkStatus.ts (20L, 0C, 0T)
+lib/
+  Heartbeat.test.tsx (16L, 0C, 0T)
+  Heartbeat.tsx (49L, 1C, 1T)
+  IdleWatchdog.test.tsx (16L, 0C, 0T)
+  IdleWatchdog.tsx (29L, 1C, 1T)
+  auth.test.ts (111L, 0C, 0T)
+  auth.ts (41L, 0C, 0T)
+  kioskColors.test.ts (89L, 0C, 0T)
+  kioskColors.ts (30L, 0C, 0T)
+  offline-queue.test.ts (8L, 0C, 0T)
+  offline-queue.ts (212L, 0C, 3T)
+  lib/config/
+    env.test.ts (49L, 0C, 0T)
+    env.ts (24L, 0C, 0T)
+screens/
+  KioskHome.test.tsx (16L, 0C, 0T)
+  KioskHome.tsx (76L, 1C, 2T)
+  KioskMap.test.tsx (16L, 0C, 0T)
+  KioskMap.tsx (96L, 1C, 2T)
+  KioskQRFlow.test.tsx (16L, 0C, 0T)
+  KioskQRFlow.tsx (190L, 1C, 2T)
+  KioskServiceMenu.test.tsx (16L, 0C, 0T)
+  KioskServiceMenu.tsx (183L, 1C, 3T)
+```
+
+## Dependencies
+
+### Auth / Identity
+
+| Package | Type |
+|---|---|
+| [@cityos/auth](/generated/packages/auth) | prod |
+
+### CityOS Core
+
+| Package | Type |
+|---|---|
+| [@cityos/sdui-renderer-kiosk](#) | prod |
+
+## Component Catalog
+
+| Component | File | Kind | Props |
+|---|---|---|---|
+| KioskAuthGate | components/KioskAuthGate.tsx | function | children: React.ReactNode |
+| SduiScreen | components/SduiScreen.tsx | function | screenId: string, surface: string, children: React.ReactNode |
+| Heartbeat | lib/Heartbeat.tsx | function | intervalMs: number, disabled?: boolean |
+| IdleWatchdog | lib/IdleWatchdog.tsx | function | lastActivityRef: React.RefObject<number>, timeoutMs: number, onIdle: () => void |
+| KioskHome | screens/KioskHome.tsx | function | onNavigate: (screen: Screen) => void |
+| KioskMap | screens/KioskMap.tsx | function | onBack: () => void |
+| KioskQRFlow | screens/KioskQRFlow.tsx | function | onBack: () => void |
+| KioskServiceMenu | screens/KioskServiceMenu.tsx | function | onBack: () => void |
+
+## Types & Interfaces
+
+### KioskAuthState
+
+**Kind:** interface | **File:** `components/KioskAuthGate.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| hasDeviceToken | `boolean` | — |
+| deviceId | `string | null` | — |
+| claims | `CityOSJwtClaims | null` | — |
+
+### KioskAuthGateProps
+
+**Kind:** interface | **File:** `components/KioskAuthGate.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| children | `React.ReactNode` | — |
+
+### SduiScreenProps
+
+**Kind:** interface | **File:** `components/SduiScreen.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| screenId | `string` | — |
+| surface | `string` | — |
+| children | `React.ReactNode` | — |
+
+### KioskRendererNode
+
+**Kind:** type | **File:** `components/SduiScreen.tsx`
+
+```ts
+type KioskRendererNode = React.ComponentProps<typeof KioskSduiRenderer>["node"];
+```
+
+### SduiTvErrorFallbackProps
+
+**Kind:** interface | **File:** `components/SduiTvErrorBoundary.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| error | `Error | null` | Yes |
+| blockSlug | `string` | Yes |
+| channelName | `string` | Yes |
+| onRetry | `() => void` | Yes |
+| maxRetries | `number` | Yes |
+
+### SduiTvErrorFallbackState
+
+**Kind:** interface | **File:** `components/SduiTvErrorBoundary.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| retryCount | `number` | — |
+| recovering | `boolean` | — |
+
+### SduiTvErrorBoundaryProps
+
+**Kind:** interface | **File:** `components/SduiTvErrorBoundary.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| children | `ReactNode` | — |
+| blockSlug | `string` | Yes |
+| channelName | `string` | Yes |
+| maxRetries | `number` | Yes |
+| onError | `(error: Error, info: ErrorInfo) => void` | Yes |
+
+### SduiTvErrorBoundaryState
+
+**Kind:** interface | **File:** `components/SduiTvErrorBoundary.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| hasError | `boolean` | — |
+| error | `Error | null` | — |
+| resetKey | `number` | — |
+
+### SduiTvErrorFallback
+
+**Kind:** class | **File:** `components/SduiTvErrorBoundary.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| retryTimer | `ReturnType<typeof setTimeout> | null` | — |
+| defaultProps | `unknown` | — |
+
+### SduiTvErrorBoundary
+
+**Kind:** class | **File:** `components/SduiTvErrorBoundary.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| handleRetry | `unknown` | — |
+
+### KioskIdleWatchdogOptions
+
+**Kind:** interface | **File:** `hooks/use-kiosk-idle-watchdog.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| warningThresholdSecs | `number` | Yes |
+| resetThresholdSecs | `number` | Yes |
+| onReset | `() => void` | Yes |
+| onWarning | `(secondsRemaining: number) => void` | Yes |
+| onActivity | `() => void` | Yes |
+| activityEvents | `string[]` | Yes |
+
+### KioskIdleState
+
+**Kind:** interface | **File:** `hooks/use-kiosk-idle-watchdog.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| secondsRemaining | `number | null` | — |
+| showWarning | `boolean` | — |
+| reset | `() => void` | — |
+| clear | `() => void` | — |
+
+### CityOSAnalytics
+
+**Kind:** interface | **File:** `hooks/use-kiosk-idle-watchdog.ts`
+
+### KioskOfflineState
+
+**Kind:** interface | **File:** `hooks/use-kiosk-offline.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| isOffline | `boolean` | — |
+| isOnline | `boolean` | — |
+| pendingCount | `number` | — |
+| isSyncing | `boolean` | — |
+| lastSyncAt | `string | null` | — |
+| queueAction | `(
+    type: KioskActionType,
+    surface: string,
+    payload: Record<string, unknown>,
+  ) => Promise<void>` | — |
+| sync | `() => Promise<number>` | — |
+
+### Props
+
+**Kind:** interface | **File:** `lib/Heartbeat.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| intervalMs | `number` | — |
+| disabled | `boolean` | Yes |
+
+*... and 13 more types*
+
+## Hooks
+
+| Hook | File | Params | Return |
+|---|---|---|---|
+| useKioskAuth | components/KioskAuthGate.tsx | — | unknown |
+| useKioskIdleWatchdog | hooks/use-kiosk-idle-watchdog.ts | options: KioskIdleWatchdogOptions | KioskIdleState |
+| useKioskOffline | hooks/use-kiosk-offline.ts | — | KioskOfflineState |
+| useNetworkStatus | hooks/useNetworkStatus.ts | — | unknown |
+
+## Public API Surface
+
+| Export | Kind | File |
+|---|---|---|
+| env | const | env.ts |
+| requireEnv | function | env.ts |
+| useKioskAuth | function | components/KioskAuthGate.tsx |
+| KioskAuthGate | function | components/KioskAuthGate.tsx |
+| SduiScreen | function | components/SduiScreen.tsx |
+| withTvErrorBoundary | function | components/SduiTvErrorBoundary.tsx |
+| SduiTvErrorFallback | class | components/SduiTvErrorBoundary.tsx |
+| SduiTvErrorBoundary | class | components/SduiTvErrorBoundary.tsx |
+| useKioskIdleWatchdog | function | hooks/use-kiosk-idle-watchdog.ts |
+| KioskIdleWatchdogOptions | interface | hooks/use-kiosk-idle-watchdog.ts |
+| KioskIdleState | interface | hooks/use-kiosk-idle-watchdog.ts |
+| useKioskOffline | function | hooks/use-kiosk-offline.ts |
+| KioskOfflineState | interface | hooks/use-kiosk-offline.ts |
+| useNetworkStatus | function | hooks/useNetworkStatus.ts |
+| Heartbeat | function | lib/Heartbeat.tsx |
+| IdleWatchdog | function | lib/IdleWatchdog.tsx |
+| getKioskToken | function | lib/auth.ts |
+| setKioskToken | function | lib/auth.ts |
+| clearKioskToken | function | lib/auth.ts |
+| getKioskUser | function | lib/auth.ts |
+| isKioskAuthenticated | function | lib/auth.ts |
+| kioskColors | const | lib/kioskColors.ts |
+| enqueueAction | function | lib/offline-queue.ts |
+| dequeueAction | function | lib/offline-queue.ts |
+| getQueue | function | lib/offline-queue.ts |
+| ... | | | (12 more) |
+
+## Related Apps
+
+Apps that share dependencies or serve similar roles:
+
+| App | Shared Dependencies | Relationship |
+|---|---|---|
+| [business-dashboard](/generated/apps/business-dashboard) | @cityos/auth | Same domain |
+| [city-dashboard](/generated/apps/city-dashboard) | @cityos/auth | Same domain |
+| [control-plane](/generated/apps/control-plane) | @cityos/auth | Same domain |
+| [dev-portal](/generated/apps/dev-portal) | @cityos/auth | Same domain |
+| [driver-app](/generated/apps/driver-app) | @cityos/auth | Same domain |
+| [fleetops](/generated/apps/fleetops) | @cityos/auth | Same domain |
+| [merchant-app](/generated/apps/merchant-app) | @cityos/auth | Same domain |
+| [merchant-app-mobile](/generated/apps/merchant-app-mobile) | @cityos/auth | Same domain |
+| [mobile](/generated/apps/mobile) | @cityos/auth | Same domain |
+| [mobile-driver](#) | @cityos/auth | Same domain |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Component Hierarchy | [kiosk-hierarchy.mmd](/generated/diagrams/components/kiosk-hierarchy.mmd) |
+| Dependency Graph | [kiosk-dependencies.mmd](/generated/diagrams/dependencies/kiosk-dependencies.mmd) |
+
+## Tests
+
+- `env.test.ts` (8 lines)
+- `components/KioskAuthGate.test.tsx` (16 lines)
+- `components/SduiScreen.test.tsx` (16 lines)
+- `components/SduiTvErrorBoundary.test.tsx` (16 lines)
+- `hooks/use-kiosk-idle-watchdog.test.ts` (16 lines)
+- `hooks/use-kiosk-offline.test.ts` (16 lines)
+- `hooks/useNetworkStatus.test.ts` (8 lines)
+- `lib/Heartbeat.test.tsx` (16 lines)
+- `lib/IdleWatchdog.test.tsx` (16 lines)
+- `lib/auth.test.ts` (111 lines)
+- `lib/kioskColors.test.ts` (89 lines)
+- `lib/offline-queue.test.ts` (8 lines)
+- `lib/config/env.test.ts` (49 lines)
+- `screens/KioskHome.test.tsx` (16 lines)
+- `screens/KioskMap.test.tsx` (16 lines)
+- `screens/KioskQRFlow.test.tsx` (16 lines)
+- `screens/KioskServiceMenu.test.tsx` (16 lines)
+
+---
+*Generated by scripts/docs/generators/deep/app-deep-dive.mjs*

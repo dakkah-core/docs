@@ -1,0 +1,435 @@
+---
+title: "City Dashboard"
+description: "Deep dive into the city-dashboard application"
+icon: "layout-dashboard"
+---
+
+> **Type:** Admin Dashboard (Next.js) | **Framework:** Next.js | **Version:** 0.1.0
+> **Path:** `apps/city-dashboard` | **Architectural Role:** City Admin Portal
+
+[Back to Generated Apps](/generated/apps)
+> **Dependencies:** [api-client-react](/generated/packages/api-client-react), [auth](/generated/packages/auth), [design-system](/generated/packages/design-system), [design-tokens](/generated/packages/design-tokens), [i18n](/generated/packages/i18n), [sdui-renderer-web](#), [sdui-protocol](#), [token-bridge](#)
+
+## Overview & Purpose
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 188 | — |
+| Lines of Code | 13,477 | — |
+| Test Coverage | 95.7% | 🟢 |
+| Oversized Files | 3 | 🟡 |
+| Components | 89 | — |
+| Hooks | 23 | — |
+| Types & Interfaces | 101 | — |
+| API Routes | 0 | — |
+| Page Routes | 25 | — |
+| Internal Deps | 8 | — |
+| Dependents | 0 | — |
+
+### ⚠️ Oversized Files
+
+| File | Lines |
+|---|---|
+| apps/city-dashboard/src/screens/WorkflowsPage.tsx | 548 |
+| apps/city-dashboard/src/screens/IoTMonitoringPage.tsx | 496 |
+| apps/city-dashboard/src/screens/PermitsPage.tsx | 442 |
+
+## Architecture
+
+### File Structure
+
+```
+app/
+  error.test.tsx (13L, 0C, 0T)
+  error.tsx (8L, 1C, 0T)
+  layout.test.tsx (8L, 0C, 0T)
+  layout.tsx (44L, 1C, 0T)
+  loading.test.tsx (8L, 0C, 0T)
+  loading.tsx (13L, 1C, 0T)
+  not-found.test.tsx (12L, 0C, 0T)
+  not-found.tsx (26L, 1C, 0T)
+  page.test.tsx (8L, 0C, 0T)
+  page.tsx (8L, 1C, 0T)
+  providers.test.tsx (8L, 0C, 0T)
+  providers.tsx (54L, 1C, 0T)
+  app/(government)/
+    GovernmentLayoutClient.test.tsx (16L, 0C, 0T)
+    GovernmentLayoutClient.tsx (247L, 1C, 1T)
+    layout.test.tsx (8L, 0C, 0T)
+    layout.tsx (10L, 1C, 0T)
+    mock-data.test.ts (8L, 0C, 0T)
+    mock-data.ts (223L, 0C, 0T)
+    types.test.ts (8L, 0C, 0T)
+    types.ts (122L, 0C, 17T)
+    app/(government)/dashboard/
+      page.test.tsx (8L, 0C, 0T)
+      page.tsx (166L, 4C, 0T)
+    app/(government)/emergency/
+      page.test.tsx (8L, 0C, 0T)
+      page.tsx (229L, 2C, 0T)
+    app/(government)/iot/
+      page.test.tsx (8L, 0C, 0T)
+      page.tsx (276L, 2C, 0T)
+    app/(government)/permits/
+      page.test.tsx (8L, 0C, 0T)
+      page.tsx (221L, 1C, 0T)
+    app/(government)/services/
+      page.test.tsx (8L, 0C, 0T)
+      page.tsx (303L, 1C, 2T)
+      app/(government)/services/[id]/
+        page.test.tsx (8L, 0C, 0T)
+        page.tsx (285L, 2C, 0T)
+... and 204 more files
+```
+
+## Page Routes
+
+| Route | Pattern |
+|---|---|
+| /(government)/dashboard | Static |
+| /(government)/emergency | Static |
+| /(government)/iot | Static |
+| /(government)/permits | Static |
+| /(government)/services | Static |
+| /(government)/services/[id] | Dynamic |
+| // | Static |
+| /analytics | Static |
+| /auth/callback | Static |
+| /callback | Static |
+| /community | Static |
+| /domains | Static |
+| /environment | Static |
+| /feature-flags | Static |
+| /finance | Static |
+| /infrastructure | Static |
+| /iot-monitoring | Static |
+| /login | Static |
+| /procurement | Static |
+| /public-safety | Static |
+| /safety | Static |
+| /service-requests | Static |
+| /settings | Static |
+| /transportation | Static |
+| /workflows | Static |
+
+## Dependencies
+
+### UI / Framework
+
+| Package | Type |
+|---|---|
+| [@cityos/api-client-react](/generated/packages/api-client-react) | prod |
+
+### Auth / Identity
+
+| Package | Type |
+|---|---|
+| [@cityos/auth](/generated/packages/auth) | prod |
+
+### CityOS Core
+
+| Package | Type |
+|---|---|
+| [@cityos/design-system](/generated/packages/design-system) | prod |
+| [@cityos/design-tokens](/generated/packages/design-tokens) | prod |
+| [@cityos/i18n](/generated/packages/i18n) | prod |
+| [@cityos/sdui-renderer-web](#) | prod |
+| [@cityos/token-bridge](#) | prod |
+
+### Other
+
+| Package | Type |
+|---|---|
+| [@dakkah/sdui-protocol](#) | prod |
+
+## Component Catalog
+
+| Component | File | Kind | Props |
+|---|---|---|---|
+| Error | app/error.tsx | function | — |
+| RootLayout | app/layout.tsx | function | — |
+| Loading | app/loading.tsx | function | — |
+| NotFound | app/not-found.tsx | function | — |
+| Page | app/page.tsx | function | — |
+| Providers | app/providers.tsx | function | — |
+| GovernmentLayoutClient | app/(government)/GovernmentLayoutClient.tsx | function | — |
+| GovernmentLayout | app/(government)/layout.tsx | function | — |
+| TrendIndicator | app/(government)/dashboard/page.tsx | function | — |
+| Sparkline | app/(government)/dashboard/page.tsx | function | — |
+| KpiCard | app/(government)/dashboard/page.tsx | function | — |
+| GovernmentDashboardPage | app/(government)/dashboard/page.tsx | function | — |
+| SeverityPulse | app/(government)/emergency/page.tsx | function | — |
+| EmergencyDashboardPage | app/(government)/emergency/page.tsx | function | — |
+| AlertRow | app/(government)/iot/page.tsx | function | — |
+| IoTSensorMapPage | app/(government)/iot/page.tsx | function | — |
+| PermitsPage | app/(government)/permits/page.tsx | function | — |
+| ServiceRequestsPage | app/(government)/services/page.tsx | function | — |
+| TimelineIcon | app/(government)/services/[id]/page.tsx | function | — |
+| ServiceRequestDetailPage | app/(government)/services/[id]/page.tsx | function | — |
+| Page | app/analytics/page.tsx | function | — |
+| GET | app/api/bff/finance/route.ts | function | — |
+| GET | app/api/bff/kpis/route.ts | function | — |
+| GET | app/api/bff/tenants/route.ts | function | — |
+| GET | app/api/health/route.ts | function | — |
+| GET | app/api/transport/traffic-incidents/route.ts | function | — |
+| AuthCallbackPage | app/auth/callback/page.tsx | function | — |
+| LegacyCallbackPage | app/callback/page.tsx | function | searchParams: Promise<Record<string, string | string[] | undefined>> |
+| Page | app/community/page.tsx | function | — |
+| DomainsPage | app/domains/page.tsx | function | — |
+| Page | app/environment/page.tsx | function | — |
+| Page | app/feature-flags/page.tsx | function | — |
+| MetricSkeleton | app/finance/page.tsx | function | — |
+| FinancePage | app/finance/page.tsx | function | — |
+| Page | app/infrastructure/page.tsx | function | — |
+| Page | app/iot-monitoring/page.tsx | function | — |
+| Page | app/login/page.tsx | function | — |
+| Page | app/procurement/page.tsx | function | — |
+| Page | app/public-safety/page.tsx | function | — |
+| SafetyPage | app/safety/page.tsx | function | — |
+| ... | | | | (49 more) |
+
+## Types & Interfaces
+
+### CityOSJwtClaims
+
+**Kind:** type | **File:** `app/(government)/GovernmentLayoutClient.tsx`
+
+### TrendDirection
+
+**Kind:** type | **File:** `app/(government)/types.ts`
+
+### CityKpi
+
+**Kind:** interface | **File:** `app/(government)/types.ts`
+
+### ServiceRequestStatus
+
+**Kind:** type | **File:** `app/(government)/types.ts`
+
+### ServiceRequestPriority
+
+**Kind:** type | **File:** `app/(government)/types.ts`
+
+### ServiceRequest
+
+**Kind:** interface | **File:** `app/(government)/types.ts`
+
+### ServiceRequestTimelineEntry
+
+**Kind:** interface | **File:** `app/(government)/types.ts`
+
+### SensorType
+
+**Kind:** type | **File:** `app/(government)/types.ts`
+
+### AlertSeverity
+
+**Kind:** type | **File:** `app/(government)/types.ts`
+
+### IoTSensor
+
+**Kind:** interface | **File:** `app/(government)/types.ts`
+
+### IoTAlert
+
+**Kind:** interface | **File:** `app/(government)/types.ts`
+
+### PermitStatus
+
+**Kind:** type | **File:** `app/(government)/types.ts`
+
+### PermitType
+
+**Kind:** type | **File:** `app/(government)/types.ts`
+
+### PermitApplication
+
+**Kind:** interface | **File:** `app/(government)/types.ts`
+
+### IncidentSeverity
+
+**Kind:** type | **File:** `app/(government)/types.ts`
+
+*... and 86 more types*
+
+## Hooks
+
+| Hook | File | Params | Return |
+|---|---|---|---|
+| useGovLabels | app/(government)/GovernmentLayoutClient.tsx | — | — |
+| useAuthMock | components/AuthGuard.test.tsx | — | — |
+| useKuzzle | components/KuzzleProvider.tsx | — | — |
+| useAuthMock | components/ProtectedRoute.test.tsx | — | — |
+| useTheme | components/layout/DashboardLayout.tsx | — | — |
+| useTMock | hooks/use-copilot.test.ts | — | — |
+| useI18nMock | hooks/use-copilot.test.ts | — | — |
+| useCopilot | hooks/use-copilot.ts | — | — |
+| useDashboardSdui | hooks/use-sdui.ts | — | — |
+| useKuzzleSubscriptionMock | hooks/useAlertStream.test.ts | — | — |
+| useAlertStream | hooks/useAlertStream.ts | — | — |
+| useKuzzleMock | hooks/useKuzzleSubscription.test.ts | — | — |
+| useKuzzleSubscription | hooks/useKuzzleSubscription.ts | — | — |
+| useSensorData | hooks/useSensorData.ts | — | — |
+| useLifecycleLabels | screens/PermitsPage.tsx | — | — |
+| ... | | | | (8 more) |
+
+## Public API Surface
+
+| Export | Kind | File |
+|---|---|---|
+| Error | function | app/error.tsx |
+| metadata | const | app/layout.tsx |
+| RootLayout | function | app/layout.tsx |
+| Loading | function | app/loading.tsx |
+| NotFound | function | app/not-found.tsx |
+| Page | function | app/page.tsx |
+| Providers | function | app/providers.tsx |
+| GovernmentLayoutClient | function | app/(government)/GovernmentLayoutClient.tsx |
+| GovernmentLayout | function | app/(government)/layout.tsx |
+| MOCK_KPIS | const | app/(government)/mock-data.ts |
+| MOCK_SERVICE_REQUESTS | const | app/(government)/mock-data.ts |
+| MOCK_TIMELINE | const | app/(government)/mock-data.ts |
+| MOCK_SENSORS | const | app/(government)/mock-data.ts |
+| MOCK_IOT_ALERTS | const | app/(government)/mock-data.ts |
+| MOCK_PERMITS | const | app/(government)/mock-data.ts |
+| MOCK_INCIDENTS | const | app/(government)/mock-data.ts |
+| TrendDirection | type | app/(government)/types.ts |
+| CityKpi | interface | app/(government)/types.ts |
+| ServiceRequestStatus | type | app/(government)/types.ts |
+| ServiceRequestPriority | type | app/(government)/types.ts |
+| ServiceRequest | interface | app/(government)/types.ts |
+| ServiceRequestTimelineEntry | interface | app/(government)/types.ts |
+| SensorType | type | app/(government)/types.ts |
+| AlertSeverity | type | app/(government)/types.ts |
+| IoTSensor | interface | app/(government)/types.ts |
+| ... | | | (110 more) |
+
+## Related Apps
+
+Apps that share dependencies or serve similar roles:
+
+| App | Shared Dependencies | Relationship |
+|---|---|---|
+| [business-dashboard](/generated/apps/business-dashboard) | @cityos/api-client-react, @cityos/auth, @cityos/design-system +4 more | Same domain |
+| [dev-portal](/generated/apps/dev-portal) | @cityos/api-client-react, @cityos/auth, @cityos/design-system +4 more | Same domain |
+| [smart-city-portal](#) | @cityos/api-client-react, @cityos/auth, @cityos/design-system +4 more | Same domain |
+| [web-platform](#) | @cityos/api-client-react, @cityos/auth, @cityos/design-system +4 more | Same domain |
+| [superapp](#) | @cityos/design-tokens, @cityos/api-client-react, @cityos/auth +2 more | Same domain |
+| [ai-assistant](/generated/packages/ai-assistant) | @cityos/i18n, @cityos/api-client-react, @cityos/design-system +1 more | Same domain |
+| [fleetops](/generated/apps/fleetops) | @cityos/design-system, @cityos/design-tokens, @cityos/auth +1 more | Same domain |
+| [merchant-app](/generated/apps/merchant-app) | @cityos/api-client-react, @cityos/auth, @cityos/i18n +1 more | Same domain |
+| [merchant-app-mobile](/generated/apps/merchant-app-mobile) | @cityos/api-client-react, @cityos/auth, @cityos/i18n +1 more | Same domain |
+| [mobile](/generated/apps/mobile) | @cityos/design-tokens, @cityos/api-client-react, @cityos/auth +1 more | Same domain |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Component Hierarchy | [city-dashboard-hierarchy.mmd](/generated/diagrams/components/city-dashboard-hierarchy.mmd) |
+| Dependency Graph | [city-dashboard-dependencies.mmd](/generated/diagrams/dependencies/city-dashboard-dependencies.mmd) |
+
+## Tests
+
+- `app/error.test.tsx` (13 lines)
+- `app/layout.test.tsx` (8 lines)
+- `app/loading.test.tsx` (8 lines)
+- `app/not-found.test.tsx` (12 lines)
+- `app/page.test.tsx` (8 lines)
+- `app/providers.test.tsx` (8 lines)
+- `app/(government)/GovernmentLayoutClient.test.tsx` (16 lines)
+- `app/(government)/layout.test.tsx` (8 lines)
+- `app/(government)/mock-data.test.ts` (8 lines)
+- `app/(government)/types.test.ts` (8 lines)
+- `app/(government)/dashboard/page.test.tsx` (8 lines)
+- `app/(government)/emergency/page.test.tsx` (8 lines)
+- `app/(government)/iot/page.test.tsx` (8 lines)
+- `app/(government)/permits/page.test.tsx` (8 lines)
+- `app/(government)/services/page.test.tsx` (8 lines)
+- `app/(government)/services/[id]/page.test.tsx` (8 lines)
+- `app/analytics/page.test.tsx` (8 lines)
+- `app/api/bff/alerts/route.test.ts` (50 lines)
+- `app/api/bff/finance/route.test.ts` (8 lines)
+- `app/api/bff/kpis/route.test.ts` (38 lines)
+- `app/api/bff/safety/incidents/route.test.ts` (8 lines)
+- `app/api/bff/tenants/route.test.ts` (8 lines)
+- `app/api/health/route.test.ts` (12 lines)
+- `app/api/transport/traffic-incidents/route.test.ts` (8 lines)
+- `app/auth/callback/page.test.tsx` (8 lines)
+- `app/callback/page.test.tsx` (8 lines)
+- `app/community/page.test.tsx` (8 lines)
+- `app/domains/page.test.tsx` (8 lines)
+- `app/environment/page.test.tsx` (8 lines)
+- `app/feature-flags/page.test.tsx` (8 lines)
+- `app/finance/page.test.tsx` (8 lines)
+- `app/infrastructure/page.test.tsx` (8 lines)
+- `app/iot-monitoring/page.test.tsx` (8 lines)
+- `app/login/page.test.tsx` (8 lines)
+- `app/procurement/page.test.tsx` (8 lines)
+- `app/public-safety/page.test.tsx` (8 lines)
+- `app/safety/page.test.tsx` (8 lines)
+- `app/service-requests/page.test.tsx` (8 lines)
+- `app/settings/page.test.tsx` (8 lines)
+- `app/transportation/page.test.tsx` (8 lines)
+- `app/workflows/page.test.tsx` (8 lines)
+- `components/AuthGuard.test.tsx` (30 lines)
+- `components/DashboardShell.test.tsx` (19 lines)
+- `components/KPIGrid.test.tsx` (12 lines)
+- `components/LiveOperationsMap.test.tsx` (12 lines)
+- `components/MapView.test.tsx` (12 lines)
+- `components/ProtectedRoute.test.tsx` (30 lines)
+- `components/ServiceHealthPanel.test.tsx` (12 lines)
+- `components/Sidebar.test.tsx` (23 lines)
+- `components/TenantSummary.test.tsx` (12 lines)
+- `components/__tests__/AlertFeed.test.tsx` (19 lines)
+- `components/__tests__/AuthGuard.test.tsx` (54 lines)
+- `components/__tests__/DashboardShell.test.tsx` (22 lines)
+- `components/__tests__/KPIGrid.test.tsx` (37 lines)
+- `components/__tests__/KuzzleProvider.test.tsx` (19 lines)
+- `components/__tests__/LiveOperationsMap.test.tsx` (19 lines)
+- `components/__tests__/ProtectedRoute.test.tsx` (32 lines)
+- `components/__tests__/SduiRenderer.test.tsx` (16 lines)
+- `components/__tests__/ServiceHealthPanel.test.tsx` (19 lines)
+- `components/__tests__/Sidebar.test.tsx` (33 lines)
+- `components/__tests__/TenantSummary.test.tsx` (19 lines)
+- `components/__tests__/auth-provider.test.tsx` (23 lines)
+- `components/copilot/__tests__/CopilotPanel.test.tsx` (64 lines)
+- `components/layout/__tests__/DashboardLayout.test.tsx` (78 lines)
+- `components/sdui/__tests__/SduiRenderer.test.tsx` (19 lines)
+- `components/widgets/AQIGauge.test.tsx` (12 lines)
+- `components/widgets/ParkingOccupancy.test.tsx` (12 lines)
+- `components/widgets/SmartBinLevels.test.tsx` (12 lines)
+- `components/widgets/TrafficFlowMap.test.tsx` (12 lines)
+- `components/widgets/WaterQuality.test.tsx` (12 lines)
+- `components/widgets/index.test.ts` (8 lines)
+- `features/auth/LoginScreen.test.tsx` (16 lines)
+- `hooks/use-auth.test.tsx` (16 lines)
+- `hooks/use-copilot.test.ts` (109 lines)
+- `hooks/use-sdui.test.ts` (16 lines)
+- `hooks/useAlertStream.test.ts` (54 lines)
+- `hooks/useKuzzleSubscription.test.ts` (92 lines)
+- `hooks/__tests__/useSensorData.test.ts` (294 lines)
+- `lib/env.test.ts` (33 lines)
+- `lib/export-utils.test.ts` (70 lines)
+- `lib/auth/actions.test.ts` (8 lines)
+- `lib/auth/index.test.ts` (26 lines)
+- `lib/bff/withBff.test.ts` (72 lines)
+- `lib/config/env.test.ts` (8 lines)
+- `screens/AnalyticsPage.test.tsx` (12 lines)
+- `screens/CommunityPage.test.tsx` (16 lines)
+- `screens/EnvironmentPage.test.tsx` (20 lines)
+- `screens/FeatureFlagsPage.test.tsx` (16 lines)
+- `screens/InfrastructurePage.test.tsx` (16 lines)
+- `screens/IoTMonitoringPage.test.tsx` (16 lines)
+- `screens/OverviewPage.test.tsx` (12 lines)
+- `screens/PermitsPage.test.tsx` (16 lines)
+- `screens/ProcurementPipelinePage.test.tsx` (16 lines)
+- `screens/PublicSafetyPage.test.tsx` (20 lines)
+- `screens/ServiceRequestsPage.test.tsx` (16 lines)
+- `screens/TransportationPage.test.tsx` (12 lines)
+- `screens/WorkflowsPage.test.tsx` (16 lines)
+- `screens/not-found.test.tsx` (8 lines)
+
+---
+*Generated by scripts/docs/generators/deep/app-deep-dive.mjs*

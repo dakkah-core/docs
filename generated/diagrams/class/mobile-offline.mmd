@@ -1,0 +1,128 @@
+classDiagram
+  direction TB
+
+  class OfflineContextValue ~interface~ {
+    +isReady: boolean
+    +isOnline: boolean
+    +syncState: SyncManagerState
+  }
+
+  class OfflineProviderProps ~interface~ {
+    +children: ReactNode
+    +executor: (action: SdAction) = Promisevoid
+    -flushIntervalMs: number
+    -pruneIntervalMs: number
+  }
+
+  class QueuedAction ~interface~ {
+    +id: string
+    +idempotencyKey: string
+    +action: SdAction
+    +retryPolicy: RetryPolicyName
+    +attemptCount: number
+    +maxAttempts: number
+    +nextRetryAt: number
+    +status: ActionStatus
+    +createdAt: number
+    +updatedAt: number
+    +errorMessage: string | null
+  }
+
+  class EnqueueInput ~interface~ {
+    +action: SdAction
+    +idempotencyKey: string
+    -retryPolicy: RetryPolicyName
+  }
+
+  class ActionStatus  {
+  }
+
+  class ActionExecutor  {
+  }
+
+  class ConflictResolution ~interface~ {
+    +winner: 'server' | 'local'
+    +resolvedAction: SdAction
+    +discardLocal: boolean
+  }
+
+  class ServerConflictPayload ~interface~ {
+    +serverAction: SdAction
+    +serverVersion: number
+  }
+
+  class RetryPolicyConfig ~interface~ {
+    +name: RetryPolicyName
+    +maxAttempts: number
+  }
+
+  class RetryPolicyName  {
+  }
+
+  class Migration ~interface~ {
+    +version: number
+    +description: string
+  }
+
+  class CacheScreenInput ~interface~ {
+    +screenId: string
+    +version: string
+    +nodes: SdNode[]
+    -ttlMs: number
+  }
+
+  class CachedScreen ~interface~ {
+    +screenId: string
+    +version: string
+    +nodes: SdNode[]
+    +cachedAt: number
+    +ttlMs: number
+    +stale: boolean
+  }
+
+  class NetworkStatus ~interface~ {
+    +isConnected: boolean
+    +connectionType: ConnectionType
+    +isExpensive: boolean
+  }
+
+  class ConnectionType  {
+  }
+
+  class NetworkStatusListener  {
+  }
+
+  class NetworkMonitor  {
+    +subscription: NetInfoSubscription | null
+    +listeners: unknown
+    +currentStatus: NetworkStatus
+  }
+
+  class SyncManagerConfig ~interface~ {
+    -flushIntervalMs: number
+    -pruneIntervalMs: number
+    +executor: ActionExecutor
+  }
+
+  class SyncManagerState ~interface~ {
+    +isInitialized: boolean
+    +isOnline: boolean
+    +isFlushing: boolean
+    +lastFlushAt: number | null
+    +lastFlushSuccessCount: number
+  }
+
+  class SyncManager  {
+    +db: SQLiteDatabase | null
+    +networkMonitor: unknown
+    +flushTimer: ReturnTypetypeof setInterval | null
+    +pruneTimer: ReturnTypetypeof setInterval | null
+    +unsubscribeNetwork: (() = void) | null
+    +state: SyncManagerState
+    +config: RequiredSyncManagerConfig
+  }
+
+  %% Relationships
+  NetworkMonitor --> NetworkStatus : currentStatus
+  SyncManagerConfig --> ActionExecutor : executor
+  SyncManager --> SyncManagerState : state

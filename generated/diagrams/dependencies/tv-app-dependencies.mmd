@@ -1,0 +1,11 @@
+graph LR
+  tv-app[tv-app]
+  tv-app --> design-tokens[design-tokens]
+  tv-app --> design-tokens-mobile[design-tokens-mobile]
+  tv-app --> mobile-core[mobile-core]
+  tv-app --> sdui-renderer-tv[sdui-renderer-tv]
+  tv-app --> sdui-protocol[sdui-protocol]
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef dep fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class tv-app app

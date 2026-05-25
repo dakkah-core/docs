@@ -1,0 +1,89 @@
+classDiagram
+  direction TB
+
+  class Story  {
+  }
+
+  class LoanCalculatorBlockProps ~interface~ {
+    -currency: string
+    -locale: string
+    -shariaByDefault: boolean
+    -initialPrincipal: number
+    -initialRate: number
+    -initialTermMonths: number
+    -className: string
+    -heading: string
+    -messages: MessageBagLoanCalculatorMessageKey
+  }
+
+  class Schedule ~interface~ {
+    +monthlyPayment: number
+    +totalPayment: number
+    +totalInterestOrProfit: number
+  }
+
+  class LoanCalculatorMessageKey  {
+  }
+
+  class Mode  {
+  }
+
+  class Story  {
+  }
+
+  class SubscriptionManageBlockProps ~interface~ {
+    -subscriptionId: string
+    -showUsage: boolean
+    -allowPause: boolean
+    -allowUpgrade: boolean
+    -currency: string
+    -locale: string
+    -onTogglePause: (next: boolean) = void
+    -onUpgrade: () = void
+    -onConfirmCancel: () = void
+    -messages: MessageBagSubscriptionManageMessageKey
+  }
+
+  class BillingRecord ~interface~ {
+    +id: string
+    +date: string
+    +amount: number
+    +status: 'paid' | 'pending' | 'failed'
+    -invoice: string
+  }
+
+  class SubscriptionManageMessageKey  {
+  }
+
+  class Story  {
+  }
+
+  class WalletTransaction ~interface~ {
+    +id: string
+    +date: string
+    +amount: number
+    +description: string
+    -status: 'pending' | 'completed' | 'failed'
+  }
+
+  class WalletBalanceBlockProps ~interface~ {
+    -balance: number
+    -pendingBalance: number
+    -currency: string
+    -locale: string
+    -transactions: WalletTransaction[]
+    -loading: boolean
+    -error: Error | null
+    -onTopUp: () = void
+    -onWithdraw: () = void
+    -heading: string
+    -variant: 'default' | 'compact'
+    -className: string
+    ... 1 more
+  }
+
+  class WalletBalanceMessageKey  {
+  }
+
+  %% Relationships
+  WalletBalanceBlockProps --> WalletTransaction : transactions

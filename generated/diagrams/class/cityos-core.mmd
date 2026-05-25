@@ -1,0 +1,453 @@
+classDiagram
+  direction TB
+
+  class UserRoles  {
+  }
+
+  class UserLike  {
+  }
+
+  class NodeRef  {
+  }
+
+  class TenantRef  {
+  }
+
+  class HeaderGetter  {
+  }
+
+  class HeaderSource  {
+  }
+
+  class NodeContextValidationError  {
+    +missingFields: string[]
+  }
+
+  class ResolverSource ~interface~ {
+    -headers: Recordstring, string | undefined
+    -path: string
+    -cookies: Recordstring, string | undefined
+    -query: Recordstring, string | undefined
+  }
+
+  class RequestEnvelope  {
+  }
+
+  class PaginationMeta  {
+  }
+
+  class ResponseEnvelope  {
+  }
+
+  class DomainEvent  {
+  }
+
+  class EventEnvelope  {
+  }
+
+  class Channel  {
+  }
+
+  class SurfaceType  {
+  }
+
+  class NodeTenantTier  {
+  }
+
+  class ZoneType  {
+  }
+
+  class NodeContext  {
+  }
+
+  class LegacyNodeContext  {
+  }
+
+  class NodeType  {
+  }
+
+  class TenantType  {
+  }
+
+  class TenantTier  {
+  }
+
+  class SubscriptionStatus  {
+  }
+
+  class TenantFeature  {
+  }
+
+  class Tenant  {
+  }
+
+  class TenantRef  {
+  }
+
+  class ErrorResponse  {
+  }
+
+  class CityOSError  {
+    +code: CityOSErrorCode
+    +statusCode: number
+    -correlationId: string
+    -details: Recordstring, unknown
+    +timestamp: string
+  }
+
+  class CityOSErrorCode  {
+  }
+
+  class CityOSBlockDefinition ~interface~ {
+    +slug: string
+    -labels: { singular?: Labels['singular'] plural?: Labels['plural'] }
+    +fields: Field[]
+    -icon: string
+    -tier: 'A' | 'B'
+    -extractionHints: {
+    titleField?: string
+    subtitleField?: string
+    ctaLabelField?: string
+    ctaUrlField?: string
+    mediaField?: string
+    geoLatField?: string
+    geoLngField?: string
+    startAtField?: string
+    endAtField?: string
+    tagsField?: string
+  }
+  }
+
+  class CityOSBlocksFieldConfig ~interface~ {
+    +name: string
+    +blocks: (CityOSBlockDefinition | Block)[]
+    -required: boolean
+    -maxRows: number
+    -minRows: number
+    -versions: boolean
+    -extraction: boolean
+    -fts: boolean
+    -localized: boolean
+  }
+
+  class CityOSDrizzle  {
+  }
+
+  class BlockDuplicate ~interface~ {
+    +slug: string
+    +count: number
+    +indices: number[]
+    +labels: (string | undefined)[]
+  }
+
+  class BlockDuplicateReport ~interface~ {
+    +totalDefinitions: number
+    +uniqueSlugs: number
+    +duplicates: BlockDuplicate[]
+  }
+
+  class AssertUniqueBlocksOptions ~interface~ {
+    -strict: boolean
+    -warn: (msg: string, extra?: Recordstring, unknown) = void
+    -onRegistered: (evt: { slug: string index: number total: number }) = void
+    -onDuplicate: (dup: BlockDuplicate) = void
+  }
+
+  class ExtractedReference ~interface~ {
+    +refCollection: string
+    +refId: string
+    +refPath: string
+    +relationType: string
+  }
+
+  class ExtractedHotFields ~interface~ {
+    -titleText: string
+    -subtitleText: string
+    -ctaLabel: string
+    -ctaUrl: string
+    -mediaPrimaryId: string
+    -geoLat: number
+    -geoLng: number
+    -startAt: string
+    -endAt: string
+    -tags: string[]
+  }
+
+  class BlockInstance ~interface~ {
+    +id: string
+    +blockType: string
+    +schemaVersion: number
+    +orderIndex: number
+    +data: Recordstring, unknown
+    +status: string
+    +isEnabled: boolean
+    -segmentKey: string | null
+    -scheduleStart: string | null
+    -scheduleEnd: string | null
+  }
+
+  class LoadOptions ~interface~ {
+    +db: CityOSDrizzle
+    +parentType: string
+    +parentId: string
+    +fieldPath: string
+    -tenantId: string | null
+    -status: string
+  }
+
+  class SchemaDivergence ~interface~ {
+    +type: 'orphaned_type' | 'inactive_type'
+    +blockType: string
+    -liveCount: number
+    -registryVersion: number
+  }
+
+  class BlockWritePayload ~interface~ {
+    +id: string
+    +blockType: string
+    -schemaVersion: number
+    +data: Recordstring, unknown
+    -status: string
+    -isEnabled: boolean
+    -segmentKey: string | null
+    -scheduleStart: string | null
+    -scheduleEnd: string | null
+  }
+
+  class SaveOptions ~interface~ {
+    +db: DrizzleClient
+    +parentType: string
+    +parentId: string
+    +fieldPath: string
+    -tenantId: string | null
+    +blocks: BlockWritePayload[]
+    +fieldConfig: CityOSBlocksFieldConfig
+  }
+
+  class DrizzleClient  {
+  }
+
+  class Coordinates  {
+  }
+
+  class BoundingBox  {
+  }
+
+  class H3Index  {
+  }
+
+  class H3Resolution  {
+  }
+
+  class DataClassification  {
+  }
+
+  class ClassificationPolicy  {
+  }
+
+  class ComplianceFramework  {
+  }
+
+  class ComplianceSeverity  {
+  }
+
+  class ComplianceRule  {
+  }
+
+  class ComplianceCheckResult  {
+  }
+
+  class GovernancePolicy  {
+  }
+
+  class ResidencyZone  {
+  }
+
+  class ResidencyPolicy  {
+  }
+
+  class AuditEntityType  {
+  }
+
+  class CapabilityPayloadLike  {
+  }
+
+  class Violation  {
+  }
+
+  class FieldConfig  {
+  }
+
+  class TenantContext  {
+  }
+
+  class RequestUser  {
+  }
+
+  class RelationField  {
+  }
+
+  class FeatureFlagFindArgs  {
+  }
+
+  class FeatureFlagPayload  {
+  }
+
+  class FeatureGateUser  {
+  }
+
+  class FeatureGateRequest  {
+  }
+
+  class TenantRef  {
+  }
+
+  class FeatureGateDoc  {
+  }
+
+  class GovernancePayload  {
+  }
+
+  class GovernanceRequest  {
+  }
+
+  class NodeHookArgs ~interface~ {
+    +data: Recordstring, unknown
+    +req: {
+    payload?: {
+      findByID(args: {
+        collection: string
+        id: string
+        depth: number
+      }): PromiseRecordstring, unknown | null
+    }
+  }
+    -operation: string
+    -originalDoc: Recordstring, unknown
+    -collection: Recordstring, unknown
+    -context: Recordstring, unknown
+  }
+
+  class StewardshipData  {
+  }
+
+  class WebhookCollectionSlug  {
+  }
+
+  class MedusaSyncHookOptions ~interface~ {
+    -eventType: string
+    -shouldSync: (doc: Recordstring, unknown) = boolean
+    +collection: string
+  }
+
+  class MedusaSyncOperation  {
+  }
+
+  class Violation  {
+  }
+
+  class CoordinateObject  {
+  }
+
+  class CoordinateContainer  {
+  }
+
+  class TargetingRule ~interface~ {
+    +attribute: TargetingAttribute
+    +operator: TargetingOperator
+    +value: string | string[] | number
+    -customKey: string
+  }
+
+  class TargetingRuleGroup ~interface~ {
+    +rules: TargetingRule[]
+  }
+
+  class FlagDocument ~interface~ {
+    -enabled: boolean
+    -tenantScope: string[]
+    -nodeTypeScope: string[]
+    -roleScope: string[]
+    -targetingRules: unknown
+    -configValue: unknown
+  }
+
+  class EvaluationContext ~interface~ {
+    -tenantId: string | null
+    -userId: string | null
+    -userRoles: string[]
+    -nodeType: string | null
+    -surfaceId: string | null
+    -locale: string | null
+    -device: string | null
+    -personaId: string | null
+    -custom: Recordstring, string | number
+  }
+
+  class EvaluationResult ~interface~ {
+    +enabled: boolean
+    +reason: string
+    -configValue: unknown
+  }
+
+  class TargetingAttribute  {
+  }
+
+  class TargetingOperator  {
+  }
+
+  class PolicySource  {
+  }
+
+  class EffectivePolicies  {
+  }
+
+  class LoggerContext ~interface~ {
+    -service: string
+    -correlationId: string
+  }
+
+  class Logger ~interface~ {
+  }
+
+  class CentralLogger ~interface~ {
+  }
+
+  class CentralLoggerFactory ~interface~ {
+  }
+
+  class TenantOwnership  {
+  }
+
+  class CityOSRlsMeta  {
+  }
+
+  class CityOSCollectionCustomMeta  {
+  }
+
+  class CityOSCollectionCustom  {
+  }
+
+  class SupportedLocale  {
+  }
+
+  class Permission  {
+  }
+
+  class CollectionType  {
+  }
+
+  class RBACRole  {
+  }
+
+  class ContractVersion  {
+  }
+
+  %% Relationships
+  Error <|-- NodeContextValidationError
+  Error <|-- CityOSError
+  BlockDuplicateReport --> BlockDuplicate : duplicates
+  LoadOptions --> CityOSDrizzle : db
+  SaveOptions --> BlockWritePayload : blocks
+  SaveOptions --> CityOSBlocksFieldConfig : fieldConfig
+  TargetingRuleGroup --> TargetingRule : rules

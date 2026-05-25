@@ -1,0 +1,45 @@
+classDiagram
+  direction TB
+
+  class Story  {
+  }
+
+  class B2bApprovalWorkflowBlockProps ~interface~ {
+    -heading: string
+    -showRules: boolean
+    -variant: 'list' | 'visual'
+    -currency: string
+    -locale: string
+    -messages: MessageBagB2bApprovalMessageKey
+  }
+
+  class B2bApprovalMessageKey  {
+  }
+
+  class Story  {
+  }
+
+  class B2bQuoteFormBlockProps ~interface~ {
+    -heading: string
+    -showProductSearch: boolean
+    -variant: 'compact' | 'detailed'
+    -messages: MessageBagB2bQuoteMessageKey
+  }
+
+  class B2bQuoteMessageKey  {
+  }
+
+  class Story  {
+  }
+
+  class CompanyDashboardBlockProps ~interface~ {
+    -showSpend: boolean
+    -showOrders: boolean
+    -showTeam: boolean
+    -showBudget: boolean
+    -period: 'monthly' | 'quarterly' | 'yearly'
+    -messages: MessageBagCompanyDashboardMessageKey
+  }
+
+  class CompanyDashboardMessageKey  {
+  }

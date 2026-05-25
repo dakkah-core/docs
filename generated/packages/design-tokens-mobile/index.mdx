@@ -1,0 +1,271 @@
+---
+title: "@cityos/design-tokens-mobile"
+description: "Deep dive into the design-tokens-mobile package"
+icon: "smartphone"
+---
+
+> **Type:** Design System Package | **Framework:** Vitest | **Version:** 0.0.0
+> **Path:** `packages/design-tokens-mobile` | **LOC:** 544 lines across 17 files
+
+[Back to Generated Packages](/generated/packages)
+> **Used by:** [car-app](/generated/apps/car-app), [driver-app](/generated/apps/driver-app), [merchant-app-mobile](/generated/apps/merchant-app-mobile), [mobile](/generated/apps/mobile), [mobile-driver](#) +10 more
+
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 17 | — |
+| Lines of Code | 544 | — |
+| Test Coverage | 35.3% | 🟡 |
+| Oversized Files | 0 | 🟢 |
+| Components | 0 | — |
+| Hooks | 0 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 15 | — |
+| Internal Deps | 0 | — |
+| Dependents | 15 | 🔴 High impact |
+
+## Architecture
+
+### File Structure
+
+```
+index-contract.test.ts (22L, 0C, 0T)
+index.test.ts (26L, 0C, 0T)
+index.ts (23L, 0C, 0T)
+semantic.test.ts (34L, 0C, 0T)
+css/
+native/
+  index.test.ts (39L, 0C, 0T)
+  index.ts (11L, 0C, 0T)
+tokens/
+  borders.ts (22L, 0C, 2T)
+  breakpoints.ts (20L, 0C, 1T)
+  colors.ts (126L, 0C, 2T)
+  elevation.ts (45L, 0C, 1T)
+  layout.ts (20L, 0C, 1T)
+  motion.ts (18L, 0C, 2T)
+  semantic.ts (42L, 0C, 1T)
+  shadows.ts (11L, 0C, 1T)
+  spacing.ts (33L, 0C, 1T)
+  typography.ts (36L, 0C, 2T)
+  zIndex.ts (16L, 0C, 1T)
+```
+
+## Public API Surface
+
+### Functions (1)
+
+| Name | Kind | File |
+|---|---|---|
+| getSemanticColors | function | tokens/semantic.ts |
+
+### Types (15)
+
+| Name | Kind | File |
+|---|---|---|
+| BorderRadius | type | tokens/borders.ts |
+| BorderWidth | type | tokens/borders.ts |
+| Breakpoints | type | tokens/breakpoints.ts |
+| Colors | type | tokens/colors.ts |
+| CategoryColors | type | tokens/colors.ts |
+| Elevation | type | tokens/elevation.ts |
+| ContentWidth | type | tokens/layout.ts |
+| Duration | type | tokens/motion.ts |
+| Easing | type | tokens/motion.ts |
+| SemanticColors | type | tokens/semantic.ts |
+| Shadows | type | tokens/shadows.ts |
+| Spacing | type | tokens/spacing.ts |
+| FontSize | type | tokens/typography.ts |
+| FontWeight | type | tokens/typography.ts |
+| ZIndex | type | tokens/zIndex.ts |
+
+### Constants (22)
+
+| Name | Kind | File |
+|---|---|---|
+| borderRadius | const | tokens/borders.ts |
+| borderWidth | const | tokens/borders.ts |
+| breakpoints | const | tokens/breakpoints.ts |
+| screenClass | const | tokens/breakpoints.ts |
+| colors | const | tokens/colors.ts |
+| categoryColors | const | tokens/colors.ts |
+| elevation | const | tokens/elevation.ts |
+| contentWidth | const | tokens/layout.ts |
+| sidebarWidth | const | tokens/layout.ts |
+| headerHeight | const | tokens/layout.ts |
+| duration | const | tokens/motion.ts |
+| easing | const | tokens/motion.ts |
+| shadows | const | tokens/shadows.ts |
+| spacing | const | tokens/spacing.ts |
+| containerWidths | const | tokens/spacing.ts |
+| sectionPadding | const | tokens/spacing.ts |
+| gridGaps | const | tokens/spacing.ts |
+| fontFamily | const | tokens/typography.ts |
+| fontSize | const | tokens/typography.ts |
+| fontWeight | const | tokens/typography.ts |
+| ... | | | (2 more) |
+
+## Type System
+
+### BorderRadius
+
+**Kind:** type | **File:** `tokens/borders.ts`
+
+```ts
+type BorderRadius = typeof borderRadius;
+```
+
+### BorderWidth
+
+**Kind:** type | **File:** `tokens/borders.ts`
+
+```ts
+type BorderWidth = typeof borderWidth;
+```
+
+### Breakpoints
+
+**Kind:** type | **File:** `tokens/breakpoints.ts`
+
+```ts
+type Breakpoints = typeof breakpoints;
+```
+
+### Colors
+
+**Kind:** type | **File:** `tokens/colors.ts`
+
+```ts
+type Colors = typeof colors;
+```
+
+### CategoryColors
+
+**Kind:** type | **File:** `tokens/colors.ts`
+
+```ts
+type CategoryColors = typeof categoryColors;
+```
+
+### Elevation
+
+**Kind:** type | **File:** `tokens/elevation.ts`
+
+```ts
+type Elevation = typeof elevation;
+```
+
+### ContentWidth
+
+**Kind:** type | **File:** `tokens/layout.ts`
+
+```ts
+type ContentWidth = typeof contentWidth;
+```
+
+### Duration
+
+**Kind:** type | **File:** `tokens/motion.ts`
+
+```ts
+type Duration = typeof duration;
+```
+
+### Easing
+
+**Kind:** type | **File:** `tokens/motion.ts`
+
+```ts
+type Easing = typeof easing;
+```
+
+### SemanticColors
+
+**Kind:** type | **File:** `tokens/semantic.ts`
+
+```ts
+type SemanticColors = ReturnType<typeof getSemanticColors>;
+```
+
+### Shadows
+
+**Kind:** type | **File:** `tokens/shadows.ts`
+
+```ts
+type Shadows = typeof shadows;
+```
+
+### Spacing
+
+**Kind:** type | **File:** `tokens/spacing.ts`
+
+```ts
+type Spacing = typeof spacing;
+```
+
+### FontSize
+
+**Kind:** type | **File:** `tokens/typography.ts`
+
+```ts
+type FontSize = typeof fontSize;
+```
+
+### FontWeight
+
+**Kind:** type | **File:** `tokens/typography.ts`
+
+```ts
+type FontWeight = typeof fontWeight;
+```
+
+### ZIndex
+
+**Kind:** type | **File:** `tokens/zIndex.ts`
+
+```ts
+type ZIndex = typeof zIndex;
+```
+
+## Consumers & Impact
+
+This package is used by:
+
+| Consumer | Type | Impact |
+|---|---|---|
+| [car-app](/generated/apps/car-app) | apps | 🔴 Runtime dependency |
+| [driver-app](/generated/apps/driver-app) | apps | 🔴 Runtime dependency |
+| [merchant-app-mobile](/generated/apps/merchant-app-mobile) | apps | 🔴 Runtime dependency |
+| [mobile](/generated/apps/mobile) | apps | 🔴 Runtime dependency |
+| [mobile-driver](#) | apps | 🔴 Runtime dependency |
+| [mobile-government](#) | apps | 🔴 Runtime dependency |
+| [mobile-inspector](#) | apps | 🔴 Runtime dependency |
+| [mobile-merchant](#) | apps | 🔴 Runtime dependency |
+| [mobile-pos](#) | apps | 🔴 Runtime dependency |
+| [superapp](#) | apps | 🔴 Runtime dependency |
+| [tv-app](#) | apps | 🔴 Runtime dependency |
+| [watch-app](#) | apps | 🔴 Runtime dependency |
+| [mobile-core](#) | packages | 🟡 Build-time dependency |
+| [sdui-renderer-native](#) | packages | 🟡 Build-time dependency |
+| [universal-ui](#) | packages | 🟡 Build-time dependency |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [design-tokens-mobile.mmd](/generated/diagrams/class/design-tokens-mobile.mmd) |
+| Dependency Graph | [design-tokens-mobile-dependencies.mmd](/generated/diagrams/dependencies/design-tokens-mobile-dependencies.mmd) |
+
+## Tests
+
+- `index-contract.test.ts` (22 lines)
+- `index.test.ts` (26 lines)
+- `semantic.test.ts` (34 lines)
+- `native/index.test.ts` (39 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

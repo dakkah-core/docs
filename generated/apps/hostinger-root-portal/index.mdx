@@ -1,0 +1,231 @@
+---
+title: "Hostinger Root Portal"
+description: "Deep dive into the hostinger-root-portal application"
+icon: "layout-dashboard"
+---
+
+> **Type:** Admin Dashboard (Next.js) | **Framework:** Vitest | **Version:** 0.1.0
+> **Path:** `apps/hostinger-root-portal` | **Architectural Role:** Admin Dashboard
+
+[Back to Generated Apps](/generated/apps)
+> **Dependencies:** [design-runtime](/generated/packages/design-runtime), [design-system](/generated/packages/design-system), [design-tokens](/generated/packages/design-tokens), [universal-ui](#)
+
+## Overview & Purpose
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 19 | — |
+| Lines of Code | 946 | — |
+| Test Coverage | 100.0% | 🟢 |
+| Oversized Files | 0 | 🟢 |
+| Components | 4 | — |
+| Hooks | 1 | — |
+| Types & Interfaces | 8 | — |
+| API Routes | 0 | — |
+| Page Routes | 0 | — |
+| Internal Deps | 4 | — |
+| Dependents | 0 | — |
+
+## Architecture
+
+### File Structure
+
+```
+App.test.tsx (16L, 0C, 0T)
+App.tsx (381L, 2C, 0T)
+main.test.tsx (8L, 0C, 0T)
+main.tsx (11L, 0C, 0T)
+app/
+  error.test.tsx (8L, 0C, 0T)
+  error.tsx (8L, 1C, 0T)
+  loading.test.tsx (8L, 0C, 0T)
+  loading.tsx (6L, 1C, 0T)
+design/
+  theme.test.ts (55L, 0C, 0T)
+  theme.ts (78L, 0C, 4T)
+  ui.test.tsx (28L, 0C, 0T)
+  ui.tsx (55L, 0C, 0T)
+lib/
+  bffClient.test.ts (8L, 0C, 0T)
+  bffClient.ts (73L, 0C, 1T)
+  env.test.ts (41L, 0C, 0T)
+  env.ts (46L, 0C, 2T)
+  staticImportGuard.test.ts (49L, 0C, 0T)
+  staticImportGuard.ts (54L, 0C, 1T)
+```
+
+## Dependencies
+
+### CityOS Core
+
+| Package | Type |
+|---|---|
+| [@cityos/design-runtime](/generated/packages/design-runtime) | prod |
+| [@cityos/design-system](/generated/packages/design-system) | prod |
+| [@cityos/design-tokens](/generated/packages/design-tokens) | prod |
+| [@cityos/universal-ui](#) | prod |
+
+## Component Catalog
+
+| Component | File | Kind | Props |
+|---|---|---|---|
+| PortalShell | App.tsx | function | — |
+| App | App.tsx | function | — |
+| Error | app/error.tsx | function | error: unknown, reset: unknown |
+| Loading | app/loading.tsx | function | — |
+
+## Types & Interfaces
+
+### PortalThemeOptions
+
+**Kind:** interface | **File:** `design/theme.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| locale | `string` | Yes |
+| tenantSlug | `string` | Yes |
+| theme | `string` | Yes |
+
+### PortalBrandingOptions
+
+**Kind:** interface | **File:** `design/theme.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| primaryColor | `string` | Yes |
+| accentColor | `string` | Yes |
+| fontFamily | `string` | Yes |
+
+### PortalLocale
+
+**Kind:** type | **File:** `design/theme.ts`
+
+```ts
+type PortalLocale = "ar" | "en";
+```
+
+### PortalThemeMode
+
+**Kind:** type | **File:** `design/theme.ts`
+
+```ts
+type PortalThemeMode = "light" | "dark";
+```
+
+### BffHealth
+
+**Kind:** interface | **File:** `lib/bffClient.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| ok | `boolean` | — |
+| status | `number` | — |
+| source | `"bff" | "fallback"` | — |
+| checkedAt | `string` | — |
+| message | `string` | — |
+
+### PortalEnvInput
+
+**Kind:** interface | **File:** `lib/env.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| VITE_BFF_URL | `string` | Yes |
+| VITE_HOSTINGER_PORTAL_ORIGIN | `string` | Yes |
+| VITE_DEFAULT_LOCALE | `string` | Yes |
+| VITE_DEFAULT_THEME | `string` | Yes |
+
+### PortalConfig
+
+**Kind:** interface | **File:** `lib/env.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| bffUrl | `string` | — |
+| portalOrigin | `string` | — |
+| defaultLocale | `"ar" | "en"` | — |
+| defaultTheme | `"light" | "dark"` | — |
+
+### StaticImportFinding
+
+**Kind:** interface | **File:** `lib/staticImportGuard.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| filePath | `string` | — |
+| line | `number` | — |
+| pattern | `(typeof FORBIDDEN_STATIC_IMPORT_PATTERNS)[number]` | — |
+| source | `string` | — |
+
+## Hooks
+
+| Hook | File | Params | Return |
+|---|---|---|---|
+| useBffHealth | App.tsx | — | unknown |
+
+## Public API Surface
+
+| Export | Kind | File |
+|---|---|---|
+| App | function | App.tsx |
+| Error | function | app/error.tsx |
+| Loading | function | app/loading.tsx |
+| normalizePortalLocale | function | design/theme.ts |
+| resolveThemeMode | function | design/theme.ts |
+| createPortalTenantConfig | function | design/theme.ts |
+| createPortalTenantContext | function | design/theme.ts |
+| createPortalBranding | function | design/theme.ts |
+| PortalThemeOptions | interface | design/theme.ts |
+| PortalBrandingOptions | interface | design/theme.ts |
+| PortalLocale | type | design/theme.ts |
+| PortalThemeMode | type | design/theme.ts |
+| getBffHealth | function | lib/bffClient.ts |
+| BffHealth | interface | lib/bffClient.ts |
+| portalConfig | const | lib/env.ts |
+| resolvePortalConfig | function | lib/env.ts |
+| PortalEnvInput | interface | lib/env.ts |
+| PortalConfig | interface | lib/env.ts |
+| FORBIDDEN_STATIC_IMPORT_PATTERNS | const | lib/staticImportGuard.ts |
+| findForbiddenStaticImports | function | lib/staticImportGuard.ts |
+| StaticImportFinding | interface | lib/staticImportGuard.ts |
+
+## Related Apps
+
+Apps that share dependencies or serve similar roles:
+
+| App | Shared Dependencies | Relationship |
+|---|---|---|
+| [storefront](#) | @cityos/design-runtime, @cityos/design-system, @cityos/design-tokens +1 more | Same domain |
+| [business-dashboard](/generated/apps/business-dashboard) | @cityos/design-system, @cityos/design-tokens | Same domain |
+| [city-dashboard](/generated/apps/city-dashboard) | @cityos/design-system, @cityos/design-tokens | Same domain |
+| [dev-portal](/generated/apps/dev-portal) | @cityos/design-system, @cityos/design-tokens | Same domain |
+| [fleetops](/generated/apps/fleetops) | @cityos/design-system, @cityos/design-tokens | Same domain |
+| [smart-city-portal](#) | @cityos/design-system, @cityos/design-tokens | Same domain |
+| [storybook](#) | @cityos/design-system, @cityos/design-tokens | Same domain |
+| [web-platform](#) | @cityos/design-system, @cityos/design-tokens | Same domain |
+| [ai-assistant](/generated/packages/ai-assistant) | @cityos/design-system | Same domain |
+| [car-app](/generated/apps/car-app) | @cityos/design-tokens | Same domain |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Component Hierarchy | [hostinger-root-portal-hierarchy.mmd](/generated/diagrams/components/hostinger-root-portal-hierarchy.mmd) |
+| Dependency Graph | [hostinger-root-portal-dependencies.mmd](/generated/diagrams/dependencies/hostinger-root-portal-dependencies.mmd) |
+
+## Tests
+
+- `App.test.tsx` (16 lines)
+- `main.test.tsx` (8 lines)
+- `app/error.test.tsx` (8 lines)
+- `app/loading.test.tsx` (8 lines)
+- `design/theme.test.ts` (55 lines)
+- `design/ui.test.tsx` (28 lines)
+- `lib/bffClient.test.ts` (8 lines)
+- `lib/env.test.ts` (41 lines)
+- `lib/staticImportGuard.test.ts` (49 lines)
+
+---
+*Generated by scripts/docs/generators/deep/app-deep-dive.mjs*

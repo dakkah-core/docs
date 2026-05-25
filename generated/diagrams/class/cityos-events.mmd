@@ -1,0 +1,98 @@
+classDiagram
+  direction TB
+
+  class CatalogEntry ~interface~ {
+    +description: string
+    +collection: string
+  }
+
+  class EventType  {
+  }
+
+  class DispatchResult ~interface~ {
+    +deliveryId: string
+    +status: "delivered" | "exhausted"
+    -statusCode: number
+    +attempt: number
+  }
+
+  class WebhookEventPayload  {
+  }
+
+  class WebhookConfig  {
+  }
+
+  class EventNodeContext ~interface~ {
+    +global: { platformVersion: string featureFlags: string[] }
+    +country: { code: string name: string currency: string timezone: string }
+    -region: { id: string name: string adminCode: string }
+    -city: { id: string name: string nodeId: string }
+    -zone: { id: string name: string type: string }
+    -venue: { id: string poiId: string name: string type: string }
+    +tenant: { id: string slug: string tier: string plan: string }
+    -subTenant: { id: string parentId: string type: string }
+    +user: { id: string roles: string[] personaId?: string isAnonymous: boolean sessionId: string }
+    +surface: string
+    +locale: string
+    +rtl: boolean
+    ... 3 more
+  }
+
+  class EventEnvelope ~interface~ {
+    +id: string
+    +type: string
+    +source: string
+    -domain: string
+    -nodeId: string | null
+    -subject: string
+    -subjectType: string
+    -tenantId: string | null
+    -correlationId: string | null
+    +timestamp: string
+    +data: Recordstring, unknown
+    -metadata: Recordstring, unknown
+    ... 1 more
+  }
+
+  class EventSubscription ~interface~ {
+    +id: string
+    +eventType: string | string[]
+    +handler: (event: EventEnvelope) = Promisevoid | void
+  }
+
+  class DLQEntry ~interface~ {
+    +event: EventEnvelope
+    +error: string
+    +failedAt: string
+    +retries: number
+    +handlerId: string
+  }
+
+  class EventHandler  {
+  }
+
+  class CityOSEventBus  {
+    +emitter: EventEmitter
+    +subscriptions: Mapstring, EventSubscription
+    +instance: CityOSEventBus
+    +dlq: DLQEntry[]
+  }
+
+  class EventBus  {
+    +emitter: EventEmitter
+    +subscriptions: Mapstring, EventSubscription
+  }
+
+  class EventWorkflowMapping ~interface~ {
+    +eventType: string
+    +workflowType: string
+    +domain: string
+    +description: string
+    -priority: "high" | "medium" | "low"
+    -idempotent: boolean
+  }
+
+  %% Relationships
+  EventEnvelope --> EventNodeContext : context
+  DLQEntry --> EventEnvelope : event
+  CityOSEventBus --> DLQEntry : dlq

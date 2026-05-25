@@ -1,0 +1,14 @@
+graph LR
+  mobile[mobile]
+  mobile --> design-tokens[design-tokens]
+  mobile --> design-tokens-mobile[design-tokens-mobile]
+  mobile --> api-client[api-client]
+  mobile --> api-client-react[api-client-react]
+  mobile --> auth[auth]
+  mobile --> mobile-core[mobile-core]
+  mobile --> sdui-renderer-native[sdui-renderer-native]
+  mobile --> sdui-protocol[sdui-protocol]
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef dep fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class mobile app

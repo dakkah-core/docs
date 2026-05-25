@@ -1,0 +1,46 @@
+classDiagram
+  direction TB
+
+  class WatchComplicationData ~interface~ {
+    +type: "text" | "gauge" | "icon" | "ring"
+    +label: string
+    +value: string | number
+    -maxValue: number
+    -icon: string
+    -tintColor: string
+  }
+
+  class WatchActionHandlerConfig ~interface~ {
+    -onNavigate: WatchNavigateHandler
+    -onMutation: WatchMutationHandler
+    -onHaptic: WatchHapticHandler
+    -onCrownRotation: (delta: number) = void
+    -onComplicationUpdate: (complicationId: string, data: WatchComplicationData) = void
+    -onFormSubmit: WatchFormSubmitHandler
+    -onLongPress: () = void
+  }
+
+  class WatchNavigateHandler  {
+  }
+
+  class WatchMutationHandler  {
+  }
+
+  class WatchFormSubmitHandler  {
+  }
+
+  class WatchHapticHandler  {
+  }
+
+  class WatchHapticPattern  {
+  }
+
+  class WatchSduiRendererProps ~interface~ {
+    +node: SdNode
+    -theme: "light" | "dark"
+    -screenShape: WatchScreenShape
+    -screenSize: number
+  }
+
+  class WatchScreenShape  {
+  }

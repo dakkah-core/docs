@@ -1,0 +1,57 @@
+classDiagram
+  direction TB
+
+  class EducationBlockBase ~interface~ {
+    +id: string
+    +blockType: string
+    -className: string
+  }
+
+  class CourseCardProps ~interface~ {
+    +blockType: 'course-card'
+    +title: string
+    +instructor: string
+    -image: string
+    +duration: string
+    +level: 'beginner' | 'intermediate' | 'advanced'
+    -enrolled: number
+    -onEnroll: () = void
+  }
+
+  class LessonPlayerProps ~interface~ {
+    +blockType: 'lesson-player'
+    +title: string
+    -videoUrl: string
+    +duration: string
+    -transcript: string
+    -onComplete: () = void
+    -messages: MessageBag'noVideo' | 'duration' | 'watched' | 'transcript'
+  }
+
+  class ProgressTrackerProps ~interface~ {
+    +blockType: 'progress-tracker'
+    -title: string
+    +modules: Array{
+    name: string
+    completed: boolean
+    progress: number
+  }
+  }
+
+  class EnrollmentBlockProps ~interface~ {
+    +blockType: 'enrollment'
+    +courseName: string
+    +startDate: string
+    +capacity: number
+    +enrolled: number
+    -onEnroll: () = void
+  }
+
+  class EducationBlock  {
+  }
+
+  %% Relationships
+  EducationBlockBase <|-- CourseCardProps
+  EducationBlockBase <|-- LessonPlayerProps
+  EducationBlockBase <|-- ProgressTrackerProps
+  EducationBlockBase <|-- EnrollmentBlockProps

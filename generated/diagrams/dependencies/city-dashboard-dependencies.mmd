@@ -1,0 +1,14 @@
+graph LR
+  city-dashboard[city-dashboard]
+  city-dashboard --> api-client-react[api-client-react]
+  city-dashboard --> auth[auth]
+  city-dashboard --> design-system[design-system]
+  city-dashboard --> design-tokens[design-tokens]
+  city-dashboard --> i18n[i18n]
+  city-dashboard --> sdui-renderer-web[sdui-renderer-web]
+  city-dashboard --> sdui-protocol[sdui-protocol]
+  city-dashboard --> token-bridge[token-bridge]
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef dep fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class city-dashboard app

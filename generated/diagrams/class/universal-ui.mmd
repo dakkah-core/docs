@@ -1,0 +1,589 @@
+classDiagram
+  direction TB
+
+  class SkipLinkProps ~interface~ {
+    -href: string
+    -children: React.ReactNode
+    -className: string
+  }
+
+  class SkipLinkProps ~interface~ {
+    -href: string
+    -children: React.ReactNode
+    -className: string
+  }
+
+  class AccordionItem ~interface~ {
+    +title: string
+    +content: React.ReactNode
+    -defaultOpen: boolean
+  }
+
+  class UniversalAccordionProps ~interface~ {
+    +items: AccordionItem[]
+    -allowMultiple: boolean
+    -className: string
+  }
+
+  class AccordionItem ~interface~ {
+    +title: string
+    +content: React.ReactNode
+    -defaultOpen: boolean
+  }
+
+  class UniversalAccordionProps ~interface~ {
+    +items: AccordionItem[]
+    -allowMultiple: boolean
+    -className: string
+  }
+
+  class UniversalBadgeProps ~interface~ {
+    +label: string
+    -variant: UniversalBadgeVariant
+    -size: UniversalBadgeSize
+    -icon: React.ReactNode
+    -className: string
+    -accessibilityLabel: string
+  }
+
+  class UniversalBadgeVariant  {
+  }
+
+  class UniversalBadgeSize  {
+  }
+
+  class UniversalBadgeProps ~interface~ {
+    +label: string
+    -variant: UniversalBadgeVariant
+    -size: UniversalBadgeSize
+    -icon: React.ReactNode
+    -className: string
+  }
+
+  class UniversalBadgeVariant  {
+  }
+
+  class UniversalBadgeSize  {
+  }
+
+  class BreadcrumbItem ~interface~ {
+    +label: string
+    -href: string
+    -onPress: () = void
+  }
+
+  class UniversalBreadcrumbProps ~interface~ {
+    +items: BreadcrumbItem[]
+    -separator: React.ReactNode
+    -className: string
+  }
+
+  class BreadcrumbItem ~interface~ {
+    +label: string
+    -href: string
+    -onPress: () = void
+  }
+
+  class UniversalBreadcrumbProps ~interface~ {
+    +items: BreadcrumbItem[]
+    -separator: React.ReactNode
+    -className: string
+  }
+
+  class UniversalButtonProps ~interface~ {
+    +label: string
+    -variant: UniversalButtonVariant
+    -size: UniversalButtonSize
+    -disabled: boolean
+    -loading: boolean
+    -icon: React.ReactNode
+    -onPress: () = void
+    -className: string
+    -accessibilityLabel: string
+    -accessibilityHint: string
+  }
+
+  class UniversalButtonVariant  {
+  }
+
+  class UniversalButtonSize  {
+  }
+
+  class Story  {
+  }
+
+  class UniversalButtonProps ~interface~ {
+    +label: string
+    -variant: UniversalButtonVariant
+    -size: UniversalButtonSize
+    -disabled: boolean
+    -loading: boolean
+    -icon: React.ReactNode
+    -onPress: () = void
+    -className: string
+    -accessibilityLabel: string
+    -accessibilityHint: string
+  }
+
+  class UniversalButtonVariant  {
+  }
+
+  class UniversalButtonSize  {
+  }
+
+  class UniversalCardProps ~interface~ {
+    +children: React.ReactNode
+    -className: string
+    -title: string
+    -subtitle: string
+    -variant: string
+  }
+
+  class UniversalCardProps ~interface~ {
+    +children: React.ReactNode
+    -className: string
+    -title: string
+    -subtitle: string
+    -variant: string
+  }
+
+  class UniversalDialogProps ~interface~ {
+    +open: boolean
+    +onOpenChange: (open: boolean) = void
+    +title: string
+    +children: React.ReactNode
+    -size: UniversalDialogSize
+    -hideClose: boolean
+    -closeOnBackdrop: boolean
+    -className: string
+  }
+
+  class UniversalDialogSize  {
+  }
+
+  class DialogWidth  {
+  }
+
+  class UniversalDialogProps ~interface~ {
+    +open: boolean
+    +onOpenChange: (open: boolean) = void
+    +title: string
+    +children: React.ReactNode
+    -size: UniversalDialogSize
+    -hideClose: boolean
+    -closeOnBackdrop: boolean
+    -className: string
+  }
+
+  class UniversalDialogSize  {
+  }
+
+  class UniversalEmptyProps ~interface~ {
+    -title: string
+    -description: string
+    -icon: React.ReactNode
+    -action: React.ReactNode
+    -className: string
+  }
+
+  class UniversalEmptyProps ~interface~ {
+    -title: string
+    -description: string
+    -icon: React.ReactNode
+    -action: React.ReactNode
+    -className: string
+  }
+
+  class UniversalGridProps ~interface~ {
+    +children: React.ReactNode
+    -columns: number
+    -gap: UniversalGridGap
+    -className: string
+    -minColumnWidth: number
+  }
+
+  class UniversalGridGap  {
+  }
+
+  class UniversalGridProps ~interface~ {
+    +children: React.ReactNode
+    -columns: number
+    -gap: UniversalGridGap
+    -minColumnWidth: string
+    -className: string
+    -accessibilityLabel: string
+  }
+
+  class UniversalGridGap  {
+  }
+
+  class UniversalImageProps ~interface~ {
+    +source: string | { uri: string }
+    -alt: string
+    -decorative: boolean
+    -contentMode: UniversalImageContentMode
+    -borderRadius: number
+    -className: string
+    -width: number
+    -height: number
+  }
+
+  class UniversalImageContentMode  {
+  }
+
+  class UniversalImageProps ~interface~ {
+    +src: string
+    -alt: string
+    -decorative: boolean
+    -width: number | string
+    -height: number | string
+    -aspectRatio: string | number
+    -contentMode: UniversalImageContentMode
+    -borderRadius: 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'full'
+    -lazy: boolean
+    -className: string
+  }
+
+  class UniversalImageContentMode  {
+  }
+
+  class UniversalInputProps ~interface~ {
+    -value: string
+    -defaultValue: string
+    -onChangeText: (text: string) = void
+    -placeholder: string
+    -label: string
+    -type: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search'
+    -disabled: boolean
+    -required: boolean
+    -error: string
+    -className: string
+    -accessibilityLabel: string
+  }
+
+  class UniversalInputProps ~interface~ {
+    -value: string
+    -defaultValue: string
+    -onChangeText: (text: string) = void
+    -placeholder: string
+    -label: string
+    -type: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search'
+    -disabled: boolean
+    -required: boolean
+    -error: string
+    -className: string
+    -accessibilityLabel: string
+  }
+
+  class UniversalListRowProps ~interface~ {
+    -label: string
+    -value: React.ReactNode
+    -badge: string
+    -badgeVariant: 'default' | 'success' | 'warning' | 'destructive'
+    -icon: React.ReactNode
+    -href: string
+    -className: string
+    -title: string
+    -description: string
+    -rightElement: React.ReactNode
+  }
+
+  class UniversalListRowProps ~interface~ {
+    -label: string
+    -value: React.ReactNode
+    -badge: string
+    -badgeVariant: 'default' | 'success' | 'warning' | 'destructive'
+    -icon: React.ReactNode
+    -href: string
+    -className: string
+    -title: string
+    -description: string
+    -rightElement: React.ReactNode
+  }
+
+  class UniversalPaginationProps ~interface~ {
+    +currentPage: number
+    +totalPages: number
+    +onPageChange: (page: number) = void
+    -siblingCount: number
+    -className: string
+  }
+
+  class UniversalPaginationProps ~interface~ {
+    +currentPage: number
+    +totalPages: number
+    +onPageChange: (page: number) = void
+    -siblingCount: number
+    -className: string
+  }
+
+  class UniversalProgressProps ~interface~ {
+    +value: number
+    -max: number
+    -variant: UniversalProgressVariant
+    -size: UniversalProgressSize
+    -label: string
+    -className: string
+  }
+
+  class UniversalProgressVariant  {
+  }
+
+  class UniversalProgressSize  {
+  }
+
+  class UniversalProgressProps ~interface~ {
+    +value: number
+    -max: number
+    -variant: UniversalProgressVariant
+    -size: UniversalProgressSize
+    -showLabel: boolean
+    -accessibilityLabel: string
+    -className: string
+  }
+
+  class UniversalProgressVariant  {
+  }
+
+  class UniversalProgressSize  {
+  }
+
+  class UniversalSelectOption ~interface~ {
+    +label: string
+    +value: string
+    -disabled: boolean
+  }
+
+  class UniversalSelectProps ~interface~ {
+    -value: string
+    -onValueChange: (value: string) = void
+    +options: UniversalSelectOption[]
+    -placeholder: string
+    -label: string
+    -disabled: boolean
+    -required: boolean
+    -error: string
+    -className: string
+    -accessibilityLabel: string
+  }
+
+  class UniversalSelectOption ~interface~ {
+    +label: string
+    +value: string
+    -disabled: boolean
+  }
+
+  class UniversalSelectProps ~interface~ {
+    -value: string
+    -onValueChange: (value: string) = void
+    +options: UniversalSelectOption[]
+    -placeholder: string
+    -label: string
+    -disabled: boolean
+    -required: boolean
+    -error: string
+    -className: string
+    -accessibilityLabel: string
+  }
+
+  class UniversalSkeletonProps ~interface~ {
+    -rows: number
+    -showAvatar: boolean
+    -className: string
+  }
+
+  class UniversalSkeletonProps ~interface~ {
+    -rows: number
+    -showAvatar: boolean
+    -className: string
+  }
+
+  class UniversalStatCardProps ~interface~ {
+    -label: string
+    -title: string
+    +value: string | number
+    -unit: string
+    -trend: string | { value: number isPositive: boolean }
+    -trendDirection: 'up' | 'down' | 'neutral'
+    -description: string
+    -className: string
+  }
+
+  class UniversalStatCardProps ~interface~ {
+    -label: string
+    -title: string
+    +value: string | number
+    -unit: string
+    -trend: string | { value: number isPositive: boolean }
+    -trendDirection: 'up' | 'down' | 'neutral'
+    -description: string
+    -className: string
+  }
+
+  class UniversalTextProps ~interface~ {
+    +children: React.ReactNode
+    -variant: UniversalTextVariant
+    -weight: UniversalTextWeight
+    -align: UniversalTextAlign
+    -numberOfLines: number
+    -className: string
+    -accessibilityLabel: string
+  }
+
+  class UniversalTextVariant  {
+  }
+
+  class UniversalTextWeight  {
+  }
+
+  class UniversalTextAlign  {
+  }
+
+  class UniversalTextProps ~interface~ {
+    +children: React.ReactNode
+    -variant: UniversalTextVariant
+    -weight: UniversalTextWeight
+    -align: UniversalTextAlign
+    -color: string
+    -numberOfLines: number
+    -className: string
+    -accessibilityLabel: string
+  }
+
+  class UniversalTextVariant  {
+  }
+
+  class UniversalTextWeight  {
+  }
+
+  class UniversalTextAlign  {
+  }
+
+  class TagName  {
+  }
+
+  class UniversalTextareaProps ~interface~ {
+    -value: string
+    -defaultValue: string
+    -onChangeText: (text: string) = void
+    -placeholder: string
+    -label: string
+    -rows: number
+    -disabled: boolean
+    -required: boolean
+    -error: string
+    -maxLength: number
+    -className: string
+    -accessibilityLabel: string
+  }
+
+  class UniversalTextareaProps ~interface~ {
+    -value: string
+    -defaultValue: string
+    -onChangeText: (text: string) = void
+    -placeholder: string
+    -label: string
+    -rows: number
+    -disabled: boolean
+    -required: boolean
+    -error: string
+    -maxLength: number
+    -className: string
+    -accessibilityLabel: string
+  }
+
+  class UniversalToastProps ~interface~ {
+    -variant: UniversalToastVariant
+    -title: string
+    -message: string
+    -duration: number
+    -onDismiss: () = void
+    -action: {
+    label: string
+    onPress: () = void
+  }
+    -className: string
+    -index: number
+  }
+
+  class UniversalToastVariant  {
+  }
+
+  class UniversalToastProps ~interface~ {
+    -variant: UniversalToastVariant
+    -title: string
+    -message: string
+    -duration: number
+    -onDismiss: () = void
+    -action: {
+    label: string
+    onPress: () = void
+  }
+    -className: string
+    -index: number
+  }
+
+  class UniversalToastVariant  {
+  }
+
+  class UniversalViewProps ~interface~ {
+    -children: React.ReactNode
+    -role: AccessibilityRole
+    -style: ViewStyle
+    -testID: string
+    -accessibilityLabel: string
+    -className: string
+  }
+
+  class UniversalViewProps ~interface~ {
+    -children: React.ReactNode
+    -className: string
+    -style: React.CSSProperties
+    -role: React.AriaRole
+    -accessibilityLabel: string
+    -accessibilityHidden: boolean
+    -testID: string
+  }
+
+  class AnimationOptions ~interface~ {
+    -preset: AnimationPreset
+    -duration: number
+    -easing: EasingFunction
+    -delay: number
+    -useNativeDriver: boolean
+  }
+
+  class AnimationPreset  {
+  }
+
+  class AnimationOptions ~interface~ {
+    -preset: AnimationPreset
+    -duration: number
+    -easing: string
+    -delay: number
+  }
+
+  class AnimationPreset  {
+  }
+
+  %% Relationships
+  UniversalAccordionProps --> AccordionItem : items
+  UniversalAccordionProps --> AccordionItem : items
+  UniversalBadgeProps --> UniversalBadgeVariant : variant
+  UniversalBadgeProps --> UniversalBadgeSize : size
+  UniversalBreadcrumbProps --> BreadcrumbItem : items
+  UniversalBreadcrumbProps --> BreadcrumbItem : items
+  UniversalButtonProps --> UniversalButtonVariant : variant
+  UniversalButtonProps --> UniversalButtonSize : size
+  UniversalDialogProps --> UniversalDialogSize : size
+  UniversalGridProps --> UniversalGridGap : gap
+  UniversalImageProps --> UniversalImageContentMode : contentMode
+  UniversalProgressProps --> UniversalProgressVariant : variant
+  UniversalProgressProps --> UniversalProgressSize : size
+  UniversalSelectProps --> UniversalSelectOption : options
+  UniversalSelectProps --> UniversalSelectOption : options
+  UniversalTextProps --> UniversalTextVariant : variant
+  UniversalTextProps --> UniversalTextWeight : weight
+  UniversalTextProps --> UniversalTextAlign : align
+  UniversalToastProps --> UniversalToastVariant : variant
+  AnimationOptions --> AnimationPreset : preset

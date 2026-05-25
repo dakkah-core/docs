@@ -1,0 +1,442 @@
+---
+title: "@cityos/auth"
+description: "Deep dive into the auth package"
+icon: "shield"
+---
+
+> **Type:** Authentication Package | **Framework:** Node.js | **Version:** 1.0.0
+> **Path:** `packages/auth` | **LOC:** 1,783 lines across 14 files
+
+[Back to Generated Packages](/generated/packages)
+> **Used by:** [business-dashboard](/generated/apps/business-dashboard), [city-dashboard](/generated/apps/city-dashboard), [control-plane](/generated/apps/control-plane), [dev-portal](/generated/apps/dev-portal), [driver-app](/generated/apps/driver-app) +17 more
+
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 14 | — |
+| Lines of Code | 1,783 | — |
+| Test Coverage | 28.6% | 🔴 |
+| Oversized Files | 1 | 🟡 |
+| Components | 3 | — |
+| Hooks | 2 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 32 | — |
+| Internal Deps | 0 | — |
+| Dependents | 22 | 🔴 High impact |
+
+### ⚠️ Oversized Files
+
+| File | Lines |
+|---|---|
+| packages/auth/src/next/index.ts | 437 |
+
+## Architecture
+
+### File Structure
+
+```
+context.tsx (29L, 1C, 1T)
+index.ts (4L, 0C, 0T)
+pkce.test.ts (72L, 0C, 0T)
+pkce.ts (185L, 0C, 2T)
+types.test.ts (56L, 0C, 0T)
+types.ts (101L, 0C, 7T)
+expo/
+  context.tsx (259L, 1C, 2T)
+  dashboard.tsx (160L, 0C, 4T)
+  index.ts (126L, 0C, 1T)
+  storage.ts (95L, 0C, 2T)
+  token.ts (187L, 0C, 7T)
+next/
+  client.tsx (52L, 1C, 1T)
+  env.ts (20L, 0C, 0T)
+  index.ts (437L, 0C, 5T)
+```
+
+## Public API Surface
+
+### Components (4)
+
+| Name | Kind | File |
+|---|---|---|
+| AuthProvider | function | context.tsx |
+| MobileAuthProvider | function | expo/context.tsx |
+| NextAuthClientProvider | function | next/client.tsx |
+| AuthGuard | function | next/index.ts |
+
+### Hooks (2)
+
+| Name | Kind | File |
+|---|---|---|
+| useAuth | function | context.tsx |
+| useMobileAuth | function | expo/context.tsx |
+
+### Functions (22)
+
+| Name | Kind | File |
+|---|---|---|
+| setPkceDigestFunction | function | pkce.ts |
+| generateCodeVerifier | function | pkce.ts |
+| generateCodeChallenge | function | pkce.ts |
+| buildAuthorizationUrl | function | pkce.ts |
+| exchangeAuthorizationCode | function | pkce.ts |
+| refreshAccessToken | function | pkce.ts |
+| buildLogoutUrl | function | pkce.ts |
+| decodeJwtPayload | function | types.ts |
+| isTokenExpired | function | types.ts |
+| createDashboardAuth | function | expo/dashboard.tsx |
+| initExpoPkce | function | expo/index.ts |
+| extractUserFromToken | function | expo/index.ts |
+| createNativeStorage | function | expo/storage.ts |
+| decodeJwt | function | expo/token.ts |
+| extractUser | function | expo/token.ts |
+| isTokenExpired | function | expo/token.ts |
+| buildTokenUrl | function | expo/token.ts |
+| buildLogoutUrl | function | expo/token.ts |
+| exchangeCodeForTokens | function | expo/token.ts |
+| refreshTokens | function | expo/token.ts |
+| ... | | | (2 more) |
+
+### Types (24)
+
+| Name | Kind | File |
+|---|---|---|
+| AuthProviderProps | interface | context.tsx |
+| BuildAuthUrlOptions | interface | pkce.ts |
+| DigestFn | type | pkce.ts |
+| AuthStorage | interface | types.ts |
+| AuthState | interface | types.ts |
+| AuthContextType | interface | types.ts |
+| CityOSJwtClaims | interface | types.ts |
+| SessionData | interface | types.ts |
+| TokenSet | interface | types.ts |
+| AuthConfig | interface | types.ts |
+| DashboardUser | interface | expo/dashboard.tsx |
+| DashboardAuthContextType | interface | expo/dashboard.tsx |
+| DashboardAuthConfig | interface | expo/dashboard.tsx |
+| TokenStorage | interface | expo/storage.ts |
+| NativeSecureStoreModule | interface | expo/storage.ts |
+| AuthTokens | interface | expo/token.ts |
+| KeycloakConfig | interface | expo/token.ts |
+| User | interface | expo/token.ts |
+| AuthStateStatus | type | expo/token.ts |
+| AuthState | type | expo/token.ts |
+| ... | | | (4 more) |
+
+### Constants (3)
+
+| Name | Kind | File |
+|---|---|---|
+| decodeJwtClaims | const | types.ts |
+| webStorage | const | expo/storage.ts |
+| nextAuthEnv | const | next/env.ts |
+
+## Component Catalog
+
+| Component | File | Kind | Props |
+|---|---|---|---|
+| AuthProvider | context.tsx | function | children: ReactNode, value: AuthContextType |
+| MobileAuthProvider | expo/context.tsx | function | config: KeycloakConfig, storage?: TokenStorage, onRedirect: (url: string) => void, children: React.ReactNode |
+| NextAuthClientProvider | next/client.tsx | function | children: React.ReactNode, initialSession: SessionData, loginAction: (returnTo?: string) => Promise<void>, logoutAction: () => Promise<void> |
+
+## Type System
+
+### AuthProviderProps
+
+**Kind:** interface | **File:** `context.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| children | `ReactNode` | — |
+| value | `AuthContextType` | — |
+
+### BuildAuthUrlOptions
+
+**Kind:** interface | **File:** `pkce.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| issuerUrl | `string` | — |
+| clientId | `string` | — |
+| redirectUri | `string` | — |
+| scope | `string` | Yes |
+| state | `string` | Yes |
+| prompt | `"none" | "login" | "consent" | "select_account"` | Yes |
+
+### DigestFn
+
+**Kind:** type | **File:** `pkce.ts`
+
+```ts
+type DigestFn = (data: Uint8Array) => Promise<Uint8Array>;
+```
+
+### AuthStorage
+
+**Kind:** interface | **File:** `types.ts`
+
+### AuthState
+
+**Kind:** interface | **File:** `types.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| isAuthenticated | `boolean` | — |
+| isLoading | `boolean` | — |
+| accessToken | `string | null` | — |
+| refreshToken | `string | null` | — |
+| idToken | `string | null` | — |
+| error | `Error | null` | — |
+
+### AuthContextType
+
+**Kind:** interface | **File:** `types.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| login | `() => Promise<void>` | — |
+| logout | `() => Promise<void>` | — |
+| refresh | `() => Promise<void>` | — |
+
+### CityOSJwtClaims
+
+**Kind:** interface | **File:** `types.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| sub | `string` | — |
+| email | `string` | Yes |
+| preferred_username | `string` | Yes |
+| name | `string` | Yes |
+| given_name | `string` | Yes |
+| family_name | `string` | Yes |
+| tenant_id | `string` | Yes |
+| company_id | `string` | Yes |
+| vendor_id | `string` | Yes |
+| actor_id | `string` | Yes |
+| roles | `string[]` | Yes |
+| assigned_node_ids | `string[]` | Yes |
+| locale | `string` | Yes |
+| realm_access | `{ roles: string[] }` | Yes |
+| resource_access | `Record<string, { roles: string[] }>` | Yes |
+| iss | `string` | Yes |
+| aud | `string | string[]` | Yes |
+| exp | `number` | Yes |
+| iat | `number` | Yes |
+| jti | `string` | Yes |
+| scope | `string` | Yes |
+
+### SessionData
+
+**Kind:** interface | **File:** `types.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| isAuthenticated | `boolean` | — |
+| accessToken | `string | null` | — |
+| refreshToken | `string | null` | — |
+| medusaClientToken | `string | null` | — |
+| user | `CityOSJwtClaims | null` | Yes |
+
+### TokenSet
+
+**Kind:** interface | **File:** `types.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| access_token | `string` | — |
+| id_token | `string` | Yes |
+| refresh_token | `string` | Yes |
+| expires_in | `number` | — |
+| token_type | `string` | Yes |
+| scope | `string` | Yes |
+
+### AuthConfig
+
+**Kind:** interface | **File:** `types.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| issuerUrl | `string` | — |
+| clientId | `string` | — |
+| redirectUri | `string` | Yes |
+| scope | `string` | Yes |
+| medusaBackendUrl | `string` | Yes |
+
+### MobileAuthContextValue
+
+**Kind:** interface | **File:** `expo/context.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| state | `AuthState` | — |
+| user | `User | null` | — |
+| isAuthenticated | `boolean` | — |
+| isLoading | `boolean` | — |
+| login | `() => Promise<void>` | — |
+| logout | `() => Promise<void>` | — |
+| getToken | `() => Promise<string | null>` | — |
+| handleCallback | `(callbackUrl: string) => Promise<boolean>` | — |
+
+### MobileAuthProviderProps
+
+**Kind:** interface | **File:** `expo/context.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| config | `KeycloakConfig` | — |
+| storage | `TokenStorage` | Yes |
+| onRedirect | `(url: string) => void` | — |
+| children | `React.ReactNode` | — |
+
+### DashboardUser
+
+**Kind:** interface | **File:** `expo/dashboard.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| name | `string` | — |
+| roles | `string[]` | — |
+| email | `string` | Yes |
+| isGuest | `boolean` | — |
+
+### DashboardAuthContextType
+
+**Kind:** interface | **File:** `expo/dashboard.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| user | `DashboardUser | null` | — |
+| isAuthenticated | `boolean` | — |
+| isLoading | `boolean` | — |
+| hasRole | `(role: string) => boolean` | — |
+| signInWithKeycloak | `() => void` | — |
+| signInAsGuest | `() => void` | — |
+| logout | `() => void` | — |
+
+### DashboardAuthConfig
+
+**Kind:** interface | **File:** `expo/dashboard.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| requiredRole | `string` | — |
+| clientId | `string` | — |
+| sessionKey | `string` | — |
+| guestName | `string` | — |
+| guestEmail | `string` | Yes |
+| guestIdPrefix | `string` | Yes |
+| extraGuestFields | `Record<string, unknown>` | Yes |
+| keycloakRealm | `string` | Yes |
+| keycloakBaseUrl | `string` | Yes |
+| basePath | `string` | Yes |
+| isDev | `boolean` | Yes |
+| isDemoMode | `boolean` | Yes |
+
+### StoredTokens
+
+**Kind:** interface | **File:** `expo/dashboard.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| accessToken | `string` | — |
+| refreshToken | `string` | — |
+| expiresAt | `number` | — |
+
+### ExpoCryptoModule
+
+**Kind:** type | **File:** `expo/index.ts`
+
+```ts
+type ExpoCryptoModule = {
+  digest?: (algorithm: string, data: BufferSource) => Promise<ArrayBuffer>;
+  digestAsync?: (
+    algorithm: string,
+    data: ArrayBuffer | string,
+    options?: { encoding: string },
+  ) => Promise<ArrayBuffer | string>;
+  digestStringAsync?: (
+    algorithm: string,
+    data: string,
+    options: { encoding: string },
+  ) => Promise<string>;
+  CryptoDigestAlgorithm?: { SHA256?: string };
+  CryptoEncoding?: { BASE64?: string };
+};
+```
+
+### TokenStorage
+
+**Kind:** interface | **File:** `expo/storage.ts`
+
+### NativeSecureStoreModule
+
+**Kind:** interface | **File:** `expo/storage.ts`
+
+### AuthTokens
+
+**Kind:** interface | **File:** `expo/token.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| accessToken | `string` | — |
+| refreshToken | `string` | — |
+| idToken | `string` | Yes |
+| expiresAt | `number` | — |
+
+*... and 12 more types*
+
+## Hooks
+
+| Hook | File | Params | Return |
+|---|---|---|---|
+| useAuth | context.tsx | — | AuthContextType |
+| useMobileAuth | expo/context.tsx | — | unknown |
+
+## Consumers & Impact
+
+This package is used by:
+
+| Consumer | Type | Impact |
+|---|---|---|
+| [business-dashboard](/generated/apps/business-dashboard) | apps | 🔴 Runtime dependency |
+| [city-dashboard](/generated/apps/city-dashboard) | apps | 🔴 Runtime dependency |
+| [control-plane](/generated/apps/control-plane) | apps | 🔴 Runtime dependency |
+| [dev-portal](/generated/apps/dev-portal) | apps | 🔴 Runtime dependency |
+| [driver-app](/generated/apps/driver-app) | apps | 🔴 Runtime dependency |
+| [fleetops](/generated/apps/fleetops) | apps | 🔴 Runtime dependency |
+| [kiosk](/generated/apps/kiosk) | apps | 🔴 Runtime dependency |
+| [merchant-app](/generated/apps/merchant-app) | apps | 🔴 Runtime dependency |
+| [merchant-app-mobile](/generated/apps/merchant-app-mobile) | apps | 🔴 Runtime dependency |
+| [mobile](/generated/apps/mobile) | apps | 🔴 Runtime dependency |
+| [mobile-driver](#) | apps | 🔴 Runtime dependency |
+| [mobile-government](#) | apps | 🔴 Runtime dependency |
+| [mobile-inspector](#) | apps | 🔴 Runtime dependency |
+| [mobile-merchant](#) | apps | 🔴 Runtime dependency |
+| [mobile-pos](#) | apps | 🔴 Runtime dependency |
+| [smart-city-portal](#) | apps | 🔴 Runtime dependency |
+| [storefront](#) | apps | 🔴 Runtime dependency |
+| [superapp](#) | apps | 🔴 Runtime dependency |
+| [watch-app](#) | apps | 🔴 Runtime dependency |
+| [web-platform](#) | apps | 🔴 Runtime dependency |
+| ... | | | (2 more) |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [auth.mmd](/generated/diagrams/class/auth.mmd) |
+| Dependency Graph | [auth-dependencies.mmd](/generated/diagrams/dependencies/auth-dependencies.mmd) |
+
+## Tests
+
+- `pkce.test.ts` (72 lines)
+- `types.test.ts` (56 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

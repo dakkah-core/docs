@@ -1,0 +1,22 @@
+graph TD
+  direction TB
+
+  smart-signage[smart-signage]
+
+  subgraph Components[
+    Shared Components
+  end
+  App[App]
+  ProgressBar[ProgressBar]
+  SlideRenderer[SlideRenderer]
+  StatusOverlay[StatusOverlay]
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef layout fill:#fff3e0,stroke:#e65100,stroke-width:1px
+  classDef page fill:#e8f5e9,stroke:#1b5e20,stroke-width:1px
+  classDef component fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class smart-signage app
+  class App component
+  class ProgressBar component
+  class SlideRenderer component
+  class StatusOverlay component

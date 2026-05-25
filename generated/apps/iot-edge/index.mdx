@@ -1,0 +1,202 @@
+---
+title: "Iot Edge"
+description: "Deep dive into the iot-edge application"
+icon: "cpu"
+---
+
+> **Type:** Web Application (Next.js) | **Framework:** Vitest | **Version:** 0.1.0
+> **Path:** `apps/iot-edge` | **Architectural Role:** IoT & Realtime
+
+[Back to Generated Apps](/generated/apps)
+## Overview & Purpose
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 12 | — |
+| Lines of Code | 834 | — |
+| Test Coverage | 100.0% | 🟢 |
+| Oversized Files | 0 | 🟢 |
+| Components | 0 | — |
+| Hooks | 0 | — |
+| Types & Interfaces | 9 | — |
+| API Routes | 0 | — |
+| Page Routes | 0 | — |
+| Internal Deps | 0 | — |
+| Dependents | 0 | — |
+
+## Architecture
+
+### File Structure
+
+```
+device-registry.test.ts (58L, 0C, 0T)
+device-registry.ts (109L, 0C, 0T)
+env.test.ts (30L, 0C, 0T)
+env.ts (21L, 0C, 0T)
+index.test.ts (122L, 0C, 0T)
+index.ts (127L, 0C, 0T)
+mqtt-bridge.test.ts (175L, 0C, 3T)
+mqtt-bridge.ts (82L, 0C, 1T)
+types.test.ts (7L, 0C, 0T)
+types.ts (59L, 0C, 5T)
+lib/
+  lib/config/
+    env.test.ts (8L, 0C, 0T)
+    env.ts (36L, 0C, 0T)
+```
+
+## Types & Interfaces
+
+### BridgeMqttClient
+
+**Kind:** type | **File:** `mqtt-bridge.test.ts`
+
+```ts
+type BridgeMqttClient = Pick<MqttClient, 'subscribe' | 'on'>;
+```
+
+### BridgeNatsConnection
+
+**Kind:** type | **File:** `mqtt-bridge.test.ts`
+
+```ts
+type BridgeNatsConnection = Pick<NatsConnection, 'publish'>;
+```
+
+### BridgeCodec
+
+**Kind:** type | **File:** `mqtt-bridge.test.ts`
+
+```ts
+type BridgeCodec = Pick<Codec<string>, 'encode'>;
+```
+
+### BridgeMetrics
+
+**Kind:** interface | **File:** `mqtt-bridge.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| messagesReceived | `number` | — |
+| messagesForwarded | `number` | — |
+| messagesDropped | `number` | — |
+| errors | `number` | — |
+
+### DeviceRecord
+
+**Kind:** interface | **File:** `types.ts`
+> Core types for the IoT Edge gateway — MQTT to NATS bridge and device registry. Registered IoT device
+
+| Property | Type | Optional |
+|---|---|---|
+| deviceId | `string` | — |
+| name | `string` | — |
+| type | `DeviceType` | — |
+| zone | `string` | — |
+| mqttTopic | `string` | — |
+| natsSubject | `string` | — |
+| status | `"online" | "offline" | "maintenance"` | — |
+| lastSeen | `string` | Yes |
+| metadata | `Record<string, unknown>` | Yes |
+
+### TelemetryMessage
+
+**Kind:** interface | **File:** `types.ts`
+> Telemetry message from an IoT device
+
+| Property | Type | Optional |
+|---|---|---|
+| deviceId | `string` | — |
+| timestamp | `string` | — |
+| payload | `Record<string, number | string | boolean>` | — |
+
+### NatsEnvelope
+
+**Kind:** interface | **File:** `types.ts`
+> Processed message ready for NATS publication
+
+| Property | Type | Optional |
+|---|---|---|
+| subject | `string` | — |
+| data | `{
+    deviceId: string;
+    deviceType: DeviceType;
+    zone: string;
+    timestamp: string;
+    payload: Record<string, number | string | boolean>;
+  }` | — |
+
+### BridgeStatus
+
+**Kind:** interface | **File:** `types.ts`
+> Bridge connection status
+
+| Property | Type | Optional |
+|---|---|---|
+| mqtt | `"connected" | "disconnected" | "reconnecting"` | — |
+| nats | `"connected" | "disconnected" | "reconnecting"` | — |
+| devicesRegistered | `number` | — |
+| messagesForwarded | `number` | — |
+| uptime | `number` | — |
+
+### DeviceType
+
+**Kind:** type | **File:** `types.ts`
+
+```ts
+type DeviceType = | "temperature"
+  | "humidity"
+  | "air-quality"
+  | "traffic-counter"
+  | "water-level"
+  | "noise"
+  | "power-meter"
+  | "camera"
+  | "generic";
+```
+
+## Public API Surface
+
+| Export | Kind | File |
+|---|---|---|
+| initRegistry | function | device-registry.ts |
+| getDevice | function | device-registry.ts |
+| getAllDevices | function | device-registry.ts |
+| registerDevice | function | device-registry.ts |
+| updateDeviceStatus | function | device-registry.ts |
+| removeDevice | function | device-registry.ts |
+| resolveNatsSubject | function | device-registry.ts |
+| getRegistrySize | function | device-registry.ts |
+| env | const | env.ts |
+| requireEnv | function | env.ts |
+| main | function | index.ts |
+| startBridge | function | mqtt-bridge.ts |
+| getBridgeMetrics | function | mqtt-bridge.ts |
+| BridgeMetrics | interface | mqtt-bridge.ts |
+| DeviceRecord | interface | types.ts |
+| TelemetryMessage | interface | types.ts |
+| NatsEnvelope | interface | types.ts |
+| BridgeStatus | interface | types.ts |
+| DeviceType | type | types.ts |
+| env | const | lib/config/env.ts |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Component Hierarchy | [iot-edge-hierarchy.mmd](#) |
+| Dependency Graph | [iot-edge-dependencies.mmd](#) |
+
+## Tests
+
+- `device-registry.test.ts` (58 lines)
+- `env.test.ts` (30 lines)
+- `index.test.ts` (122 lines)
+- `mqtt-bridge.test.ts` (175 lines)
+- `types.test.ts` (7 lines)
+- `lib/config/env.test.ts` (8 lines)
+
+---
+*Generated by scripts/docs/generators/deep/app-deep-dive.mjs*

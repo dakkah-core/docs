@@ -1,0 +1,223 @@
+---
+title: "Control Plane"
+description: "Deep dive into the control-plane application"
+icon: "smartphone"
+---
+
+> **Type:** Web Application (Next.js) | **Framework:** Next.js | **Version:** 0.1.0
+> **Path:** `apps/control-plane` | **Architectural Role:** Web Application
+
+[Back to Generated Apps](/generated/apps)
+> **Dependencies:** [auth](/generated/packages/auth), [design-tokens](/generated/packages/design-tokens)
+
+## Overview & Purpose
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 20 | — |
+| Lines of Code | 623 | — |
+| Test Coverage | 100.0% | 🟢 |
+| Oversized Files | 0 | 🟢 |
+| Components | 9 | — |
+| Hooks | 0 | — |
+| Types & Interfaces | 5 | — |
+| API Routes | 0 | — |
+| Page Routes | 5 | — |
+| Internal Deps | 2 | — |
+| Dependents | 0 | — |
+
+## Architecture
+
+### File Structure
+
+```
+app/
+  layout.test.tsx (8L, 0C, 0T)
+  layout.tsx (66L, 2C, 0T)
+  not-found.test.tsx (8L, 0C, 0T)
+  not-found.tsx (21L, 1C, 0T)
+  page.test.tsx (8L, 0C, 0T)
+  page.tsx (47L, 1C, 1T)
+  providers.test.tsx (8L, 0C, 0T)
+  providers.tsx (21L, 1C, 0T)
+  app/deployments/
+    page.test.tsx (8L, 0C, 0T)
+    page.tsx (81L, 1C, 1T)
+  app/health/
+    page.test.tsx (8L, 0C, 0T)
+    page.tsx (69L, 1C, 1T)
+  app/pods/
+    page.test.tsx (8L, 0C, 0T)
+    page.tsx (81L, 1C, 1T)
+  app/schemas/
+    page.test.tsx (8L, 0C, 0T)
+    page.tsx (77L, 1C, 1T)
+lib/
+  env.test.ts (8L, 0C, 0T)
+  env.ts (22L, 0C, 0T)
+  lib/config/
+    env.test.ts (33L, 0C, 0T)
+    env.ts (33L, 0C, 0T)
+```
+
+## Page Routes
+
+| Route | Pattern |
+|---|---|
+| // | Static |
+| /deployments | Static |
+| /health | Static |
+| /pods | Static |
+| /schemas | Static |
+
+## Dependencies
+
+### Auth / Identity
+
+| Package | Type |
+|---|---|
+| [@cityos/auth](/generated/packages/auth) | prod |
+
+### CityOS Core
+
+| Package | Type |
+|---|---|
+| [@cityos/design-tokens](/generated/packages/design-tokens) | prod |
+
+## Component Catalog
+
+| Component | File | Kind | Props |
+|---|---|---|---|
+| RootLayout | app/layout.tsx | function | children: unknown |
+| Sidebar | app/layout.tsx | function | — |
+| NotFound | app/not-found.tsx | function | — |
+| DashboardPage | app/page.tsx | function | — |
+| Providers | app/providers.tsx | function | children: unknown |
+| DeploymentsPage | app/deployments/page.tsx | function | — |
+| HealthPage | app/health/page.tsx | function | — |
+| PodsPage | app/pods/page.tsx | function | — |
+| SchemasPage | app/schemas/page.tsx | function | — |
+
+## Types & Interfaces
+
+### MetricCard
+
+**Kind:** interface | **File:** `app/page.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| label | `string` | — |
+| value | `string` | — |
+| status | `"healthy" | "warning" | "critical"` | — |
+
+### Deployment
+
+**Kind:** interface | **File:** `app/deployments/page.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| service | `string` | — |
+| version | `string` | — |
+| environment | `"production" | "staging" | "development"` | — |
+| status | `"success" | "failed" | "rolling"` | — |
+| deployedAt | `string` | — |
+| deployedBy | `string` | — |
+
+### HealthCheck
+
+**Kind:** interface | **File:** `app/health/page.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| service | `string` | — |
+| endpoint | `string` | — |
+| status | `"healthy" | "degraded" | "down"` | — |
+| latencyMs | `number` | — |
+| lastChecked | `string` | — |
+
+### PodInfo
+
+**Kind:** interface | **File:** `app/pods/page.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| name | `string` | — |
+| namespace | `string` | — |
+| status | `"Running" | "Pending" | "CrashLoopBackOff" | "Terminated"` | — |
+| restarts | `number` | — |
+| cpu | `string` | — |
+| memory | `string` | — |
+| age | `string` | — |
+
+### SchemaEntry
+
+**Kind:** interface | **File:** `app/schemas/page.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| name | `string` | — |
+| domain | `string` | — |
+| currentVersion | `number` | — |
+| status | `"active" | "deprecated" | "draft"` | — |
+| lastUpdated | `string` | — |
+| consumers | `number` | — |
+
+## Public API Surface
+
+| Export | Kind | File |
+|---|---|---|
+| metadata | const | app/layout.tsx |
+| RootLayout | function | app/layout.tsx |
+| NotFound | function | app/not-found.tsx |
+| DashboardPage | function | app/page.tsx |
+| Providers | function | app/providers.tsx |
+| DeploymentsPage | function | app/deployments/page.tsx |
+| HealthPage | function | app/health/page.tsx |
+| PodsPage | function | app/pods/page.tsx |
+| SchemasPage | function | app/schemas/page.tsx |
+| env | const | lib/env.ts |
+| requireEnv | function | lib/env.ts |
+| env | const | lib/config/env.ts |
+
+## Related Apps
+
+Apps that share dependencies or serve similar roles:
+
+| App | Shared Dependencies | Relationship |
+|---|---|---|
+| [business-dashboard](/generated/apps/business-dashboard) | @cityos/auth, @cityos/design-tokens | Same domain |
+| [city-dashboard](/generated/apps/city-dashboard) | @cityos/auth, @cityos/design-tokens | Same domain |
+| [dev-portal](/generated/apps/dev-portal) | @cityos/auth, @cityos/design-tokens | Same domain |
+| [driver-app](/generated/apps/driver-app) | @cityos/auth, @cityos/design-tokens | Same domain |
+| [fleetops](/generated/apps/fleetops) | @cityos/design-tokens, @cityos/auth | Same domain |
+| [merchant-app](/generated/apps/merchant-app) | @cityos/auth, @cityos/design-tokens | Same domain |
+| [mobile](/generated/apps/mobile) | @cityos/design-tokens, @cityos/auth | Same domain |
+| [mobile-driver](#) | @cityos/design-tokens, @cityos/auth | Same domain |
+| [mobile-government](#) | @cityos/auth, @cityos/design-tokens | Same domain |
+| [mobile-inspector](#) | @cityos/auth, @cityos/design-tokens | Same domain |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Component Hierarchy | [control-plane-hierarchy.mmd](/generated/diagrams/components/control-plane-hierarchy.mmd) |
+| Dependency Graph | [control-plane-dependencies.mmd](/generated/diagrams/dependencies/control-plane-dependencies.mmd) |
+
+## Tests
+
+- `app/layout.test.tsx` (8 lines)
+- `app/not-found.test.tsx` (8 lines)
+- `app/page.test.tsx` (8 lines)
+- `app/providers.test.tsx` (8 lines)
+- `app/deployments/page.test.tsx` (8 lines)
+- `app/health/page.test.tsx` (8 lines)
+- `app/pods/page.test.tsx` (8 lines)
+- `app/schemas/page.test.tsx` (8 lines)
+- `lib/env.test.ts` (8 lines)
+- `lib/config/env.test.ts` (33 lines)
+
+---
+*Generated by scripts/docs/generators/deep/app-deep-dive.mjs*

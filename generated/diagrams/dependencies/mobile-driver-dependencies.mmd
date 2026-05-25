@@ -1,0 +1,14 @@
+graph LR
+  mobile-driver[mobile-driver]
+  mobile-driver --> design-tokens[design-tokens]
+  mobile-driver --> design-tokens-mobile[design-tokens-mobile]
+  mobile-driver --> api-client[api-client]
+  mobile-driver --> auth[auth]
+  mobile-driver --> i18n[i18n]
+  mobile-driver --> mobile-core[mobile-core]
+  mobile-driver --> sdui-renderer-native[sdui-renderer-native]
+  mobile-driver --> sdui-protocol[sdui-protocol]
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef dep fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class mobile-driver app

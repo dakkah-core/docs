@@ -1,0 +1,393 @@
+---
+title: "Merchant App"
+description: "Deep dive into the merchant-app application"
+icon: "smartphone"
+---
+
+> **Type:** Mobile App (React Native / Expo) | **Framework:** Next.js | **Version:** 0.0.0
+> **Path:** `apps/merchant-app` | **Architectural Role:** Web Application
+
+[Back to Generated Apps](/generated/apps)
+> **Dependencies:** [api-client](/generated/packages/api-client), [api-client-react](/generated/packages/api-client-react), [auth](/generated/packages/auth), [cityos-core](/generated/packages/cityos-core), [i18n](/generated/packages/i18n), [design-tokens](/generated/packages/design-tokens), [merchant-experience](#)
+
+## Overview & Purpose
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 35 | — |
+| Lines of Code | 2,632 | — |
+| Test Coverage | 17.1% | 🔴 |
+| Oversized Files | 0 | 🟢 |
+| Components | 27 | — |
+| Hooks | 0 | — |
+| Types & Interfaces | 20 | — |
+| API Routes | 0 | — |
+| Page Routes | 8 | — |
+| Internal Deps | 7 | — |
+| Dependents | 0 | — |
+
+## Architecture
+
+### File Structure
+
+```
+app/
+  error.tsx (60L, 1C, 1T)
+  global-error.tsx (46L, 1C, 1T)
+  layout.tsx (35L, 1C, 0T)
+  loading.tsx (33L, 1C, 0T)
+  manifest.ts (51L, 0C, 0T)
+  not-found.tsx (21L, 1C, 0T)
+  page.tsx (9L, 0C, 0T)
+  providers.tsx (19L, 1C, 0T)
+  app/(console)/
+    layout.tsx (68L, 1C, 0T)
+    app/(console)/analytics/
+      page.tsx (210L, 2C, 3T)
+    app/(console)/dashboard/
+      page.tsx (68L, 4C, 0T)
+    app/(console)/orders/
+      page.tsx (220L, 2C, 1T)
+    app/(console)/products/
+      page.tsx (163L, 2C, 1T)
+      app/(console)/products/new/
+        page.tsx (7L, 1C, 0T)
+    app/(console)/settings/
+      page.tsx (325L, 1C, 3T)
+  app/api/
+    app/api/auth/
+      app/api/auth/callback/
+        route.ts (99L, 1C, 0T)
+      app/api/auth/refresh/
+        route.ts (64L, 0C, 0T)
+    app/api/health/
+      route.ts (7L, 0C, 0T)
+  app/login/
+    page.tsx (83L, 1C, 0T)
+components/
+  new-product-form.tsx (200L, 1C, 1T)
+  pwa-service-worker.tsx (17L, 0C, 0T)
+  sidebar.tsx (57L, 1C, 1T)
+  components/dashboard/
+    pending-items.tsx (81L, 1C, 1T)
+    quick-actions.tsx (42L, 1C, 1T)
+... and 15 more files
+```
+
+## Page Routes
+
+| Route | Pattern |
+|---|---|
+| /(console)/analytics | Static |
+| /(console)/dashboard | Static |
+| /(console)/orders | Static |
+| /(console)/products | Static |
+| /(console)/products/new | Static |
+| /(console)/settings | Static |
+| // | Static |
+| /login | Static |
+
+## Dependencies
+
+### UI / Framework
+
+| Package | Type |
+|---|---|
+| [@cityos/api-client-react](/generated/packages/api-client-react) | prod |
+
+### Auth / Identity
+
+| Package | Type |
+|---|---|
+| [@cityos/auth](/generated/packages/auth) | prod |
+
+### CityOS Core
+
+| Package | Type |
+|---|---|
+| [@cityos/api-client](/generated/packages/api-client) | prod |
+| [@cityos/core](/generated/packages/cityos-core) | prod |
+| [@cityos/i18n](/generated/packages/i18n) | prod |
+| [@cityos/design-tokens](/generated/packages/design-tokens) | prod |
+| [@cityos/merchant-experience](#) | prod |
+
+## Component Catalog
+
+| Component | File | Kind | Props |
+|---|---|---|---|
+| Error | app/error.tsx | function | error: Error & { digest?: string }, reset: () => void |
+| GlobalError | app/global-error.tsx | function | error: Error & { digest?: string }, reset: () => void |
+| RootLayout | app/layout.tsx | function | children: unknown |
+| Loading | app/loading.tsx | function | — |
+| NotFoundPage | app/not-found.tsx | function | — |
+| Providers | app/providers.tsx | function | children: unknown |
+| ConsoleLayout | app/(console)/layout.tsx | function | children: unknown |
+| AnalyticsPage | app/(console)/analytics/page.tsx | function | — |
+| KpiCard | app/(console)/analytics/page.tsx | function | label: unknown, value: unknown |
+| DashboardPage | app/(console)/dashboard/page.tsx | function | — |
+| StatsLoading | app/(console)/dashboard/page.tsx | function | — |
+| OrdersLoading | app/(console)/dashboard/page.tsx | function | — |
+| PendingLoading | app/(console)/dashboard/page.tsx | function | — |
+| OrdersPage | app/(console)/orders/page.tsx | function | — |
+| OrderStatusBadge | app/(console)/orders/page.tsx | function | status: unknown |
+| ProductsPage | app/(console)/products/page.tsx | function | — |
+| ProductStatusBadge | app/(console)/products/page.tsx | function | status: unknown |
+| NewProductPage | app/(console)/products/new/page.tsx | function | — |
+| SettingsPage | app/(console)/settings/page.tsx | function | — |
+| GET | app/api/auth/callback/route.ts | function | req: NextRequest |
+| LoginPage | app/login/page.tsx | function | — |
+| NewProductForm | components/new-product-form.tsx | function | — |
+| Sidebar | components/sidebar.tsx | function | — |
+| PendingItems | components/dashboard/pending-items.tsx | function | — |
+| QuickActions | components/dashboard/quick-actions.tsx | function | — |
+| RecentOrders | components/dashboard/recent-orders.tsx | function | — |
+| DashboardStats | components/dashboard/stats.tsx | function | — |
+
+## Types & Interfaces
+
+### ErrorProps
+
+**Kind:** interface | **File:** `app/error.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| error | `Error & { digest?: string }` | — |
+| reset | `() => void` | — |
+
+### GlobalErrorProps
+
+**Kind:** type | **File:** `app/global-error.tsx`
+
+```ts
+type GlobalErrorProps = {
+  error: Error & { digest?: string };
+  reset: () => void;
+};
+```
+
+### RevenuePoint
+
+**Kind:** interface | **File:** `app/(console)/analytics/page.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| date | `string` | — |
+| revenue | `number` | — |
+
+### TopProduct
+
+**Kind:** interface | **File:** `app/(console)/analytics/page.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| name | `string` | — |
+| unitsSold | `number` | — |
+| revenue | `number` | — |
+
+### AnalyticsData
+
+**Kind:** interface | **File:** `app/(console)/analytics/page.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| totalRevenue | `number` | — |
+| totalOrders | `number` | — |
+| averageOrderValue | `number` | — |
+| conversionRate | `number` | — |
+| revenueTimeline | `RevenuePoint[]` | — |
+| topProducts | `TopProduct[]` | — |
+
+### MerchantOrder
+
+**Kind:** interface | **File:** `app/(console)/orders/page.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| displayId | `string` | — |
+| customerName | `string` | — |
+| total | `string` | — |
+| currency | `string` | — |
+| status | `string` | — |
+| createdAt | `string` | — |
+| itemCount | `number` | — |
+
+### MerchantProduct
+
+**Kind:** interface | **File:** `app/(console)/products/page.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| name | `string` | — |
+| description | `string` | — |
+| price | `string` | — |
+| currency | `string` | — |
+| category | `string` | — |
+| status | `'published' | 'draft' | 'archived'` | — |
+| inventory | `number` | — |
+| image | `string | null` | — |
+| updatedAt | `string` | — |
+
+### DayHours
+
+**Kind:** interface | **File:** `app/(console)/settings/page.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| open | `string` | — |
+| close | `string` | — |
+| closed | `boolean` | — |
+
+### MerchantProfile
+
+**Kind:** interface | **File:** `app/(console)/settings/page.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| storeName | `string` | — |
+| email | `string` | — |
+| phone | `string` | — |
+| address | `string` | — |
+| webhookUrl | `string` | — |
+| paymentMethods | `{
+    cashOnDelivery: boolean;
+    creditCard: boolean;
+    mada: boolean;
+    applePay: boolean;
+    stcPay: boolean;
+  }` | — |
+| operatingHours | `Record<string, DayHours>` | — |
+| notifications | `{
+    newOrderAlerts: boolean;
+    lowInventoryWarnings: boolean;
+    dailyRevenueSummary: boolean;
+    customerReviews: boolean;
+  }` | — |
+
+### SaveStatus
+
+**Kind:** type | **File:** `app/(console)/settings/page.tsx`
+
+```ts
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
+```
+
+### FormState
+
+**Kind:** type | **File:** `components/new-product-form.tsx`
+
+```ts
+type FormState = {
+  name: string;
+  price: string;
+  category: string;
+};
+```
+
+### LinkHref
+
+**Kind:** type | **File:** `components/sidebar.tsx`
+
+```ts
+type LinkHref = React.ComponentProps<typeof Link>['href'];
+```
+
+### LinkHref
+
+**Kind:** type | **File:** `components/dashboard/pending-items.tsx`
+
+```ts
+type LinkHref = React.ComponentProps<typeof Link>['href'];
+```
+
+### LinkHref
+
+**Kind:** type | **File:** `components/dashboard/quick-actions.tsx`
+
+```ts
+type LinkHref = React.ComponentProps<typeof Link>['href'];
+```
+
+### RecentOrder
+
+**Kind:** interface | **File:** `components/dashboard/recent-orders.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| displayId | `string` | — |
+| customerName | `string` | — |
+| total | `string` | — |
+| currency | `string` | — |
+| status | `string` | — |
+| createdAt | `string` | — |
+
+*... and 5 more types*
+
+## Public API Surface
+
+| Export | Kind | File |
+|---|---|---|
+| Error | function | app/error.tsx |
+| GlobalError | function | app/global-error.tsx |
+| metadata | const | app/layout.tsx |
+| RootLayout | function | app/layout.tsx |
+| Loading | function | app/loading.tsx |
+| manifest | function | app/manifest.ts |
+| NotFoundPage | function | app/not-found.tsx |
+| RootPage | function | app/page.tsx |
+| Providers | function | app/providers.tsx |
+| ConsoleLayout | function | app/(console)/layout.tsx |
+| AnalyticsPage | function | app/(console)/analytics/page.tsx |
+| generateMetadata | function | app/(console)/dashboard/page.tsx |
+| DashboardPage | function | app/(console)/dashboard/page.tsx |
+| OrdersPage | function | app/(console)/orders/page.tsx |
+| ProductsPage | function | app/(console)/products/page.tsx |
+| dynamic | const | app/(console)/products/new/page.tsx |
+| NewProductPage | function | app/(console)/products/new/page.tsx |
+| SettingsPage | function | app/(console)/settings/page.tsx |
+| GET | function | app/api/auth/callback/route.ts |
+| POST | function | app/api/auth/refresh/route.ts |
+| GET | function | app/api/health/route.ts |
+| LoginPage | function | app/login/page.tsx |
+| NewProductForm | function | components/new-product-form.tsx |
+| PwaServiceWorker | function | components/pwa-service-worker.tsx |
+| Sidebar | function | components/sidebar.tsx |
+| ... | | | (25 more) |
+
+## Related Apps
+
+Apps that share dependencies or serve similar roles:
+
+| App | Shared Dependencies | Relationship |
+|---|---|---|
+| [merchant-app-mobile](/generated/apps/merchant-app-mobile) | @cityos/api-client, @cityos/api-client-react, @cityos/auth +2 more | Same domain |
+| [superapp](#) | @cityos/design-tokens, @cityos/api-client, @cityos/api-client-react +2 more | Same domain |
+| [web-platform](#) | @cityos/api-client, @cityos/api-client-react, @cityos/auth +2 more | Same domain |
+| [business-dashboard](/generated/apps/business-dashboard) | @cityos/api-client-react, @cityos/auth, @cityos/design-tokens +1 more | Same domain |
+| [city-dashboard](/generated/apps/city-dashboard) | @cityos/api-client-react, @cityos/auth, @cityos/design-tokens +1 more | Same domain |
+| [dev-portal](/generated/apps/dev-portal) | @cityos/api-client-react, @cityos/auth, @cityos/design-tokens +1 more | Same domain |
+| [mobile](/generated/apps/mobile) | @cityos/design-tokens, @cityos/api-client, @cityos/api-client-react +1 more | Same domain |
+| [mobile-driver](#) | @cityos/design-tokens, @cityos/api-client, @cityos/auth +1 more | Same domain |
+| [smart-city-portal](#) | @cityos/api-client-react, @cityos/auth, @cityos/design-tokens +1 more | Same domain |
+| [driver-app](/generated/apps/driver-app) | @cityos/api-client, @cityos/auth, @cityos/design-tokens | Same domain |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Component Hierarchy | [merchant-app-hierarchy.mmd](/generated/diagrams/components/merchant-app-hierarchy.mmd) |
+| Dependency Graph | [merchant-app-dependencies.mmd](/generated/diagrams/dependencies/merchant-app-dependencies.mmd) |
+
+## Tests
+
+- `lib/auth/merchant-access.test.ts` (110 lines)
+- `lib/auth/storage.test.ts` (51 lines)
+- `lib/config/env.test.ts` (34 lines)
+
+---
+*Generated by scripts/docs/generators/deep/app-deep-dive.mjs*

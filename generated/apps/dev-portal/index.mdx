@@ -1,0 +1,438 @@
+---
+title: "Dev Portal"
+description: "Deep dive into the dev-portal application"
+icon: "layout-dashboard"
+---
+
+> **Type:** Admin Dashboard (Next.js) | **Framework:** Next.js | **Version:** 0.1.0
+> **Path:** `apps/dev-portal` | **Architectural Role:** Developer Portal
+
+[Back to Generated Apps](/generated/apps)
+> **Dependencies:** [api-client-react](/generated/packages/api-client-react), [auth](/generated/packages/auth), [design-system](/generated/packages/design-system), [design-tokens](/generated/packages/design-tokens), [i18n](/generated/packages/i18n), [sdui-renderer-web](#), [sdui-protocol](#)
+
+## Overview & Purpose
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 64 | — |
+| Lines of Code | 4,309 | — |
+| Test Coverage | 98.4% | 🟢 |
+| Oversized Files | 1 | 🟡 |
+| Components | 40 | — |
+| Hooks | 2 | — |
+| Types & Interfaces | 28 | — |
+| API Routes | 0 | — |
+| Page Routes | 11 | — |
+| Internal Deps | 7 | — |
+| Dependents | 0 | — |
+
+### ⚠️ Oversized Files
+
+| File | Lines |
+|---|---|
+| apps/dev-portal/src/app/(developer)/docs/page.tsx | 556 |
+
+## Architecture
+
+### File Structure
+
+```
+simple.test.ts (7L, 0C, 0T)
+app/
+  error.test.tsx (11L, 0C, 0T)
+  error.tsx (8L, 1C, 0T)
+  layout.test.tsx (24L, 0C, 0T)
+  layout.tsx (34L, 1C, 0T)
+  loading.test.tsx (11L, 0C, 0T)
+  loading.tsx (13L, 1C, 0T)
+  not-found.test.tsx (13L, 0C, 0T)
+  not-found.tsx (21L, 1C, 0T)
+  page.test.tsx (11L, 0C, 0T)
+  page.tsx (112L, 1C, 2T)
+  providers.test.tsx (18L, 0C, 0T)
+  providers.tsx (25L, 1C, 0T)
+  app/(developer)/
+    DeveloperLayoutClient.test.tsx (15L, 0C, 0T)
+    DeveloperLayoutClient.tsx (275L, 2C, 1T)
+    layout.test.tsx (15L, 0C, 0T)
+    layout.tsx (10L, 1C, 0T)
+    app/(developer)/docs/
+      page.test.tsx (11L, 0C, 0T)
+      page.tsx (556L, 5C, 0T)
+    app/(developer)/explorer/
+      page.test.tsx (11L, 0C, 0T)
+      page.tsx (363L, 3C, 3T)
+    app/(developer)/keys/
+      page.test.tsx (11L, 0C, 0T)
+      page.tsx (345L, 3C, 0T)
+    app/(developer)/usage/
+      page.test.tsx (11L, 0C, 0T)
+      page.tsx (207L, 4C, 0T)
+    app/(developer)/webhooks/
+      page.test.tsx (11L, 0C, 0T)
+      page.tsx (324L, 4C, 0T)
+  app/api/
+    app/api/health/
+      route.test.ts (8L, 0C, 0T)
+      route.ts (7L, 0C, 0T)
+  app/api-reference/
+    page.test.tsx (11L, 0C, 0T)
+... and 46 more files
+```
+
+## Page Routes
+
+| Route | Pattern |
+|---|---|
+| /(developer)/docs | Static |
+| /(developer)/explorer | Static |
+| /(developer)/keys | Static |
+| /(developer)/usage | Static |
+| /(developer)/webhooks | Static |
+| // | Static |
+| /api-reference | Static |
+| /auth/callback | Static |
+| /callback | Static |
+| /login | Static |
+| /playground | Static |
+
+## Dependencies
+
+### UI / Framework
+
+| Package | Type |
+|---|---|
+| [@cityos/api-client-react](/generated/packages/api-client-react) | prod |
+
+### Auth / Identity
+
+| Package | Type |
+|---|---|
+| [@cityos/auth](/generated/packages/auth) | prod |
+
+### CityOS Core
+
+| Package | Type |
+|---|---|
+| [@cityos/design-system](/generated/packages/design-system) | prod |
+| [@cityos/design-tokens](/generated/packages/design-tokens) | prod |
+| [@cityos/i18n](/generated/packages/i18n) | prod |
+| [@cityos/sdui-renderer-web](#) | prod |
+
+### Other
+
+| Package | Type |
+|---|---|
+| [@dakkah/sdui-protocol](#) | prod |
+
+## Component Catalog
+
+| Component | File | Kind | Props |
+|---|---|---|---|
+| Error | app/error.tsx | function | error: unknown, reset: unknown |
+| RootLayout | app/layout.tsx | function | children: unknown |
+| Loading | app/loading.tsx | function | — |
+| NotFound | app/not-found.tsx | function | — |
+| DevPortalHome | app/page.tsx | function | — |
+| Providers | app/providers.tsx | function | children: unknown, initialSession: unknown |
+| AuthGuard | app/(developer)/DeveloperLayoutClient.tsx | function | children: unknown |
+| DeveloperLayoutClient | app/(developer)/DeveloperLayoutClient.tsx | function | children: unknown |
+| DeveloperLayout | app/(developer)/layout.tsx | function | children: unknown |
+| MethodBadge | app/(developer)/docs/page.tsx | function | method: unknown |
+| CopyButton | app/(developer)/docs/page.tsx | function | text: unknown |
+| EndpointDetail | app/(developer)/docs/page.tsx | function | endpoint: unknown |
+| CodeSampleTabs | app/(developer)/docs/page.tsx | function | samples: unknown |
+| ApiDocsPage | app/(developer)/docs/page.tsx | function | — |
+| HeaderEditor | app/(developer)/explorer/page.tsx | function | headers: unknown, onChange: unknown |
+| ResponseViewer | app/(developer)/explorer/page.tsx | function | response: unknown |
+| ApiExplorerPage | app/(developer)/explorer/page.tsx | function | — |
+| CopyButton | app/(developer)/keys/page.tsx | function | text: unknown |
+| CreateKeyDialog | app/(developer)/keys/page.tsx | function | onClose: unknown, onCreate: unknown |
+| ApiKeysPage | app/(developer)/keys/page.tsx | function | — |
+| QuotaCard | app/(developer)/usage/page.tsx | function | quota: unknown |
+| DailyBarChart | app/(developer)/usage/page.tsx | function | data: unknown |
+| EndpointBreakdown | app/(developer)/usage/page.tsx | function | data: unknown |
+| UsagePage | app/(developer)/usage/page.tsx | function | — |
+| StatusBadge | app/(developer)/webhooks/page.tsx | function | status: unknown |
+| AddWebhookDialog | app/(developer)/webhooks/page.tsx | function | onClose: unknown, onAdd: unknown |
+| DeliveryLog | app/(developer)/webhooks/page.tsx | function | deliveries: unknown |
+| WebhooksPage | app/(developer)/webhooks/page.tsx | function | — |
+| ApiReferencePage | app/api-reference/page.tsx | function | — |
+| AuthCallbackPage | app/auth/callback/page.tsx | function | searchParams: unknown |
+| LoginPage | app/login/page.tsx | function | — |
+| PlaygroundPage | app/playground/page.tsx | function | — |
+| AICopilot | components/AICopilot.tsx | function | — |
+| DevPortalLayout | components/DevPortalLayout.tsx | function | children: unknown |
+| CopilotFallback | components/DevPortalLayout.tsx | arrow | — |
+| PortalShell | components/PortalShell.tsx | function | children: unknown |
+| StatRenderer | components/SduiRenderer.tsx | function | node: unknown |
+| ListRenderer | components/SduiRenderer.tsx | function | node: unknown |
+| SDUIRenderer | components/SduiRenderer.tsx | function | node: unknown |
+| AuthClientProvider | components/auth-provider.tsx | function | children: unknown, initialSession: unknown |
+
+## Types & Interfaces
+
+### QuickLink
+
+**Kind:** interface | **File:** `app/page.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| label | `string` | — |
+| href | `string` | — |
+| description | `string` | — |
+| icon | `string` | — |
+
+### StatCard
+
+**Kind:** interface | **File:** `app/page.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| label | `string` | — |
+| value | `string` | — |
+
+### NavItem
+
+**Kind:** interface | **File:** `app/(developer)/DeveloperLayoutClient.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| labelKey | `string` | — |
+| href | `string` | — |
+| icon | `typeof FileJson` | — |
+
+### PresetEndpoint
+
+**Kind:** interface | **File:** `app/(developer)/explorer/page.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| label | `string` | — |
+| method | `HttpMethod` | — |
+| path | `string` | — |
+| body | `string` | — |
+
+### HeaderEntry
+
+**Kind:** interface | **File:** `app/(developer)/explorer/page.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| key | `string` | — |
+| value | `string` | — |
+
+### ResponseData
+
+**Kind:** interface | **File:** `app/(developer)/explorer/page.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| status | `number` | — |
+| statusText | `string` | — |
+| headers | `Record<string, string>` | — |
+| body | `string` | — |
+| duration | `number` | — |
+
+### Endpoint
+
+**Kind:** interface | **File:** `app/api-reference/page.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| method | `"GET" | "POST" | "PUT" | "PATCH" | "DELETE"` | — |
+| path | `string` | — |
+| description | `string` | — |
+| group | `string` | — |
+
+### Message
+
+**Kind:** type | **File:** `components/AICopilot.tsx`
+
+```ts
+type Message = {
+  id: string;
+  role: "user" | "ai";
+  content: string;
+  timestamp: Date;
+  sdui?: ExtendedNode;
+};
+```
+
+### StatNode
+
+**Kind:** interface | **File:** `components/SduiRenderer.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| type | `"stat"` | — |
+| label | `string` | — |
+| value | `string | number` | — |
+| icon | `string` | Yes |
+| trend | `string` | Yes |
+
+### ListItem
+
+**Kind:** interface | **File:** `components/SduiRenderer.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| title | `string` | — |
+| subtitle | `string` | Yes |
+| icon | `string` | Yes |
+| action | `Record<string, unknown>` | Yes |
+
+### ListNode
+
+**Kind:** interface | **File:** `components/SduiRenderer.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| type | `"list"` | — |
+| title | `string` | Yes |
+| items | `ListItem[]` | — |
+
+### ExtendedNode
+
+**Kind:** type | **File:** `components/SduiRenderer.tsx`
+
+```ts
+type ExtendedNode = SdNode | StatNode | ListNode | { type: string; children?: ExtendedNode[]; [key: string]: unknown };
+```
+
+### AuthUser
+
+**Kind:** interface | **File:** `hooks/use-auth.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| email | `string | null` | Yes |
+| name | `string | null` | Yes |
+
+### AuthCtx
+
+**Kind:** interface | **File:** `hooks/use-auth.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| user | `AuthUser | null` | — |
+| isAuthenticated | `boolean` | — |
+| isLoading | `boolean` | — |
+| signOut | `() => void` | — |
+| signInProduction | `() => void` | — |
+
+### OpenApiParameter
+
+**Kind:** interface | **File:** `lib/types/developer.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| name | `string` | — |
+| in | `"query" | "path" | "header" | "cookie"` | — |
+| required | `boolean` | — |
+| description | `string` | — |
+| schema | `string` | — |
+
+*... and 13 more types*
+
+## Hooks
+
+| Hook | File | Params | Return |
+|---|---|---|---|
+| useAuth | hooks/use-auth.tsx | — | AuthCtx |
+| useDevPortalSDUI | hooks/use-sdui.ts | — | unknown |
+
+## Public API Surface
+
+| Export | Kind | File |
+|---|---|---|
+| Error | function | app/error.tsx |
+| metadata | const | app/layout.tsx |
+| RootLayout | function | app/layout.tsx |
+| Loading | function | app/loading.tsx |
+| NotFound | function | app/not-found.tsx |
+| DevPortalHome | function | app/page.tsx |
+| Providers | function | app/providers.tsx |
+| DeveloperLayoutClient | function | app/(developer)/DeveloperLayoutClient.tsx |
+| DeveloperLayout | function | app/(developer)/layout.tsx |
+| ApiDocsPage | function | app/(developer)/docs/page.tsx |
+| ApiExplorerPage | function | app/(developer)/explorer/page.tsx |
+| ApiKeysPage | function | app/(developer)/keys/page.tsx |
+| UsagePage | function | app/(developer)/usage/page.tsx |
+| WebhooksPage | function | app/(developer)/webhooks/page.tsx |
+| GET | function | app/api/health/route.ts |
+| ApiReferencePage | function | app/api-reference/page.tsx |
+| AuthCallbackPage | function | app/auth/callback/page.tsx |
+| AuthCallbackPage | function | app/callback/page.tsx |
+| LoginPage | function | app/login/page.tsx |
+| PlaygroundPage | function | app/playground/page.tsx |
+| AICopilot | function | components/AICopilot.tsx |
+| DevPortalLayout | function | components/DevPortalLayout.tsx |
+| PortalShell | function | components/PortalShell.tsx |
+| SDUIRenderer | function | components/SduiRenderer.tsx |
+| ExtendedNode | type | components/SduiRenderer.tsx |
+| ... | | | (29 more) |
+
+## Related Apps
+
+Apps that share dependencies or serve similar roles:
+
+| App | Shared Dependencies | Relationship |
+|---|---|---|
+| [business-dashboard](/generated/apps/business-dashboard) | @cityos/api-client-react, @cityos/auth, @cityos/design-system +4 more | Same domain |
+| [city-dashboard](/generated/apps/city-dashboard) | @cityos/api-client-react, @cityos/auth, @cityos/design-system +4 more | Same domain |
+| [smart-city-portal](#) | @cityos/api-client-react, @cityos/auth, @cityos/design-system +4 more | Same domain |
+| [web-platform](#) | @cityos/api-client-react, @cityos/auth, @cityos/design-system +4 more | Same domain |
+| [superapp](#) | @cityos/design-tokens, @cityos/api-client-react, @cityos/auth +2 more | Same domain |
+| [ai-assistant](/generated/packages/ai-assistant) | @cityos/i18n, @cityos/api-client-react, @cityos/design-system +1 more | Same domain |
+| [fleetops](/generated/apps/fleetops) | @cityos/design-system, @cityos/design-tokens, @cityos/auth +1 more | Same domain |
+| [merchant-app](/generated/apps/merchant-app) | @cityos/api-client-react, @cityos/auth, @cityos/i18n +1 more | Same domain |
+| [merchant-app-mobile](/generated/apps/merchant-app-mobile) | @cityos/api-client-react, @cityos/auth, @cityos/i18n +1 more | Same domain |
+| [mobile](/generated/apps/mobile) | @cityos/design-tokens, @cityos/api-client-react, @cityos/auth +1 more | Same domain |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Component Hierarchy | [dev-portal-hierarchy.mmd](/generated/diagrams/components/dev-portal-hierarchy.mmd) |
+| Dependency Graph | [dev-portal-dependencies.mmd](/generated/diagrams/dependencies/dev-portal-dependencies.mmd) |
+
+## Tests
+
+- `simple.test.ts` (7 lines)
+- `app/error.test.tsx` (11 lines)
+- `app/layout.test.tsx` (24 lines)
+- `app/loading.test.tsx` (11 lines)
+- `app/not-found.test.tsx` (13 lines)
+- `app/page.test.tsx` (11 lines)
+- `app/providers.test.tsx` (18 lines)
+- `app/(developer)/DeveloperLayoutClient.test.tsx` (15 lines)
+- `app/(developer)/layout.test.tsx` (15 lines)
+- `app/(developer)/docs/page.test.tsx` (11 lines)
+- `app/(developer)/explorer/page.test.tsx` (11 lines)
+- `app/(developer)/keys/page.test.tsx` (11 lines)
+- `app/(developer)/usage/page.test.tsx` (11 lines)
+- `app/(developer)/webhooks/page.test.tsx` (11 lines)
+- `app/api/health/route.test.ts` (8 lines)
+- `app/api-reference/page.test.tsx` (11 lines)
+- `app/auth/callback/page.test.tsx` (10 lines)
+- `app/callback/page.test.tsx` (18 lines)
+- `app/login/page.test.tsx` (11 lines)
+- `app/playground/page.test.tsx` (11 lines)
+- `components/AICopilot.test.tsx` (11 lines)
+- `components/DevPortalLayout.test.tsx` (15 lines)
+- `components/PortalShell.test.tsx` (68 lines)
+- `components/SduiRenderer.test.tsx` (11 lines)
+- `components/auth-provider.test.tsx` (25 lines)
+- `hooks/use-auth.test.tsx` (41 lines)
+- `hooks/use-sdui.test.ts` (48 lines)
+- `lib/env.test.ts` (9 lines)
+- `lib/auth/actions.test.ts` (55 lines)
+- `lib/auth/index.test.ts` (9 lines)
+- `lib/config/env.test.ts` (29 lines)
+- `lib/types/developer.test.ts` (9 lines)
+
+---
+*Generated by scripts/docs/generators/deep/app-deep-dive.mjs*

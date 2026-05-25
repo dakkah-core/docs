@@ -1,0 +1,42 @@
+classDiagram
+  direction TB
+
+  class TvActionHandlerConfig ~interface~ {
+    -onNavigate: TvNavigateHandler
+    -onMutation: TvMutationHandler
+    -onFormSubmit: TvFormSubmitHandler
+    -onVoiceSearch: TvVoiceSearchHandler
+    -onBack: () = void
+    -onHome: () = void
+  }
+
+  class TvNavigateHandler  {
+  }
+
+  class TvMutationHandler  {
+  }
+
+  class TvVoiceSearchHandler  {
+  }
+
+  class TvFormSubmitHandler  {
+  }
+
+  class TvSduiRendererProps ~interface~ {
+    +node: SdNode
+    -theme: "light" | "dark"
+    -onBack: () = void
+  }
+
+  class FocusNavigationOptions ~interface~ {
+    -focusableSelector: string
+    -wrapAround: boolean
+    -onSelect: (element: HTMLElement) = void
+    -onBack: () = void
+  }
+
+  class FocusGrid ~interface~ {
+    +rows: HTMLElement[][]
+    +currentRow: number
+    +currentCol: number
+  }

@@ -1,0 +1,100 @@
+graph TD
+  direction TB
+
+  business-dashboard[business-dashboard]
+
+  subgraph Layouts[
+    Layouts
+  end
+  RootLayout[RootLayout]
+  business-dashboard --> RootLayout
+  EnterpriseLayoutClient[EnterpriseLayoutClient]
+  business-dashboard --> EnterpriseLayoutClient
+  EnterpriseLayout[EnterpriseLayout]
+  business-dashboard --> EnterpriseLayout
+  DashboardLayout[DashboardLayout]
+  business-dashboard --> DashboardLayout
+
+  subgraph Pages[
+    Pages
+  end
+  LedgerPage[LedgerPage]
+  RootLayout --> LedgerPage
+  PayablesPage[PayablesPage]
+  RootLayout --> PayablesPage
+  ReceivablesPage[ReceivablesPage]
+  RootLayout --> ReceivablesPage
+  TasksPage[TasksPage]
+  RootLayout --> TasksPage
+  PurchaseOrdersPage[PurchaseOrdersPage]
+  RootLayout --> PurchaseOrdersPage
+  SuppliersPage[SuppliersPage]
+  RootLayout --> SuppliersPage
+  Page[Page]
+  RootLayout --> Page
+  Page[Page]
+  RootLayout --> Page
+  AuthCallbackPage[AuthCallbackPage]
+  RootLayout --> AuthCallbackPage
+  Page[Page]
+  RootLayout --> Page
+
+  subgraph Components[
+    Shared Components
+  end
+  Error[Error]
+  RootLayout --> Error
+  Loading[Loading]
+  RootLayout --> Loading
+  NotFound[NotFound]
+  RootLayout --> NotFound
+  BusinessDashboardHome[BusinessDashboardHome]
+  RootLayout --> BusinessDashboardHome
+  Providers[Providers]
+  RootLayout --> Providers
+  DualPaneShell[DualPaneShell]
+  RootLayout --> DualPaneShell
+  GET[GET]
+  RootLayout --> GET
+  AuthGuard[AuthGuard]
+  RootLayout --> AuthGuard
+  BulkInventoryUpload[BulkInventoryUpload]
+  RootLayout --> BulkInventoryUpload
+  ChatPanel[ChatPanel]
+  RootLayout --> ChatPanel
+  CommandPalette[CommandPalette]
+  RootLayout --> CommandPalette
+  IntegrationErrorBanner[IntegrationErrorBanner]
+  RootLayout --> IntegrationErrorBanner
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef layout fill:#fff3e0,stroke:#e65100,stroke-width:1px
+  classDef page fill:#e8f5e9,stroke:#1b5e20,stroke-width:1px
+  classDef component fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class business-dashboard app
+  class RootLayout layout
+  class EnterpriseLayoutClient layout
+  class EnterpriseLayout layout
+  class DashboardLayout layout
+  class LedgerPage page
+  class PayablesPage page
+  class ReceivablesPage page
+  class TasksPage page
+  class PurchaseOrdersPage page
+  class SuppliersPage page
+  class Page page
+  class Page page
+  class AuthCallbackPage page
+  class Page page
+  class Error component
+  class Loading component
+  class NotFound component
+  class BusinessDashboardHome component
+  class Providers component
+  class DualPaneShell component
+  class GET component
+  class AuthGuard component
+  class BulkInventoryUpload component
+  class ChatPanel component
+  class CommandPalette component
+  class IntegrationErrorBanner component

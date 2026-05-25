@@ -1,0 +1,106 @@
+classDiagram
+  direction TB
+
+  class DeadLetterEntry ~interface~ {
+    +id: string | number
+    +eventId: string
+    +eventType: string
+    +payloadData: Recordstring, unknown
+    +errorMessage: string
+    +originalSystem: string
+    +status: "pending_review" | "replayed" | "archived"
+    +retryCount: number
+    +failedAt: string
+    +createdAt: string
+    +updatedAt: string
+  }
+
+  class DLQListOptions ~interface~ {
+    -page: number
+    -limit: number
+    -status: "pending_review" | "replayed" | "archived"
+    -eventType: string
+    -fromDate: string
+    -toDate: string
+  }
+
+  class DLQStats ~interface~ {
+    +pendingReview: number
+    +replayed: number
+    +archived: number
+    +total: number
+    +oldestPendingAt: string | null
+  }
+
+  class DeadLetterCreateData  {
+  }
+
+  class OutboxCreateData  {
+  }
+
+  class WorkflowContext ~interface~ {
+    +tenantId: string
+    -correlationId: string
+    -nodeId: string
+  }
+
+  class DeliveryConfig ~interface~ {
+    +target: DeliveryTarget
+    +maxRetries: number
+    +baseDelayMs: number
+    +maxDelayMs: number
+    +timeout: number
+  }
+
+  class OutboxEntry ~interface~ {
+    +id: string
+    +eventType: string
+    +payload: unknown
+    +target: DeliveryTarget
+    +status: "pending" | "processing" | "delivered" | "failed" | "dead-letter"
+    +attempts: number
+    -lastAttemptAt: string
+    -nextRetryAt: string
+    -error: string
+    +createdAt: string
+    -deliveredAt: string
+    +context: WorkflowContext
+  }
+
+  class DeliveryMetrics ~interface~ {
+    +totalDelivered: number
+    +totalFailed: number
+    +totalDeadLetter: number
+    +avgLatencyMs: number
+    +deliveriesByTarget: RecordDeliveryTarget, number
+    +failuresByTarget: RecordDeliveryTarget, number
+  }
+
+  class DeliveryTarget  {
+  }
+
+  class EnhancedOutboxProcessor  {
+    +entries: Mapstring, OutboxEntry
+    +metrics: DeliveryMetrics
+  }
+
+  class KuzzleInstance ~interface~ {
+    +connected: boolean
+    +realtime: {
+    publish(
+      index: string,
+      collection: string,
+      body: Recordstring, unknown,
+    ): Promisevoid
+  }
+  }
+
+  class WorkflowDispatchFn  {
+  }
+
+  class OutboxCreateData  {
+  }
+
+  %% Relationships
+  OutboxEntry --> WorkflowContext : context
+  EnhancedOutboxProcessor --> DeliveryMetrics : metrics

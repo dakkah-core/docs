@@ -1,0 +1,52 @@
+classDiagram
+  direction TB
+
+  class LogisticsBlockBase ~interface~ {
+    +id: string
+    +blockType: string
+    -className: string
+  }
+
+  class ShipmentTrackerProps ~interface~ {
+    +blockType: 'shipment-tracker'
+    +trackingNumber: string
+    +status: 'pending' | 'in-transit' | 'delivered' | 'exception'
+    +origin: string
+    +destination: string
+    +estimatedDelivery: string
+    +events: Array{
+    time: string
+    location: string
+    status: string
+  }
+  }
+
+  class RouteMapBlockProps ~interface~ {
+    +blockType: 'route-map'
+    +routeName: string
+    +stops: Array{
+    name: string
+    time: string
+    completed: boolean
+  }
+    -currentStop: number
+  }
+
+  class DeliveryTimelineProps ~interface~ {
+    +blockType: 'delivery-timeline'
+    +deliveries: Array{
+    id: string
+    recipient: string
+    address: string
+    window: string
+    status: 'scheduled' | 'en-route' | 'delivered' | 'failed'
+  }
+  }
+
+  class LogisticsBlock  {
+  }
+
+  %% Relationships
+  LogisticsBlockBase <|-- ShipmentTrackerProps
+  LogisticsBlockBase <|-- RouteMapBlockProps
+  LogisticsBlockBase <|-- DeliveryTimelineProps

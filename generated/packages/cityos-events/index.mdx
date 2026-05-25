@@ -1,0 +1,300 @@
+---
+title: "@cityos/cityos-events"
+description: "Deep dive into the cityos-events package"
+icon: "package"
+---
+
+> **Type:** CityOS Core Infrastructure | **Framework:** Payload CMS | **Version:** 0.1.0
+> **Path:** `packages/cityos-events` | **LOC:** 1,581 lines across 10 files
+
+[Back to Generated Packages](/generated/packages)
+> **Depends on:** [cityos-core](/generated/packages/cityos-core)
+> **Used by:** [cityos-outbox](/generated/packages/cityos-outbox)
+
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 10 | — |
+| Lines of Code | 1,581 | — |
+| Test Coverage | 20.0% | 🔴 |
+| Oversized Files | 1 | 🟡 |
+| Components | 0 | — |
+| Hooks | 0 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 13 | — |
+| Internal Deps | 1 | — |
+| Dependents | 1 | 🟢 Low impact |
+
+### ⚠️ Oversized Files
+
+| File | Lines |
+|---|---|
+| packages/cityos-events/src/event-bus.ts | 434 |
+
+## Architecture
+
+### File Structure
+
+```
+catalog.ts (153L, 0C, 2T)
+dispatcher.ts (155L, 0C, 3T)
+env.ts (4L, 0C, 0T)
+envelope.ts (69L, 0C, 2T)
+errorUtils.ts (5L, 0C, 0T)
+event-bus.ts (434L, 0C, 5T)
+event-router.ts (293L, 0C, 1T)
+index.ts (6L, 0C, 0T)
+__tests__/
+  catalog.test.ts (119L, 0C, 0T)
+  envelope.test.ts (343L, 0C, 0T)
+```
+
+## Public API Surface
+
+### Components (4)
+
+| Name | Kind | File |
+|---|---|---|
+| EVENT_CATALOG | const | catalog.ts |
+| WebhookEventPayloadSchema | const | dispatcher.ts |
+| WebhookConfigSchema | const | dispatcher.ts |
+| EVENT_WORKFLOW_MAP | const | event-router.ts |
+
+### Functions (17)
+
+| Name | Kind | File |
+|---|---|---|
+| dispatchWebhook | function | dispatcher.ts |
+| createEventEnvelope | function | envelope.ts |
+| toErrMsg | function | errorUtils.ts |
+| publishEvent | function | event-bus.ts |
+| subscribe | function | event-bus.ts |
+| unsubscribe | function | event-bus.ts |
+| getDLQ | function | event-bus.ts |
+| clearDLQ | function | event-bus.ts |
+| replayDLQ | function | event-bus.ts |
+| resolveWorkflow | function | event-router.ts |
+| getMappingsByDomain | function | event-router.ts |
+| getEventsByWorkflow | function | event-router.ts |
+| getAllEventTypes | function | event-router.ts |
+| getAllDomains | function | event-router.ts |
+| getHighPriorityMappings | function | event-router.ts |
+| isRegisteredEvent | function | event-router.ts |
+| routeEventToWorkflow | function | event-router.ts |
+
+### Types (9)
+
+| Name | Kind | File |
+|---|---|---|
+| EventType | type | catalog.ts |
+| DispatchResult | interface | dispatcher.ts |
+| WebhookEventPayload | type | dispatcher.ts |
+| WebhookConfig | type | dispatcher.ts |
+| EventNodeContext | interface | envelope.ts |
+| EventEnvelope | interface | envelope.ts |
+| EventSubscription | interface | event-bus.ts |
+| DLQEntry | interface | event-bus.ts |
+| EventWorkflowMapping | interface | event-router.ts |
+
+### Classes (1)
+
+| Name | Kind | File |
+|---|---|---|
+| EventBus | class | event-bus.ts |
+
+### Constants (2)
+
+| Name | Kind | File |
+|---|---|---|
+| cityosEventsEnv | const | env.ts |
+| eventBus | const | event-bus.ts |
+
+## Type System
+
+### CatalogEntry
+
+**Kind:** interface | **File:** `catalog.ts`
+> Event catalog: maps event names to metadata including the source Payload collection. The `collection` field is typed as `string` because this package does not have access to the generated `CollectionSlug` union from the CMS. Consumers that need `CollectionSlug` should cast at the call-site.
+
+| Property | Type | Optional |
+|---|---|---|
+| description | `string` | — |
+| collection | `string` | — |
+
+### EventType
+
+**Kind:** type | **File:** `catalog.ts`
+
+```ts
+type EventType = keyof typeof EVENT_CATALOG;
+```
+
+### DispatchResult
+
+**Kind:** interface | **File:** `dispatcher.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| deliveryId | `string` | — |
+| status | `"delivered" | "exhausted"` | — |
+| statusCode | `number` | Yes |
+| attempt | `number` | — |
+
+### WebhookEventPayload
+
+**Kind:** type | **File:** `dispatcher.ts`
+
+```ts
+type WebhookEventPayload = z.infer<typeof WebhookEventPayloadSchema>;
+```
+
+### WebhookConfig
+
+**Kind:** type | **File:** `dispatcher.ts`
+
+```ts
+type WebhookConfig = z.infer<typeof WebhookConfigSchema>;
+```
+
+### EventNodeContext
+
+**Kind:** interface | **File:** `envelope.ts`
+> Minimal NodeContext reference for event envelopes. This mirrors the full NodeContext from @cityos/core but avoids a hard cross-package dependency so the events package stays lightweight.
+
+| Property | Type | Optional |
+|---|---|---|
+| global | `{ platformVersion: string; featureFlags: string[] }` | — |
+| country | `{ code: string; name: string; currency: string; timezone: string }` | — |
+| region | `{ id: string; name: string; adminCode: string }` | Yes |
+| city | `{ id: string; name: string; nodeId: string }` | Yes |
+| zone | `{ id: string; name: string; type: string }` | Yes |
+| venue | `{ id: string; poiId: string; name: string; type: string }` | Yes |
+| tenant | `{ id: string; slug: string; tier: string; plan: string }` | — |
+| subTenant | `{ id: string; parentId: string; type: string }` | Yes |
+| user | `{ id: string; roles: string[]; personaId?: string; isAnonymous: boolean; sessionId: string }` | — |
+| surface | `string` | — |
+| locale | `string` | — |
+| rtl | `boolean` | — |
+| requestId | `string` | — |
+| timestamp | `string` | — |
+| signature | `string` | Yes |
+
+### EventEnvelope
+
+**Kind:** interface | **File:** `envelope.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| type | `string` | — |
+| source | `string` | — |
+| domain | `string` | Yes |
+| nodeId | `string | null` | Yes |
+| subject | `string` | Yes |
+| subjectType | `string` | Yes |
+| tenantId | `string | null` | Yes |
+| correlationId | `string | null` | Yes |
+| timestamp | `string` | — |
+| data | `Record<string, unknown>` | — |
+| metadata | `Record<string, unknown>` | Yes |
+| context | `EventNodeContext` | Yes |
+
+### EventSubscription
+
+**Kind:** interface | **File:** `event-bus.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| eventType | `string | string[]` | — |
+| handler | `(event: EventEnvelope) => Promise<void> | void` | — |
+
+### DLQEntry
+
+**Kind:** interface | **File:** `event-bus.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| event | `EventEnvelope` | — |
+| error | `string` | — |
+| failedAt | `string` | — |
+| retries | `number` | — |
+| handlerId | `string` | — |
+
+### EventHandler
+
+**Kind:** type | **File:** `event-bus.ts`
+
+```ts
+type EventHandler = (event: EventEnvelope) => Promise<void> | void;
+```
+
+### CityOSEventBus
+
+**Kind:** class | **File:** `event-bus.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| emitter | `EventEmitter` | — |
+| subscriptions | `Map<string, EventSubscription>` | — |
+| instance | `CityOSEventBus` | — |
+| dlq | `DLQEntry[]` | — |
+
+### EventBus
+
+**Kind:** class | **File:** `event-bus.ts`
+> EventBus — a public, instantiable event bus class for test isolation and domain package usage. Mirrors the CityOSEventBus interface but allows `new EventBus()` without the singleton constraint.
+
+| Property | Type | Optional |
+|---|---|---|
+| emitter | `EventEmitter` | — |
+| subscriptions | `Map<string, EventSubscription>` | — |
+
+### EventWorkflowMapping
+
+**Kind:** interface | **File:** `event-router.ts`
+> CityOS Event Router — CMS-native port of dakkah-cityos-workflow/server/lib/event-router.ts Maps 24 platform events to specific workflow types across all domains. Provides domain-aware lookup and reverse-lookup by workflow ID.
+
+| Property | Type | Optional |
+|---|---|---|
+| eventType | `string` | — |
+| workflowType | `string` | — |
+| domain | `string` | — |
+| description | `string` | — |
+| priority | `"high" | "medium" | "low"` | Yes |
+| idempotent | `boolean` | Yes |
+
+## Dependencies
+
+### CityOS Core
+
+| Package | Type | Consumer |
+|---|---|---|
+| @cityos/core | prod | [cityos-core](/generated/packages/cityos-core) |
+
+## Consumers & Impact
+
+This package is used by:
+
+| Consumer | Type | Impact |
+|---|---|---|
+| [cityos-outbox](/generated/packages/cityos-outbox) | packages | 🟡 Build-time dependency |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [cityos-events.mmd](/generated/diagrams/class/cityos-events.mmd) |
+| Dependency Graph | [cityos-events-dependencies.mmd](/generated/diagrams/dependencies/cityos-events-dependencies.mmd) |
+
+## Tests
+
+- `__tests__/catalog.test.ts` (119 lines)
+- `__tests__/envelope.test.ts` (343 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

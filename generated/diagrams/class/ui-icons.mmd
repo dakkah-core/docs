@@ -1,0 +1,72 @@
+classDiagram
+  direction TB
+
+  class DynamicIconNativeProps ~interface~ {
+    +icon: unknown
+    -size: IconSize
+    -tone: IconTone
+    -color: string
+    -label: string
+    -decorative: boolean
+    -style: ViewStyle
+    -textStyle: TextStyle
+  }
+
+  class IconDefinition ~interface~ {
+    +semantic: IconSemanticName
+    +provider: IconProvider
+    +providerName: string
+    +label: string
+    -rtlMirror: boolean
+    -decorativeDefault: boolean
+    -tags: string[]
+  }
+
+  class ResolvedIcon ~interface~ {
+    +input: string
+    +semantic: IconSemanticName
+    +definition: IconDefinition
+    +aliased: boolean
+  }
+
+  class IconProvider  {
+  }
+
+  class IconSemanticName  {
+  }
+
+  class IconSize  {
+  }
+
+  class IconStroke  {
+  }
+
+  class IconTone  {
+  }
+
+  class SvgIconComponent  {
+  }
+
+  class DynamicIconProps ~interface~ {
+    +icon: unknown
+    -fallbackLabel: string
+  }
+
+  class IconProps ~interface~ {
+    +semantic: IconSemanticName
+    -size: IconSize
+    -tone: IconTone
+    -label: string
+    -decorative: boolean
+    -strokeWidth: IconStroke
+    -className: string
+    -style: CSSProperties
+  }
+
+  %% Relationships
+  ResolvedIcon --> IconDefinition : definition
+  Omit<IconProps, "semantic"> <|-- DynamicIconProps
+  IconProps --> IconSemanticName : semantic
+  IconProps --> IconSize : size
+  IconProps --> IconTone : tone
+  IconProps --> IconStroke : strokeWidth

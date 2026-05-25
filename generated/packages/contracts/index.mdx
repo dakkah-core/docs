@@ -1,0 +1,328 @@
+---
+title: "@cityos/contracts"
+description: "Deep dive into the contracts package"
+icon: "package"
+---
+
+> **Type:** Contracts Package | **Framework:** Vitest | **Version:** 1.0.0
+> **Path:** `packages/contracts` | **LOC:** 1,144 lines across 22 files
+
+[Back to Generated Packages](/generated/packages)
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 22 | — |
+| Lines of Code | 1,144 | — |
+| Test Coverage | 45.5% | 🟡 |
+| Oversized Files | 0 | 🟢 |
+| Components | 0 | — |
+| Hooks | 0 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 70 | — |
+| Internal Deps | 0 | — |
+| Dependents | 0 | 🟢 Low impact |
+
+## Architecture
+
+### File Structure
+
+```
+base-entity.test.ts (58L, 0C, 0T)
+base-entity.ts (47L, 0C, 6T)
+booking.ts (96L, 0C, 6T)
+channels.ts (12L, 0C, 2T)
+cms-payload.test.ts (38L, 0C, 0T)
+cms-payload.ts (29L, 0C, 2T)
+commerce.ts (121L, 0C, 8T)
+governance.ts (32L, 0C, 3T)
+index.test.ts (58L, 0C, 0T)
+index.ts (17L, 0C, 0T)
+medusa-sync.ts (25L, 0C, 1T)
+node-context.ts (19L, 0C, 6T)
+node-types.test.ts (34L, 0C, 0T)
+node-types.ts (43L, 0C, 1T)
+persona.ts (41L, 0C, 6T)
+rbac.test.ts (49L, 0C, 0T)
+rbac.ts (47L, 0C, 1T)
+reviews-disputes.ts (109L, 0C, 7T)
+search.ts (89L, 0C, 8T)
+subscription.ts (80L, 0C, 5T)
+temporal.ts (14L, 0C, 1T)
+travel.ts (86L, 0C, 7T)
+```
+
+## Public API Surface
+
+### Components (66)
+
+| Name | Kind | File |
+|---|---|---|
+| BaseEntitySchema | const | base-entity.ts |
+| TenantScopedEntitySchema | const | base-entity.ts |
+| NodeScopedEntitySchema | const | base-entity.ts |
+| StatusField | const | base-entity.ts |
+| SortOrderSchema | const | base-entity.ts |
+| PaginationSchema | const | base-entity.ts |
+| PaginatedResponseSchema | function | base-entity.ts |
+| BookingTypeSchema | const | booking.ts |
+| BookingStatusSchema | const | booking.ts |
+| TimeSlotSchema | const | booking.ts |
+| BookableServiceSchema | const | booking.ts |
+| AttendeeSchema | const | booking.ts |
+| BookingSchema | const | booking.ts |
+| CHANNEL_TYPES | const | channels.ts |
+| SUPPORTED_LOCALES | const | channels.ts |
+| LOCALE_CONFIG | const | channels.ts |
+| SupportedCurrencySchema | const | commerce.ts |
+| MoneyAmountSchema | const | commerce.ts |
+| CartRuleTypeSchema | const | commerce.ts |
+| CartRuleSchema | const | commerce.ts |
+| ... | | | (46 more) |
+
+### Functions (11)
+
+| Name | Kind | File |
+|---|---|---|
+| isValidParentType | function | node-types.ts |
+| getValidParentTypes | function | node-types.ts |
+| canBeRoot | function | node-types.ts |
+| getNodeTypeDepth | function | node-types.ts |
+| getAncestorTypes | function | node-types.ts |
+| getDescendantTypes | function | node-types.ts |
+| hasHigherRole | function | rbac.ts |
+| hasMinimumRole | function | rbac.ts |
+| isAdminRole | function | rbac.ts |
+| getWriteRoles | function | rbac.ts |
+| getAuditRoles | function | rbac.ts |
+
+### Types (70)
+
+| Name | Kind | File |
+|---|---|---|
+| BaseEntity | type | base-entity.ts |
+| TenantScopedEntity | type | base-entity.ts |
+| NodeScopedEntity | type | base-entity.ts |
+| StatusField | type | base-entity.ts |
+| SortOrder | type | base-entity.ts |
+| Pagination | type | base-entity.ts |
+| BookingType | type | booking.ts |
+| BookingStatus | type | booking.ts |
+| TimeSlot | type | booking.ts |
+| BookableService | type | booking.ts |
+| Attendee | type | booking.ts |
+| Booking | type | booking.ts |
+| ChannelType | type | channels.ts |
+| SupportedLocale | type | channels.ts |
+| IntegrationLogContext | interface | cms-payload.ts |
+| IntegrationLog | interface | cms-payload.ts |
+| SupportedCurrency | type | commerce.ts |
+| MoneyAmount | type | commerce.ts |
+| CartRuleType | type | commerce.ts |
+| CartRule | type | commerce.ts |
+| ... | | | (50 more) |
+
+## Type System
+
+### BaseEntity
+
+**Kind:** type | **File:** `base-entity.ts`
+
+```ts
+type BaseEntity = z.infer<typeof BaseEntitySchema>;
+```
+
+### TenantScopedEntity
+
+**Kind:** type | **File:** `base-entity.ts`
+
+```ts
+type TenantScopedEntity = z.infer<typeof TenantScopedEntitySchema>;
+```
+
+### NodeScopedEntity
+
+**Kind:** type | **File:** `base-entity.ts`
+
+```ts
+type NodeScopedEntity = z.infer<typeof NodeScopedEntitySchema>;
+```
+
+### StatusField
+
+**Kind:** type | **File:** `base-entity.ts`
+
+```ts
+type StatusField = z.infer<typeof StatusField>;
+```
+
+### SortOrder
+
+**Kind:** type | **File:** `base-entity.ts`
+
+```ts
+type SortOrder = z.infer<typeof SortOrderSchema>;
+```
+
+### Pagination
+
+**Kind:** type | **File:** `base-entity.ts`
+
+```ts
+type Pagination = z.infer<typeof PaginationSchema>;
+```
+
+### BookingType
+
+**Kind:** type | **File:** `booking.ts`
+
+```ts
+type BookingType = z.infer<typeof BookingTypeSchema>;
+```
+
+### BookingStatus
+
+**Kind:** type | **File:** `booking.ts`
+
+```ts
+type BookingStatus = z.infer<typeof BookingStatusSchema>;
+```
+
+### TimeSlot
+
+**Kind:** type | **File:** `booking.ts`
+
+```ts
+type TimeSlot = z.infer<typeof TimeSlotSchema>;
+```
+
+### BookableService
+
+**Kind:** type | **File:** `booking.ts`
+
+```ts
+type BookableService = z.infer<typeof BookableServiceSchema>;
+```
+
+### Attendee
+
+**Kind:** type | **File:** `booking.ts`
+
+```ts
+type Attendee = z.infer<typeof AttendeeSchema>;
+```
+
+### Booking
+
+**Kind:** type | **File:** `booking.ts`
+
+```ts
+type Booking = z.infer<typeof BookingSchema>;
+```
+
+### ChannelType
+
+**Kind:** type | **File:** `channels.ts`
+
+```ts
+type ChannelType = typeof CHANNEL_TYPES[number];
+```
+
+### SupportedLocale
+
+**Kind:** type | **File:** `channels.ts`
+
+```ts
+type SupportedLocale = typeof SUPPORTED_LOCALES[number];
+```
+
+### IntegrationLogContext
+
+**Kind:** interface | **File:** `cms-payload.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| sourceSystem | `| "fleetbase"
+    | "medusa"
+    | "erpnext"
+    | "tryton"
+    | "pallet-wms"
+    | "temporal"
+    | "waltid"
+    | "keycloak"
+    | "citybus"` | — |
+| tenantId | `string | null` | Yes |
+| correlationId | `string | null` | Yes |
+
+### IntegrationLog
+
+**Kind:** interface | **File:** `cms-payload.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| context | `IntegrationLogContext` | — |
+| eventType | `string` | — |
+| reference | `string | null` | Yes |
+| status | `"received" | "success" | "failed" | "skipped"` | — |
+| rawPayload | `Record<string, unknown> | null` | Yes |
+| error | `string | null` | Yes |
+| retryCount | `number | null` | Yes |
+| processedAt | `string | null` | Yes |
+| createdAt | `string` | — |
+| updatedAt | `string` | — |
+
+### SupportedCurrency
+
+**Kind:** type | **File:** `commerce.ts`
+
+```ts
+type SupportedCurrency = z.infer<typeof SupportedCurrencySchema>;
+```
+
+### MoneyAmount
+
+**Kind:** type | **File:** `commerce.ts`
+
+```ts
+type MoneyAmount = z.infer<typeof MoneyAmountSchema>;
+```
+
+### CartRuleType
+
+**Kind:** type | **File:** `commerce.ts`
+
+```ts
+type CartRuleType = z.infer<typeof CartRuleTypeSchema>;
+```
+
+### CartRule
+
+**Kind:** type | **File:** `commerce.ts`
+
+```ts
+type CartRule = z.infer<typeof CartRuleSchema>;
+```
+
+*... and 50 more types*
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [contracts.mmd](/generated/diagrams/class/contracts.mmd) |
+| Dependency Graph | [contracts-dependencies.mmd](#) |
+
+## Tests
+
+- `base-entity.test.ts` (58 lines)
+- `cms-payload.test.ts` (38 lines)
+- `index.test.ts` (58 lines)
+- `node-types.test.ts` (34 lines)
+- `rbac.test.ts` (49 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

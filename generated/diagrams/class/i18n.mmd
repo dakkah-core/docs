@@ -1,0 +1,67 @@
+classDiagram
+  direction TB
+
+  class LocaleFormatters ~interface~ {
+    +hijri: HijriFormatter
+    +number: ArabicNumeralFormatter
+    +currency: CurrencyFormatter
+    +plural: (count: number, rules: PluralRules) = string
+  }
+
+  class I18nContextValue  {
+  }
+
+  class LocaleContextValue  {
+  }
+
+  class HijriFormatter ~interface~ {
+    +format: (date: Date) = string
+    +formatWithOptions: (date: Date, options: Intl.DateTimeFormatOptions) = string
+  }
+
+  class ArabicNumeralFormatter ~interface~ {
+    +format: (value: number) = string
+    +formatGrouped: (value: number, fractionDigits?: number) = string
+  }
+
+  class CurrencyFormatter ~interface~ {
+    +format: (halalas: number) = string
+    +formatRiyals: (riyals: number) = string
+  }
+
+  class MissingKeyEvent ~interface~ {
+    +key: string
+    -locale: string
+    -namespace: string
+    +timestamp: number
+  }
+
+  class MissingKeyListener  {
+  }
+
+  class ArabicPluralCategory  {
+  }
+
+  class EnglishPluralCategory  {
+  }
+
+  class PluralCategory  {
+  }
+
+  class PluralRules  {
+  }
+
+  class Locale  {
+  }
+
+  class SupportedLocale  {
+  }
+
+  class TranslationKey  {
+  }
+
+  class MessageKey  {
+  }
+
+  class Direction  {
+  }

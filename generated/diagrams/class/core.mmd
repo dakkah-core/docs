@@ -1,0 +1,388 @@
+classDiagram
+  direction TB
+
+  class NodeRedFlowManifest ~interface~ {
+    +id: string
+    +name: string
+    +version: string
+    +description: string
+    +triggers: string[]
+    +outputs: string[]
+    +dependencies: string[]
+    +critical: boolean
+  }
+
+  class FlowHealthStatus ~interface~ {
+    +flowId: string
+    +name: string
+    +healthy: boolean
+    +deployed: boolean
+    -version: string
+    -error: string
+  }
+
+  class RetryConfig ~interface~ {
+    +maxAttempts: number
+    +baseDelayMs: number
+    +maxDelayMs: number
+    +jitterFactor: number
+    -onRetry: (attempt: number, error: Error, delayMs: number) = void
+    -onExhausted: (attempts: number, lastError: Error) = void
+  }
+
+  class TrytonCallOpts ~interface~ {
+    +model: string
+    +method: string
+    +args: unknown[]
+    -retryConfig: PartialRetryConfig
+  }
+
+  class TrytonCallResult ~interface~ {
+    +result: T
+    +attempts: number
+  }
+
+  class VCSchema ~interface~ {
+    +id: string
+    +name: string
+    +version: string
+    +context: string[]
+    +credentialSubjectSchema: Recordstring, unknown
+  }
+
+  class SchemaRegistrationResult ~interface~ {
+    +schemaId: string
+    +name: string
+    +registered: boolean
+    +alreadyExisted: boolean
+    -error: string
+  }
+
+  class IoTDeviceIdentity ~interface~ {
+    +deviceId: string
+    +sensorType: string
+    -location: {
+    lat: number
+    lng: number
+    /** Altitude in metres above sea level, optional */
+    altMetres?: number
+  }
+    -zoneId: string
+    -tenantId: string
+  }
+
+  class SensorReading ~interface~ {
+    +value: TValue
+    -unit: string
+    -confidence: number
+    -rawValue: number
+  }
+
+  class IoTTelemetryEvent ~interface~ {
+    -messageId: string
+    +measuredAt: string
+    -receivedAt: string
+    +device: IoTDeviceIdentity
+    +readings: Recordstring, SensorReading
+    -meta: Recordstring, unknown
+  }
+
+  class AirQualityTelemetry ~interface~ {
+    +readings: {
+    pm25:    SensorReadingnumber  // PM2.5 μg/m³
+    pm10:    SensorReadingnumber  // PM10 μg/m³
+    co2:     SensorReadingnumber  // CO₂ ppm
+    tvoc:    SensorReadingnumber  // TVOC ppb
+    humidity?: SensorReadingnumber // %RH
+    temp?:   SensorReadingnumber  // °C
+  }
+  }
+
+  class ParkingTelemetry ~interface~ {
+    +readings: {
+    occupied: SensorReadingboolean
+    vehicleClass?: SensorReading"car" | "truck" | "motorbike" | "unknown"
+  }
+  }
+
+  class OccupancyTelemetry ~interface~ {
+    +readings: {
+    count: SensorReadingnumber
+    capacity?: SensorReadingnumber
+    /** Percentage occupancy [0, 100] — derived from count / capacity */
+    occupancyPct?: SensorReadingnumber
+  }
+  }
+
+  class TrafficFlowTelemetry ~interface~ {
+    +readings: {
+    vehiclesPerMinute: SensorReadingnumber
+    avgSpeedKmh:       SensorReadingnumber
+    queueLengthMetres?: SensorReadingnumber
+  }
+  }
+
+  class KuzzleDocument ~interface~ {
+    +_id: string
+    +_source: TBody
+    +_index: string
+    +_collection: string
+    +_version: number
+  }
+
+  class KuzzleRealtimeNotification ~interface~ {
+    +type: "document" | "user" | "server"
+    +action: "create" | "update" | "delete" | "replace" | "publish"
+    +collection: string
+    +index: string
+    +requestId: string
+    +timestamp: number
+    -result: KuzzleDocumentTBody
+  }
+
+  class MQTTBridgeMessage ~interface~ {
+    +topic: string
+    +qos: 0 | 1 | 2
+    +retain: boolean
+    +payload: IoTTelemetryEvent
+  }
+
+  class IoTCollection  {
+  }
+
+  class KuzzleError ~interface~ {
+    +message: string
+    +status: number
+    -stack: string
+  }
+
+  class KuzzleResponseBase ~interface~ {
+    +requestId: string
+    +status: number
+    +error: KuzzleError | null
+    +controller: string
+    +action: string
+    -collection: string
+    -index: string
+    -volatile: Recordstring, unknown
+  }
+
+  class KuzzleDocument ~interface~ {
+    +_id: string
+    +_version: number
+    +_source: T
+    +_kuzzle_info: {
+    author: string
+    createdAt: number
+    updatedAt: number | null
+    updater: string | null
+  }
+  }
+
+  class KuzzleSearchResult ~interface~ {
+    +result: {
+    hits: KuzzleDocumentT[]
+    total: number
+    scrollId?: string
+  }
+  }
+
+  class KuzzleDocumentNotification ~interface~ {
+    +type: "document"
+    +scope: KuzzleScopeType
+    +state: KuzzleStateType
+    +action: KuzzleDocumentAction
+    +protocol: string
+    +timestamp: number
+    +index: string
+    +collection: string
+    +controller: "document" | "realtime"
+    +requestId: string
+    +result: KuzzleDocumentT
+    +room: string
+    ... 1 more
+  }
+
+  class KuzzleUserNotification ~interface~ {
+    +type: "user"
+    +user: string
+    +action: string
+    +protocol: string
+    +timestamp: number
+    -index: string
+    -collection: string
+    +controller: string
+    +requestId: string
+    +result: {
+    count: number
+  }
+    +room: string
+  }
+
+  class IoTSensorSource ~interface~ {
+    +deviceId: string
+    +deviceType: string
+    +tenantSlug: string
+    +timestamp: string
+    +payload: Recordstring, unknown
+    -metadata: {
+    firmware?: string
+    rssi?: number
+    battery?: number
+  }
+  }
+
+  class AirQualitySource ~interface~ {
+    +payload: {
+    pm25: number
+    pm10: number
+    co2: number
+    temperature: number
+    humidity: number
+    aqi: number
+  }
+  }
+
+  class ParkingSource ~interface~ {
+    +payload: {
+    spaceId: string
+    occupied: boolean
+    zoneId: string
+    licensePlate?: string
+    entryTime?: string
+  }
+  }
+
+  class TrafficSource ~interface~ {
+    +payload: {
+    segmentId: string
+    speed: number          // km/h
+    density: number        // vehicles/km
+    occupancy: number      // 0-1
+    incidents: string[]
+  }
+  }
+
+  class KuzzleSubscriptionFilters ~interface~ {
+    -equals: Recordstring, unknown
+    -range: Recordstring, { gt?: number gte?: number lt?: number lte?: number }
+    -exists: { field: string }
+    -term: Recordstring, unknown
+    -bool: { must?: KuzzleSubscriptionFilters[] should?: KuzzleSubscriptionFilters[] must_not?: KuzzleSubscriptionFilters[] }
+  }
+
+  class KuzzleSubscriptionOptions ~interface~ {
+    +scope: "in" | "out" | "all" | "none"
+    +state: "pending" | "done" | "all"
+    +users: "in" | "out" | "all" | "none"
+    +subscribeToSelf: boolean
+  }
+
+  class KuzzleNotificationType  {
+  }
+
+  class KuzzleScopeType  {
+  }
+
+  class KuzzleStateType  {
+  }
+
+  class KuzzleDocumentAction  {
+  }
+
+  class KuzzleNotification  {
+  }
+
+  class KuzzleIoTNotification  {
+  }
+
+  class RlsPolicy ~interface~ {
+    +tableName: string
+    +schema: string
+    +policyName: string
+    +using: string
+    -withCheck: string
+  }
+
+  class CollectionRlsSpec ~interface~ {
+    +schema: string
+    +table: string
+    -column: string
+  }
+
+  class CollectionCustomCityOS  {
+  }
+
+  class ScaffoldTemplate ~interface~ {
+    +type: string
+    +description: string
+    +rootDir: string
+    +files: ScaffoldFile[]
+  }
+
+  class ScaffoldFile ~interface~ {
+    +path: string
+    +content: string
+  }
+
+  class ScaffoldOutput ~interface~ {
+    +files: Array{ path: string content: string }
+    +dirs: string[]
+  }
+
+  class PeerDepRange ~interface~ {
+    +min: string
+    +max: string
+    +required: boolean
+    -reason: string
+  }
+
+  class PeerDepViolation ~interface~ {
+    +package: string
+    +dep: string
+    +installed: string
+    +required: PeerDepRange
+    +reason: string
+  }
+
+  class PeerDepMatrix  {
+  }
+
+  class SeedContext ~interface~ {
+    +log: (msg: string) = void
+    +warn: (msg: string) = void
+  }
+
+  class SeedOpts ~interface~ {
+    +name: string
+    +version: string
+    -force: boolean
+    -ctx: PartialSeedContext
+  }
+
+  class SeedResult ~interface~ {
+    +ran: boolean
+    +skipped: boolean
+    +name: string
+    +version: string
+    -durationMs: number
+  }
+
+  class SeedDefinition ~interface~ {
+    +opts: SeedOpts
+    +fn: () = Promisevoid
+  }
+
+  %% Relationships
+  IoTTelemetryEvent --> IoTDeviceIdentity : device
+  IoTTelemetryEvent <|-- AirQualityTelemetry
+  IoTTelemetryEvent <|-- ParkingTelemetry
+  IoTTelemetryEvent <|-- OccupancyTelemetry
+  IoTTelemetryEvent <|-- TrafficFlowTelemetry
+  MQTTBridgeMessage --> IoTTelemetryEvent : payload
+  KuzzleResponseBase <|-- KuzzleSearchResult
+  IoTSensorSource <|-- AirQualitySource
+  IoTSensorSource <|-- ParkingSource
+  IoTSensorSource <|-- TrafficSource
+  PeerDepViolation --> PeerDepRange : required
+  SeedDefinition --> SeedOpts : opts

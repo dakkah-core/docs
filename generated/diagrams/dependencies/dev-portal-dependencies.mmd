@@ -1,0 +1,13 @@
+graph LR
+  dev-portal[dev-portal]
+  dev-portal --> api-client-react[api-client-react]
+  dev-portal --> auth[auth]
+  dev-portal --> design-system[design-system]
+  dev-portal --> design-tokens[design-tokens]
+  dev-portal --> i18n[i18n]
+  dev-portal --> sdui-renderer-web[sdui-renderer-web]
+  dev-portal --> sdui-protocol[sdui-protocol]
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef dep fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class dev-portal app

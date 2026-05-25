@@ -1,0 +1,1059 @@
+classDiagram
+  direction TB
+
+  class CustomFetchOptions  {
+  }
+
+  class ErrorType  {
+  }
+
+  class BodyType  {
+  }
+
+  class ApiError  {
+    +name: unknown
+    +status: number
+    +statusText: string
+    +data: T | null
+    +headers: Headers
+    +response: Response
+    +method: string
+    +url: string
+  }
+
+  class ResponseParseError  {
+    +name: unknown
+    +status: number
+    +statusText: string
+    +headers: Headers
+    +response: Response
+    +method: string
+    +url: string
+    +rawBody: string
+    +cause: unknown
+  }
+
+  class QueuedMutation ~interface~ {
+    -id: number
+    +url: string
+    +method: string
+    +headers: Recordstring, string
+    +body: string | null
+    +timestamp: number
+  }
+
+  class BffResponse ~interface~ {
+    +success: boolean
+    +data: T
+  }
+
+  class SSEMessage ~interface~ {
+    +type: string
+    +data: T
+    +receivedAt: number
+  }
+
+  class UseEventStreamOptions ~interface~ {
+    -types: string[]
+    -interval: number
+    -enabled: boolean
+    -maxEvents: number
+  }
+
+  class FeatureFlag ~interface~ {
+    +id: string
+    +key: string
+    +name: string
+    +description: string
+    +enabled: boolean
+    +rolloutPercentage: number
+    +tenants: string[]
+  }
+
+  class FeatureFlagContextValue ~interface~ {
+    +flags: FeatureFlag[]
+    +isLoading: boolean
+    +isEnabled: (key: string) = boolean
+    +getFlag: (key: string) = FeatureFlag | undefined
+  }
+
+  class FeatureFlagProviderProps ~interface~ {
+    +children: ReactNode
+    -tenant: string
+    -enabled: boolean
+  }
+
+  class HealthStatus ~interface~ {
+    +status: string
+  }
+
+  class GeoPoint ~interface~ {
+    -lat: number
+    -lng: number
+  }
+
+  class DriverStatus ~interface~ {
+    -id: string
+    -status: DriverStatusStatus
+    -location: GeoPoint
+  }
+
+  class DriverStatusUpdate ~interface~ {
+    +status: DriverStatusUpdateStatus
+  }
+
+  class DriverJob ~interface~ {
+    -id: string
+    -type: string
+    -status: string
+    -pickup: GeoPoint
+    -dropoff: GeoPoint
+  }
+
+  class DriverJobList ~interface~ {
+    -jobs: DriverJob[]
+  }
+
+  class FleetVehicle ~interface~ {
+    -id: string
+    -type: string
+    -status: FleetVehicleStatus
+    -licensePlate: string
+    -location: GeoPoint
+  }
+
+  class FleetVehicleList ~interface~ {
+    -vehicles: FleetVehicle[]
+  }
+
+  class ShipmentList ~interface~ {
+    -shipments: ShipmentListShipmentsItem[]
+  }
+
+  class MaintenanceList ~interface~ {
+    -records: MaintenanceListRecordsItem[]
+  }
+
+  class FuelRecordList ~interface~ {
+    -records: FuelRecordListRecordsItem[]
+  }
+
+  class Product ~interface~ {
+    -id: string
+    -name: string
+    -price: number
+    -category: string
+    -image: string
+  }
+
+  class ProductList ~interface~ {
+    -products: Product[]
+  }
+
+  class ProductInput ~interface~ {
+    +name: string
+    +price: number
+    -category: string
+  }
+
+  class Cart ~interface~ {
+    -items: CartItemsItem[]
+    -total: number
+  }
+
+  class CartItemInput ~interface~ {
+    +productId: string
+    +quantity: number
+  }
+
+  class Order ~interface~ {
+    -id: string
+    -status: string
+    -total: number
+    -createdAt: string
+  }
+
+  class OrderList ~interface~ {
+    -orders: Order[]
+  }
+
+  class CheckoutInput ~interface~ {
+    +paymentMethod: string
+    -address: string
+  }
+
+  class InventoryList ~interface~ {
+    -items: InventoryListItemsItem[]
+  }
+
+  class MerchantProfile ~interface~ {
+    -id: string
+    -name: string
+    -category: string
+    -rating: number
+    -storeStatus: string
+  }
+
+  class PosCheckoutInput ~interface~ {
+    +items: PosCheckoutInputItemsItem[]
+    -paymentMethod: string
+  }
+
+  class PosTransaction ~interface~ {
+    -id: string
+    -total: number
+    -status: string
+    -receipt: string
+  }
+
+  class PosShift ~interface~ {
+    -id: string
+    -status: string
+    -openedAt: string
+    -sales: number
+  }
+
+  class PosDailyReport ~interface~ {
+    -date: string
+    -totalSales: number
+    -transactions: number
+    -averageOrder: number
+  }
+
+  class Wallet ~interface~ {
+    -id: string
+    -balance: number
+    -currency: string
+  }
+
+  class WalletList ~interface~ {
+    -wallets: Wallet[]
+  }
+
+  class TransactionHistory ~interface~ {
+    -transactions: TransactionHistoryTransactionsItem[]
+  }
+
+  class TopUpInput ~interface~ {
+    +amount: number
+    -paymentMethod: string
+  }
+
+  class InvoiceList ~interface~ {
+    -invoices: InvoiceListInvoicesItem[]
+  }
+
+  class GrantList ~interface~ {
+    -grants: GrantListGrantsItem[]
+  }
+
+  class TenderList ~interface~ {
+    -tenders: TenderListTendersItem[]
+  }
+
+  class PractitionerList ~interface~ {
+    -practitioners: PractitionerListPractitionersItem[]
+  }
+
+  class FacilityList ~interface~ {
+    -facilities: FacilityListFacilitiesItem[]
+  }
+
+  class Appointment ~interface~ {
+    -id: string
+    -practitionerId: string
+    -date: string
+    -status: string
+  }
+
+  class AppointmentList ~interface~ {
+    -appointments: Appointment[]
+  }
+
+  class AppointmentInput ~interface~ {
+    +practitionerId: string
+    +date: string
+    -notes: string
+  }
+
+  class Course ~interface~ {
+    -id: string
+    -title: string
+    -instructor: string
+    -level: string
+    -capacity: number
+  }
+
+  class CourseList ~interface~ {
+    -courses: Course[]
+  }
+
+  class InstitutionList ~interface~ {
+    -institutions: InstitutionListInstitutionsItem[]
+  }
+
+  class Enrollment ~interface~ {
+    -id: string
+    -courseId: string
+    -status: string
+  }
+
+  class EnrollmentList ~interface~ {
+    -enrollments: Enrollment[]
+  }
+
+  class EnrollmentInput ~interface~ {
+    +courseId: string
+  }
+
+  class GradeList ~interface~ {
+    -grades: GradeListGradesItem[]
+  }
+
+  class ScheduleList ~interface~ {
+    -schedules: ScheduleListSchedulesItem[]
+  }
+
+  class CertificateList ~interface~ {
+    -certificates: CertificateListCertificatesItem[]
+  }
+
+  class JobListing ~interface~ {
+    -id: string
+    -title: string
+    -company: string
+    -salary: string
+    -location: string
+  }
+
+  class JobListingList ~interface~ {
+    -listings: JobListing[]
+  }
+
+  class JobApplication ~interface~ {
+    -id: string
+    -listingId: string
+    -status: string
+  }
+
+  class JobApplicationList ~interface~ {
+    -applications: JobApplication[]
+  }
+
+  class JobApplicationInput ~interface~ {
+    +listingId: string
+    -coverLetter: string
+  }
+
+  class EmployerList ~interface~ {
+    -employers: EmployerListEmployersItem[]
+  }
+
+  class OutageList ~interface~ {
+    -outages: OutageListOutagesItem[]
+  }
+
+  class OutageReportInput ~interface~ {
+    +type: string
+    +location: string
+    -description: string
+  }
+
+  class OutageReport ~interface~ {
+    -id: string
+    -status: string
+  }
+
+  class UtilitiesStatus ~interface~ {
+    -services: UtilitiesStatusServicesItem[]
+  }
+
+  class BillingList ~interface~ {
+    -bills: BillingListBillsItem[]
+  }
+
+  class ParkingList ~interface~ {
+    -facilities: ParkingListFacilitiesItem[]
+  }
+
+  class FitnessList ~interface~ {
+    -facilities: FitnessListFacilitiesItem[]
+  }
+
+  class RentalList ~interface~ {
+    -rentals: RentalListRentalsItem[]
+  }
+
+  class IotDevice ~interface~ {
+    -id: string
+    -type: string
+    -status: IotDeviceStatus
+    -location: GeoPoint
+  }
+
+  class IotDeviceList ~interface~ {
+    -devices: IotDevice[]
+  }
+
+  class DeviceReadingList ~interface~ {
+    -readings: DeviceReadingListReadingsItem[]
+  }
+
+  class IotAlertList ~interface~ {
+    -alerts: IotAlertListAlertsItem[]
+  }
+
+  class IotDashboard ~interface~ {
+    -totalDevices: number
+    -onlineDevices: number
+    -activeAlerts: number
+  }
+
+  class AirQualityStation ~interface~ {
+    -id: string
+    -name: string
+    -aqi: number
+    -pm25: number
+    -pm10: number
+  }
+
+  class AirQualityList ~interface~ {
+    -stations: AirQualityStation[]
+  }
+
+  class EnvironmentSensorList ~interface~ {
+    -sensors: EnvironmentSensorListSensorsItem[]
+  }
+
+  class EnvironmentAlertList ~interface~ {
+    -alerts: EnvironmentAlertListAlertsItem[]
+  }
+
+  class SafetyIncident ~interface~ {
+    -id: string
+    -type: string
+    -severity: SafetyIncidentSeverity
+    -location: string
+    -status: string
+  }
+
+  class SafetyIncidentList ~interface~ {
+    -incidents: SafetyIncident[]
+  }
+
+  class SafetyIncidentInput ~interface~ {
+    +type: string
+    +location: string
+    -description: string
+  }
+
+  class SafetyAlertList ~interface~ {
+    -alerts: SafetyAlertListAlertsItem[]
+  }
+
+  class EmergencyContactList ~interface~ {
+    -contacts: EmergencyContactListContactsItem[]
+  }
+
+  class SafetyZoneList ~interface~ {
+    -zones: SafetyZoneListZonesItem[]
+  }
+
+  class GovernanceServiceList ~interface~ {
+    -services: GovernanceServiceListServicesItem[]
+  }
+
+  class ProposalList ~interface~ {
+    -proposals: ProposalListProposalsItem[]
+  }
+
+  class PermitList ~interface~ {
+    -permits: PermitListPermitsItem[]
+  }
+
+  class GovernanceReport ~interface~ {
+    -id: string
+    -title: string
+    -status: string
+  }
+
+  class GovernanceReportList ~interface~ {
+    -reports: GovernanceReport[]
+  }
+
+  class GovernanceReportInput ~interface~ {
+    +title: string
+    +description: string
+    -category: string
+  }
+
+  class Campaign ~interface~ {
+    -id: string
+    -title: string
+    -goal: number
+    -raised: number
+    -status: string
+  }
+
+  class CampaignList ~interface~ {
+    -campaigns: Campaign[]
+  }
+
+  class DonationInput ~interface~ {
+    +campaignId: string
+    +amount: number
+  }
+
+  class Donation ~interface~ {
+    -id: string
+    -amount: number
+    -status: string
+  }
+
+  class CrowdfundingList ~interface~ {
+    -projects: CrowdfundingListProjectsItem[]
+  }
+
+  class CommunityBoardList ~interface~ {
+    -boards: CommunityBoardListBoardsItem[]
+  }
+
+  class SocialPost ~interface~ {
+    -id: string
+    -author: string
+    -content: string
+    -likes: number
+    -createdAt: string
+  }
+
+  class SocialFeed ~interface~ {
+    -posts: SocialPost[]
+  }
+
+  class SocialPostInput ~interface~ {
+    +content: string
+    -tags: string[]
+  }
+
+  class TrendingList ~interface~ {
+    -topics: TrendingListTopicsItem[]
+  }
+
+  class Thread ~interface~ {
+    -id: string
+    -title: string
+    -body: string
+    -author: string
+    -replies: number
+  }
+
+  class ThreadList ~interface~ {
+    -threads: Thread[]
+  }
+
+  class ThreadInput ~interface~ {
+    +title: string
+    +body: string
+    -category: string
+  }
+
+  class CulturalEvent ~interface~ {
+    -id: string
+    -title: string
+    -type: string
+    -venue: string
+    -date: string
+  }
+
+  class CulturalEventList ~interface~ {
+    -events: CulturalEvent[]
+  }
+
+  class VenueList ~interface~ {
+    -venues: VenueListVenuesItem[]
+  }
+
+  class EventRegistration ~interface~ {
+    -id: string
+    -eventId: string
+    -status: string
+  }
+
+  class EventRegistrationList ~interface~ {
+    -registrations: EventRegistration[]
+  }
+
+  class EventRegistrationInput ~interface~ {
+    +eventId: string
+    -attendees: number
+  }
+
+  class HeritageSiteList ~interface~ {
+    -sites: HeritageSiteListSitesItem[]
+  }
+
+  class TourList ~interface~ {
+    -tours: TourListToursItem[]
+  }
+
+  class ExhibitionList ~interface~ {
+    -exhibitions: ExhibitionListExhibitionsItem[]
+  }
+
+  class HeritageList ~interface~ {
+    -items: HeritageListItemsItem[]
+  }
+
+  class SportsEventList ~interface~ {
+    -events: SportsEventListEventsItem[]
+  }
+
+  class SportsVenueList ~interface~ {
+    -venues: SportsVenueListVenuesItem[]
+  }
+
+  class SportsBooking ~interface~ {
+    -id: string
+    -venueId: string
+    -date: string
+    -status: string
+  }
+
+  class SportsBookingList ~interface~ {
+    -bookings: SportsBooking[]
+  }
+
+  class SportsBookingInput ~interface~ {
+    +venueId: string
+    +date: string
+    -duration: number
+  }
+
+  class StandingList ~interface~ {
+    -standings: StandingListStandingsItem[]
+  }
+
+  class CropList ~interface~ {
+    -crops: CropListCropsItem[]
+  }
+
+  class AgriSensorList ~interface~ {
+    -sensors: AgriSensorListSensorsItem[]
+  }
+
+  class AgriActivity ~interface~ {
+    -id: string
+    -type: string
+    -date: string
+    -notes: string
+  }
+
+  class AgriActivityList ~interface~ {
+    -activities: AgriActivity[]
+  }
+
+  class AgriActivityInput ~interface~ {
+    +type: string
+    -date: string
+    -notes: string
+  }
+
+  class AgriMarketData ~interface~ {
+    -commodities: AgriMarketDataCommoditiesItem[]
+  }
+
+  class Property ~interface~ {
+    -id: string
+    -title: string
+    -type: PropertyType
+    -price: number
+    -area: number
+    -location: string
+  }
+
+  class PropertyList ~interface~ {
+    -properties: Property[]
+  }
+
+  class AgentList ~interface~ {
+    -agents: AgentListAgentsItem[]
+  }
+
+  class RealEstateApplication ~interface~ {
+    -id: string
+    -propertyId: string
+    -status: string
+  }
+
+  class RealEstateApplicationList ~interface~ {
+    -applications: RealEstateApplication[]
+  }
+
+  class RealEstateApplicationInput ~interface~ {
+    +propertyId: string
+    -message: string
+  }
+
+  class PoiDetail ~interface~ {
+    -id: string
+    -name: string
+    -category: string
+    -location: GeoPoint
+    -rating: number
+  }
+
+  class PoiSearchResult ~interface~ {
+    -pois: PoiDetail[]
+  }
+
+  class PoiReviewList ~interface~ {
+    -reviews: PoiReviewListReviewsItem[]
+  }
+
+  class PoiCollectionList ~interface~ {
+    -collections: PoiCollectionListCollectionsItem[]
+  }
+
+  class MediaFile ~interface~ {
+    -id: string
+    -name: string
+    -url: string
+    -type: string
+    -size: number
+    -createdAt: string
+  }
+
+  class MediaFileList ~interface~ {
+    -files: MediaFile[]
+  }
+
+  class MediaFolderList ~interface~ {
+    -folders: MediaFolderListFoldersItem[]
+  }
+
+  class DeviceRegistrationInput ~interface~ {
+    +token: string
+    +platform: DeviceRegistrationInputPlatform
+  }
+
+  class DeviceRegistration ~interface~ {
+    -id: string
+    -status: string
+  }
+
+  class NotificationCategoryList ~interface~ {
+    -categories: NotificationCategoryListCategoriesItem[]
+  }
+
+  class NotificationPreferencesInput ~interface~ {
+    -categories: NotificationPreferencesInputCategoriesItem[]
+  }
+
+  class NotificationInput ~interface~ {
+    +title: string
+    +body: string
+    -channel: string
+  }
+
+  class NotificationResult ~interface~ {
+    -id: string
+    -status: string
+  }
+
+  class TenantList ~interface~ {
+    -tenants: TenantListTenantsItem[]
+  }
+
+  class FeatureFlagList ~interface~ {
+    -flags: FeatureFlagListFlagsItem[]
+  }
+
+  class SystemStatus ~interface~ {
+    -status: string
+    -uptime: number
+    -version: string
+  }
+
+  class PlatformConfig ~interface~ {
+    -features: PlatformConfigFeatures
+    -limits: PlatformConfigLimits
+  }
+
+  class AiChatInput ~interface~ {
+    +message: string
+    -context: string
+  }
+
+  class AiChatResponse ~interface~ {
+    -response: string
+    -sources: string[]
+  }
+
+  class AiExecuteInput ~interface~ {
+    +task: string
+    -params: AiExecuteInputParams
+  }
+
+  class AiExecuteResult ~interface~ {
+    -result: string
+    -confidence: number
+  }
+
+  class AiTranscription ~interface~ {
+    -text: string
+    -language: string
+    -duration: number
+  }
+
+  class SduiScreen ~interface~ {
+    -id: string
+    -layout: SduiScreenLayout
+    -components: SduiScreenComponentsItem[]
+    -version: number
+  }
+
+  class DriverStatusStatus  {
+  }
+
+  class DriverStatusUpdateStatus  {
+  }
+
+  class FleetVehicleStatus  {
+  }
+
+  class ShipmentListShipmentsItem  {
+  }
+
+  class MaintenanceListRecordsItem  {
+  }
+
+  class FuelRecordListRecordsItem  {
+  }
+
+  class CartItemsItem  {
+  }
+
+  class InventoryListItemsItem  {
+  }
+
+  class PosCheckoutInputItemsItem  {
+  }
+
+  class TransactionHistoryTransactionsItem  {
+  }
+
+  class InvoiceListInvoicesItem  {
+  }
+
+  class GrantListGrantsItem  {
+  }
+
+  class TenderListTendersItem  {
+  }
+
+  class PractitionerListPractitionersItem  {
+  }
+
+  class FacilityListFacilitiesItem  {
+  }
+
+  class InstitutionListInstitutionsItem  {
+  }
+
+  class GradeListGradesItem  {
+  }
+
+  class ScheduleListSchedulesItem  {
+  }
+
+  class CertificateListCertificatesItem  {
+  }
+
+  class EmployerListEmployersItem  {
+  }
+
+  class OutageListOutagesItem  {
+  }
+
+  class UtilitiesStatusServicesItem  {
+  }
+
+  class BillingListBillsItem  {
+  }
+
+  class ParkingListFacilitiesItem  {
+  }
+
+  class FitnessListFacilitiesItem  {
+  }
+
+  class RentalListRentalsItem  {
+  }
+
+  class IotDeviceStatus  {
+  }
+
+  class DeviceReadingListReadingsItem  {
+  }
+
+  class IotAlertListAlertsItem  {
+  }
+
+  class EnvironmentSensorListSensorsItem  {
+  }
+
+  class EnvironmentAlertListAlertsItem  {
+  }
+
+  class SafetyIncidentSeverity  {
+  }
+
+  class SafetyAlertListAlertsItem  {
+  }
+
+  class EmergencyContactListContactsItem  {
+  }
+
+  class SafetyZoneListZonesItem  {
+  }
+
+  class GovernanceServiceListServicesItem  {
+  }
+
+  class ProposalListProposalsItem  {
+  }
+
+  class PermitListPermitsItem  {
+  }
+
+  class CrowdfundingListProjectsItem  {
+  }
+
+  class CommunityBoardListBoardsItem  {
+  }
+
+  class TrendingListTopicsItem  {
+  }
+
+  class VenueListVenuesItem  {
+  }
+
+  class HeritageSiteListSitesItem  {
+  }
+
+  class TourListToursItem  {
+  }
+
+  class ExhibitionListExhibitionsItem  {
+  }
+
+  class HeritageListItemsItem  {
+  }
+
+  class SportsEventListEventsItem  {
+  }
+
+  class SportsVenueListVenuesItem  {
+  }
+
+  class StandingListStandingsItem  {
+  }
+
+  class CropListCropsItem  {
+  }
+
+  class AgriSensorListSensorsItem  {
+  }
+
+  class AgriMarketDataCommoditiesItem  {
+  }
+
+  class PropertyType  {
+  }
+
+  class AgentListAgentsItem  {
+  }
+
+  class PoiReviewListReviewsItem  {
+  }
+
+  class PoiCollectionListCollectionsItem  {
+  }
+
+  class MediaFolderListFoldersItem  {
+  }
+
+  class DeviceRegistrationInputPlatform  {
+  }
+
+  class NotificationCategoryListCategoriesItem  {
+  }
+
+  class NotificationPreferencesInputCategoriesItem  {
+  }
+
+  class TenantListTenantsItem  {
+  }
+
+  class FeatureFlagListFlagsItem  {
+  }
+
+  class PlatformConfigFeatures  {
+  }
+
+  class PlatformConfigLimits  {
+  }
+
+  class AiExecuteInputParams  {
+  }
+
+  class SduiScreenLayout  {
+  }
+
+  class SduiScreenComponentsItem  {
+  }
+
+  class SearchPoiParams  {
+  }
+
+  class UploadMediaBody  {
+  }
+
+  class AiTranscribeBody  {
+  }
+
+  %% Relationships
+  Error <|-- ApiError
+  Error <|-- ResponseParseError
+  FeatureFlagContextValue --> FeatureFlag : flags
+  DriverStatus --> GeoPoint : location
+  DriverJob --> GeoPoint : pickup
+  DriverJob --> GeoPoint : dropoff
+  DriverJobList --> DriverJob : jobs
+  FleetVehicle --> GeoPoint : location
+  FleetVehicleList --> FleetVehicle : vehicles
+  ProductList --> Product : products
+  OrderList --> Order : orders
+  WalletList --> Wallet : wallets
+  AppointmentList --> Appointment : appointments
+  CourseList --> Course : courses
+  EnrollmentList --> Enrollment : enrollments
+  JobListingList --> JobListing : listings
+  JobApplicationList --> JobApplication : applications
+  IotDevice --> GeoPoint : location
+  IotDeviceList --> IotDevice : devices
+  AirQualityList --> AirQualityStation : stations
+  SafetyIncidentList --> SafetyIncident : incidents
+  GovernanceReportList --> GovernanceReport : reports
+  CampaignList --> Campaign : campaigns
+  SocialFeed --> SocialPost : posts
+  ThreadList --> Thread : threads
+  CulturalEventList --> CulturalEvent : events
+  EventRegistrationList --> EventRegistration : registrations
+  SportsBookingList --> SportsBooking : bookings
+  AgriActivityList --> AgriActivity : activities
+  PropertyList --> Property : properties
+  RealEstateApplicationList --> RealEstateApplication : applications
+  PoiDetail --> GeoPoint : location
+  PoiSearchResult --> PoiDetail : pois
+  MediaFileList --> MediaFile : files

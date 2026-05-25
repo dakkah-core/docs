@@ -1,0 +1,43 @@
+classDiagram
+  direction TB
+
+  class CatalogQuery ~interface~ {
+    -domain: EventDomain
+    -priority: EventPriority
+    -deprecated: boolean
+    -namePrefix: string
+  }
+
+  class CatalogStats ~interface~ {
+    +total: number
+    +byDomain: Recordstring, number
+    +byPriority: Recordstring, number
+    +deprecated: number
+  }
+
+  class EventDefinition ~interface~ {
+    +name: string
+    +version: string
+    +schema: z.ZodTypeRecordstring, unknown
+    +domain: EventDomain
+    +priority: EventPriority
+    +idempotent: boolean
+    +description: string
+    +deprecated: boolean
+    -replacedBy: string
+  }
+
+  class EventPriority  {
+  }
+
+  class EventDomain  {
+  }
+
+  class SemVer ~interface~ {
+    +major: number
+    +minor: number
+    +patch: number
+  }
+
+  class MigrationKind  {
+  }

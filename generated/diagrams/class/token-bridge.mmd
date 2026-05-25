@@ -1,0 +1,105 @@
+classDiagram
+  direction TB
+
+  class ThemeColors ~interface~ {
+    +primary: string
+    +primaryForeground: string
+    +secondary: string
+    +secondaryForeground: string
+    +accent: string
+    +accentForeground: string
+    +background: string
+    +foreground: string
+    +muted: string
+    +mutedForeground: string
+    +card: string
+    +cardForeground: string
+    ... 11 more
+  }
+
+  class ThemeSpacing ~interface~ {
+    +xs: string
+    +sm: string
+    +md: string
+    +lg: string
+    +xl: string
+    +"2xl": string
+    +"3xl": string
+    +"4xl": string
+  }
+
+  class ThemeTypography ~interface~ {
+    +fontFamily: { sans: string display: string serif: string mono: string }
+    +fontSize: Recordstring, string
+    +fontWeight: Recordstring, number
+    +lineHeight: Recordstring, string
+  }
+
+  class ThemeShadows ~interface~ {
+    +none: string
+    +sm: string
+    +md: string
+    +lg: string
+    +xl: string
+    +"2xl": string
+    +inner: string
+  }
+
+  class ThemeBorders ~interface~ {
+    +radius: Recordstring, string
+    +width: Recordstring, string
+  }
+
+  class Theme ~interface~ {
+    +name: string
+    +mode: ThemeMode
+    +colors: ThemeColors
+    +spacing: ThemeSpacing
+    +typography: ThemeTypography
+    +shadows: ThemeShadows
+    +borders: ThemeBorders
+  }
+
+  class CreateThemeOptions ~interface~ {
+    +name: string
+    +mode: ThemeMode
+    -colors: PartialThemeColors
+    -spacing: PartialThemeSpacing
+    -typography: PartialThemeTypography
+    -shadows: PartialThemeShadows
+    -borders: PartialThemeBorders
+  }
+
+  class TenantBranding ~interface~ {
+    -colors: DeepPartialThemeColors
+    -typography: DeepPartialThemeTypography
+    -spacing: DeepPartialThemeSpacing
+  }
+
+  class ThemeContextValue ~interface~ {
+    +theme: Theme
+    +mode: ThemeMode
+    +setMode: (mode: ThemeMode) = void
+  }
+
+  class ThemeProviderProps ~interface~ {
+    -initialTheme: Theme
+    -tenantBranding: TenantBranding
+    +children: import("react").ReactNode
+  }
+
+  class ThemeMode  {
+  }
+
+  class DeepPartial  {
+  }
+
+  %% Relationships
+  Theme --> ThemeColors : colors
+  Theme --> ThemeSpacing : spacing
+  Theme --> ThemeTypography : typography
+  Theme --> ThemeShadows : shadows
+  Theme --> ThemeBorders : borders
+  ThemeContextValue --> Theme : theme
+  ThemeProviderProps --> Theme : initialTheme
+  ThemeProviderProps --> TenantBranding : tenantBranding

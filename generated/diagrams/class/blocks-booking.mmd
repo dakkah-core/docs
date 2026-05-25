@@ -1,0 +1,68 @@
+classDiagram
+  direction TB
+
+  class Story  {
+  }
+
+  class AppointmentSlotsBlockProps ~interface~ {
+    -providerId: string
+    -date: string
+    -duration: string
+    -variant: 'list' | 'grid' | 'timeline'
+    -messages: MessageBagSlotsMessageKey
+  }
+
+  class SlotData ~interface~ {
+    +time: string
+    +available: boolean
+  }
+
+  class SlotsMessageKey  {
+  }
+
+  class Story  {
+  }
+
+  class TimeSlot ~interface~ {
+    +time: string
+    +available: boolean
+    -price: number
+  }
+
+  class BookingCalendarBlockProps ~interface~ {
+    -serviceId: string
+    -variant: 'monthly' | 'weekly' | 'daily'
+    -showPricing: boolean
+    -allowMultiDay: boolean
+    -messages: MessageBagBookingCalendarMessageKey
+  }
+
+  class BookingCalendarMessageKey  {
+  }
+
+  class Story  {
+  }
+
+  class ServiceItem ~interface~ {
+    +name: string
+    -description: string
+    -price: number
+    -duration: string
+    -image: string
+    -category: string
+  }
+
+  class ServiceCardGridBlockProps ~interface~ {
+    -heading: string
+    -services: ServiceItem[]
+    -columns: 2 | 3 | 4
+    -showBookingCta: boolean
+    -categoryFilter: boolean
+    -messages: MessageBagServiceGridMessageKey
+  }
+
+  class ServiceGridMessageKey  {
+  }
+
+  %% Relationships
+  ServiceCardGridBlockProps --> ServiceItem : services

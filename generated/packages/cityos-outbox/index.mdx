@@ -1,0 +1,320 @@
+---
+title: "@cityos/cityos-outbox"
+description: "Deep dive into the cityos-outbox package"
+icon: "package"
+---
+
+> **Type:** CityOS Core Infrastructure | **Framework:** Payload CMS | **Version:** 0.1.0
+> **Path:** `packages/cityos-outbox` | **LOC:** 1,115 lines across 8 files
+
+[Back to Generated Packages](/generated/packages)
+> **Depends on:** [cityos-core](/generated/packages/cityos-core), [cityos-events](/generated/packages/cityos-events)
+
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 8 | — |
+| Lines of Code | 1,115 | — |
+| Test Coverage | 50.0% | 🟡 |
+| Oversized Files | 0 | 🟢 |
+| Components | 0 | — |
+| Hooks | 0 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 14 | — |
+| Internal Deps | 2 | — |
+| Dependents | 0 | 🟢 Low impact |
+
+## Architecture
+
+### File Structure
+
+```
+dlq.ts (379L, 0C, 5T)
+env.test.ts (37L, 0C, 0T)
+env.ts (8L, 0C, 0T)
+index.ts (5L, 0C, 0T)
+outboxEnhancement.test.ts (109L, 0C, 0T)
+outboxEnhancement.ts (191L, 0C, 6T)
+outboxService.ts (337L, 0C, 3T)
+outboxWorker.ts (49L, 0C, 0T)
+```
+
+## Public API Surface
+
+### Components (2)
+
+| Name | Kind | File |
+|---|---|---|
+| DLQ_MAX_RETRIES | const | dlq.ts |
+| DEFAULT_DELIVERY_CONFIGS | const | outboxEnhancement.ts |
+
+### Functions (14)
+
+| Name | Kind | File |
+|---|---|---|
+| moveToDeadLetter | function | dlq.ts |
+| listDeadLetters | function | dlq.ts |
+| retryDeadLetter | function | dlq.ts |
+| retryAllDeadLetters | function | dlq.ts |
+| archiveDeadLetter | function | dlq.ts |
+| getDeadLetterStats | function | dlq.ts |
+| createEnhancedOutboxProcessor | function | outboxEnhancement.ts |
+| setOutboxKuzzleInstance | function | outboxService.ts |
+| setWorkflowDispatchHook | function | outboxService.ts |
+| enqueueEvent | function | outboxService.ts |
+| processOutbox | function | outboxService.ts |
+| cleanupDelivered | function | outboxService.ts |
+| startOutboxWorker | function | outboxWorker.ts |
+| stopOutboxWorker | function | outboxWorker.ts |
+
+### Types (8)
+
+| Name | Kind | File |
+|---|---|---|
+| DeadLetterEntry | interface | dlq.ts |
+| DLQListOptions | interface | dlq.ts |
+| DLQStats | interface | dlq.ts |
+| WorkflowContext | interface | outboxEnhancement.ts |
+| DeliveryConfig | interface | outboxEnhancement.ts |
+| OutboxEntry | interface | outboxEnhancement.ts |
+| DeliveryMetrics | interface | outboxEnhancement.ts |
+| DeliveryTarget | type | outboxEnhancement.ts |
+
+### Classes (1)
+
+| Name | Kind | File |
+|---|---|---|
+| EnhancedOutboxProcessor | class | outboxEnhancement.ts |
+
+### Constants (1)
+
+| Name | Kind | File |
+|---|---|---|
+| outboxEnv | const | env.ts |
+
+## Type System
+
+### DeadLetterEntry
+
+**Kind:** interface | **File:** `dlq.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string | number` | — |
+| eventId | `string` | — |
+| eventType | `string` | — |
+| payloadData | `Record<string, unknown>` | — |
+| errorMessage | `string` | — |
+| originalSystem | `string` | — |
+| status | `"pending_review" | "replayed" | "archived"` | — |
+| retryCount | `number` | — |
+| failedAt | `string` | — |
+| createdAt | `string` | — |
+| updatedAt | `string` | — |
+
+### DLQListOptions
+
+**Kind:** interface | **File:** `dlq.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| page | `number` | Yes |
+| limit | `number` | Yes |
+| status | `"pending_review" | "replayed" | "archived"` | Yes |
+| eventType | `string` | Yes |
+| fromDate | `string` | Yes |
+| toDate | `string` | Yes |
+
+### DLQStats
+
+**Kind:** interface | **File:** `dlq.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| pendingReview | `number` | — |
+| replayed | `number` | — |
+| archived | `number` | — |
+| total | `number` | — |
+| oldestPendingAt | `string | null` | — |
+
+### DeadLetterCreateData
+
+**Kind:** type | **File:** `dlq.ts`
+
+```ts
+type DeadLetterCreateData = {
+  eventId: string;
+  eventType: string;
+  payloadData: Record<string, unknown>;
+  errorMessage: string;
+  originalSystem: string;
+  status: "pending_review" | "replayed" | "archived";
+  retryCount: number;
+  failedAt: string;
+};
+```
+
+### OutboxCreateData
+
+**Kind:** type | **File:** `dlq.ts`
+
+```ts
+type OutboxCreateData = {
+  eventType: string;
+  payload: Record<string, unknown>;
+  status: "pending" | "processing" | "delivered" | "failed";
+  attempts: number;
+  maxAttempts: number;
+  correlationId?: string;
+  tenant: string;
+  error?: string;
+  lastAttemptAt?: string;
+  deliveredAt?: string;
+  dlqReplayOf?: string;
+};
+```
+
+### WorkflowContext
+
+**Kind:** interface | **File:** `outboxEnhancement.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| tenantId | `string` | — |
+| correlationId | `string` | Yes |
+| nodeId | `string` | Yes |
+
+### DeliveryConfig
+
+**Kind:** interface | **File:** `outboxEnhancement.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| target | `DeliveryTarget` | — |
+| maxRetries | `number` | — |
+| baseDelayMs | `number` | — |
+| maxDelayMs | `number` | — |
+| timeout | `number` | — |
+
+### OutboxEntry
+
+**Kind:** interface | **File:** `outboxEnhancement.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| eventType | `string` | — |
+| payload | `unknown` | — |
+| target | `DeliveryTarget` | — |
+| status | `"pending" | "processing" | "delivered" | "failed" | "dead-letter"` | — |
+| attempts | `number` | — |
+| lastAttemptAt | `string` | Yes |
+| nextRetryAt | `string` | Yes |
+| error | `string` | Yes |
+| createdAt | `string` | — |
+| deliveredAt | `string` | Yes |
+| context | `WorkflowContext` | — |
+
+### DeliveryMetrics
+
+**Kind:** interface | **File:** `outboxEnhancement.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| totalDelivered | `number` | — |
+| totalFailed | `number` | — |
+| totalDeadLetter | `number` | — |
+| avgLatencyMs | `number` | — |
+| deliveriesByTarget | `Record<DeliveryTarget, number>` | — |
+| failuresByTarget | `Record<DeliveryTarget, number>` | — |
+
+### DeliveryTarget
+
+**Kind:** type | **File:** `outboxEnhancement.ts`
+
+```ts
+type DeliveryTarget = "temporal" | "medusa" | "webhook" | "internal";
+```
+
+### EnhancedOutboxProcessor
+
+**Kind:** class | **File:** `outboxEnhancement.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| entries | `Map<string, OutboxEntry>` | — |
+| metrics | `DeliveryMetrics` | — |
+
+### KuzzleInstance
+
+**Kind:** interface | **File:** `outboxService.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| connected | `boolean` | — |
+| realtime | `{
+    publish(
+      index: string,
+      collection: string,
+      body: Record<string, unknown>,
+    ): Promise<void>;
+  }` | — |
+
+### WorkflowDispatchFn
+
+**Kind:** type | **File:** `outboxService.ts`
+
+```ts
+type WorkflowDispatchFn = (
+  payload: Payload,
+  envelope: EventEnvelope,
+) => Promise<void>;
+```
+
+### OutboxCreateData
+
+**Kind:** type | **File:** `outboxService.ts`
+
+```ts
+type OutboxCreateData = {
+  eventType: string;
+  payload: Record<string, unknown>;
+  status: "pending" | "processing" | "delivered" | "failed";
+  attempts: number;
+  maxAttempts: number;
+  correlationId?: string;
+  tenant: string;
+  error?: string;
+  lastAttemptAt?: string;
+  deliveredAt?: string;
+  dlqReplayOf?: string;
+};
+```
+
+## Dependencies
+
+### CityOS Core
+
+| Package | Type | Consumer |
+|---|---|---|
+| @cityos/core | prod | [cityos-core](/generated/packages/cityos-core) |
+| @cityos/events | prod | [cityos-events](/generated/packages/cityos-events) |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [cityos-outbox.mmd](/generated/diagrams/class/cityos-outbox.mmd) |
+| Dependency Graph | [cityos-outbox-dependencies.mmd](/generated/diagrams/dependencies/cityos-outbox-dependencies.mmd) |
+
+## Tests
+
+- `env.test.ts` (37 lines)
+- `outboxEnhancement.test.ts` (109 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

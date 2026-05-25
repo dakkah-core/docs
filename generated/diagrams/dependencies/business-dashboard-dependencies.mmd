@@ -1,0 +1,13 @@
+graph LR
+  business-dashboard[business-dashboard]
+  business-dashboard --> api-client-react[api-client-react]
+  business-dashboard --> auth[auth]
+  business-dashboard --> design-system[design-system]
+  business-dashboard --> design-tokens[design-tokens]
+  business-dashboard --> i18n[i18n]
+  business-dashboard --> sdui-renderer-web[sdui-renderer-web]
+  business-dashboard --> sdui-protocol[sdui-protocol]
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef dep fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class business-dashboard app

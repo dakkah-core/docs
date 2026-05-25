@@ -1,0 +1,18 @@
+graph LR
+  merchant-app-mobile[merchant-app-mobile]
+  merchant-app-mobile --> api-client[api-client]
+  merchant-app-mobile --> api-client-react[api-client-react]
+  merchant-app-mobile --> auth[auth]
+  merchant-app-mobile --> design-tokens-mobile[design-tokens-mobile]
+  merchant-app-mobile --> i18n[i18n]
+  merchant-app-mobile --> merchant-experience[merchant-experience]
+  merchant-app-mobile --> mobile-core[mobile-core]
+  merchant-app-mobile --> mobile-offline[mobile-offline]
+  merchant-app-mobile --> mobile-payments[mobile-payments]
+  merchant-app-mobile --> mobile-telemetry[mobile-telemetry]
+  merchant-app-mobile --> sdui-renderer-native[sdui-renderer-native]
+  merchant-app-mobile --> sdui-protocol[sdui-protocol]
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef dep fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class merchant-app-mobile app

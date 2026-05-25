@@ -1,0 +1,43 @@
+classDiagram
+  direction TB
+
+  class KuzzleClient ~interface~ {
+    +connected: boolean
+    +server: { ping(): Promiseunknown }
+  }
+
+  class KuzzleHealthStatus ~interface~ {
+    +connected: boolean
+    +latencyMs: number | null
+    -error: string
+  }
+
+  class ProxyContextRequest ~interface~ {
+    -correlationId: string
+    -tenantId: string
+    -path: string
+    +headers: IncomingMessage["headers"]
+  }
+
+  class KuzzleProxyRequest ~interface~ {
+    -cityosToken: string
+  }
+
+  class CachedKey ~interface~ {
+    +key: string
+    +expiresAt: number
+  }
+
+  class Jwk ~interface~ {
+    -kid: string
+    -kty: string
+  }
+
+  class JwksResponse ~interface~ {
+    -keys: Jwk[]
+  }
+
+  %% Relationships
+  IncomingMessage <|-- ProxyContextRequest
+  http.IncomingMessage <|-- KuzzleProxyRequest
+  JwksResponse --> Jwk : keys

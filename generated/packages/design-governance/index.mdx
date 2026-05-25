@@ -1,0 +1,184 @@
+---
+title: "@cityos/design-governance"
+description: "Deep dive into the design-governance package"
+icon: "palette"
+---
+
+> **Type:** Design System Package | **Framework:** Vitest | **Version:** 0.1.0
+> **Path:** `packages/design-governance` | **LOC:** 1,342 lines across 16 files
+
+[Back to Generated Packages](/generated/packages)
+> **Depends on:** [design-tokens](/generated/packages/design-tokens)
+
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 16 | — |
+| Lines of Code | 1,342 | — |
+| Test Coverage | 18.8% | 🔴 |
+| Oversized Files | 0 | 🟢 |
+| Components | 0 | — |
+| Hooks | 0 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 7 | — |
+| Internal Deps | 1 | — |
+| Dependents | 0 | 🟢 Low impact |
+
+## Architecture
+
+### File Structure
+
+```
+index.ts (5L, 0C, 0T)
+eslint-plugin/
+  index.ts (47L, 0C, 0T)
+rules/
+  index.ts (9L, 0C, 0T)
+  no-block-in-wrong-package.ts (95L, 0C, 0T)
+  no-directional-class.ts (70L, 0C, 0T)
+  no-inline-hex.ts (70L, 0C, 0T)
+  no-inline-rgba.ts (55L, 0C, 0T)
+  no-inline-style-hex.ts (86L, 0C, 0T)
+  no-svg-color-literal.ts (65L, 0C, 0T)
+  no-tailwind-arbitrary-color.ts (71L, 0C, 0T)
+  require-focus-visible.ts (92L, 0C, 0T)
+  rules/__tests__/
+    new-rules.test.ts (291L, 0C, 1T)
+    rules.test.ts (206L, 0C, 1T)
+validators/
+  index.ts (2L, 0C, 0T)
+  token-contrast.ts (106L, 0C, 5T)
+  validators/__tests__/
+    token-contrast.test.ts (72L, 0C, 0T)
+```
+
+## Public API Surface
+
+### Functions (2)
+
+| Name | Kind | File |
+|---|---|---|
+| contrastRatio | function | validators/token-contrast.ts |
+| validateTokenContrast | function | validators/token-contrast.ts |
+
+### Types (5)
+
+| Name | Kind | File |
+|---|---|---|
+| TokenSpec | interface | validators/token-contrast.ts |
+| BackgroundSpec | interface | validators/token-contrast.ts |
+| ContrastViolation | interface | validators/token-contrast.ts |
+| ValidationResult | interface | validators/token-contrast.ts |
+| ValidateOptions | interface | validators/token-contrast.ts |
+
+### Constants (9)
+
+| Name | Kind | File |
+|---|---|---|
+| plugin | const | eslint-plugin/index.ts |
+| noBlockInWrongPackage | const | rules/no-block-in-wrong-package.ts |
+| noDirectionalClass | const | rules/no-directional-class.ts |
+| noInlineHex | const | rules/no-inline-hex.ts |
+| noInlineRgba | const | rules/no-inline-rgba.ts |
+| noInlineStyleHex | const | rules/no-inline-style-hex.ts |
+| noSvgColorLiteral | const | rules/no-svg-color-literal.ts |
+| noTailwindArbitraryColor | const | rules/no-tailwind-arbitrary-color.ts |
+| requireFocusVisible | const | rules/require-focus-visible.ts |
+
+## Type System
+
+### Report
+
+**Kind:** interface | **File:** `rules/__tests__/new-rules.test.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| messageId | `string` | — |
+| data | `Record<string, unknown>` | Yes |
+
+### Report
+
+**Kind:** interface | **File:** `rules/__tests__/rules.test.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| messageId | `string` | — |
+| data | `Record<string, unknown>` | Yes |
+
+### TokenSpec
+
+**Kind:** interface | **File:** `validators/token-contrast.ts`
+> Token contrast validator ------------------------ CI-runnable check that every domain token's hex value meets WCAG 2.1 AA contrast ratios against the canonical surface backgrounds in both light and dark modes. Exits non-zero on violation so CI can gate PRs. Public API: validateTokenContrast(tokenSet, backgrounds, options?) → ValidationResult Pure function — no filesystem or network access. Callers wire it to a CLI or a vitest test as needed.
+
+| Property | Type | Optional |
+|---|---|---|
+| key | `string` | — |
+| value | `string` | — |
+| role | `'text' | 'largeText' | 'uiComponent'` | — |
+
+### BackgroundSpec
+
+**Kind:** interface | **File:** `validators/token-contrast.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| label | `'light' | 'dark'` | — |
+| value | `string` | — |
+
+### ContrastViolation
+
+**Kind:** interface | **File:** `validators/token-contrast.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| token | `string` | — |
+| background | `string` | — |
+| ratio | `number` | — |
+| required | `number` | — |
+| role | `TokenSpec['role']` | — |
+
+### ValidationResult
+
+**Kind:** interface | **File:** `validators/token-contrast.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| ok | `boolean` | — |
+| violations | `ContrastViolation[]` | — |
+| evaluated | `number` | — |
+
+### ValidateOptions
+
+**Kind:** interface | **File:** `validators/token-contrast.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| thresholds | `Partial<Record<TokenSpec['role'], number>>` | Yes |
+
+## Dependencies
+
+### CityOS Core
+
+| Package | Type | Consumer |
+|---|---|---|
+| @cityos/design-tokens | prod | [design-tokens](/generated/packages/design-tokens) |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [design-governance.mmd](/generated/diagrams/class/design-governance.mmd) |
+| Dependency Graph | [design-governance-dependencies.mmd](/generated/diagrams/dependencies/design-governance-dependencies.mmd) |
+
+## Tests
+
+- `rules/__tests__/new-rules.test.ts` (291 lines)
+- `rules/__tests__/rules.test.ts` (206 lines)
+- `validators/__tests__/token-contrast.test.ts` (72 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

@@ -1,0 +1,68 @@
+classDiagram
+  direction TB
+
+  class ActionHandlerConfig ~interface~ {
+    -onNavigate: NavigateHandler
+    -onMutation: MutationHandler
+    -onHardwareAccess: HardwareAccessHandler
+    -onIntent: IntentHandler
+    -onFormSubmit: FormSubmitHandler
+  }
+
+  class NavigateHandler  {
+  }
+
+  class MutationHandler  {
+  }
+
+  class HardwareAccessHandler  {
+  }
+
+  class IntentHandler  {
+  }
+
+  class FormSubmitHandler  {
+  }
+
+  class SduiRendererProps ~interface~ {
+    +node: SdNode
+    -theme: "light" | "dark"
+  }
+
+  class LocalizedSdNode  {
+  }
+
+  class CityOSLocaleCode  {
+  }
+
+  class SduiNode ~interface~ {
+    +type: string
+    -id: string
+    -title: string
+    -subtitle: string
+    -badge: string
+    -image: string
+    -content: string
+    -label: string
+    -value: string | number
+    -icon: string
+    -trend: string
+    -variant: string
+    ... 7 more
+  }
+
+  class UseSduiScreenOptions ~interface~ {
+    +screenId: string
+    -surface: string
+    -basePath: string
+    -apiClient: PickCityOSClient, "get"
+    -fetcher: SduiFetcher
+    -refetchInterval: number
+    -staleTime: number
+    -retry: number | boolean
+    -fallback: SduiNode | (() = SduiNode)
+    -enabled: boolean
+  }
+
+  class SduiFetcher  {
+  }

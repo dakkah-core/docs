@@ -1,0 +1,229 @@
+classDiagram
+  direction TB
+
+  class AuthProviderProps ~interface~ {
+    +children: ReactNode
+    +value: AuthContextType
+  }
+
+  class BuildAuthUrlOptions ~interface~ {
+    +issuerUrl: string
+    +clientId: string
+    +redirectUri: string
+    -scope: string
+    -state: string
+    -prompt: "none" | "login" | "consent" | "select_account"
+  }
+
+  class DigestFn  {
+  }
+
+  class AuthStorage ~interface~ {
+  }
+
+  class AuthState ~interface~ {
+    +isAuthenticated: boolean
+    +isLoading: boolean
+    +accessToken: string | null
+    +refreshToken: string | null
+    +idToken: string | null
+    +error: Error | null
+  }
+
+  class AuthContextType ~interface~ {
+    +login: () = Promisevoid
+    +logout: () = Promisevoid
+    +refresh: () = Promisevoid
+  }
+
+  class CityOSJwtClaims ~interface~ {
+    +sub: string
+    -email: string
+    -preferred_username: string
+    -name: string
+    -given_name: string
+    -family_name: string
+    -tenant_id: string
+    -company_id: string
+    -vendor_id: string
+    -actor_id: string
+    -roles: string[]
+    -assigned_node_ids: string[]
+    ... 9 more
+  }
+
+  class SessionData ~interface~ {
+    +isAuthenticated: boolean
+    +accessToken: string | null
+    +refreshToken: string | null
+    +medusaClientToken: string | null
+    -user: CityOSJwtClaims | null
+  }
+
+  class TokenSet ~interface~ {
+    +access_token: string
+    -id_token: string
+    -refresh_token: string
+    +expires_in: number
+    -token_type: string
+    -scope: string
+  }
+
+  class AuthConfig ~interface~ {
+    +issuerUrl: string
+    +clientId: string
+    -redirectUri: string
+    -scope: string
+    -medusaBackendUrl: string
+  }
+
+  class MobileAuthContextValue ~interface~ {
+    +state: AuthState
+    +user: User | null
+    +isAuthenticated: boolean
+    +isLoading: boolean
+    +login: () = Promisevoid
+    +logout: () = Promisevoid
+    +getToken: () = Promisestring | null
+    +handleCallback: (callbackUrl: string) = Promiseboolean
+  }
+
+  class MobileAuthProviderProps ~interface~ {
+    +config: KeycloakConfig
+    -storage: TokenStorage
+    +onRedirect: (url: string) = void
+    +children: React.ReactNode
+  }
+
+  class DashboardUser ~interface~ {
+    +id: string
+    +name: string
+    +roles: string[]
+    -email: string
+    +isGuest: boolean
+  }
+
+  class DashboardAuthContextType ~interface~ {
+    +user: DashboardUser | null
+    +isAuthenticated: boolean
+    +isLoading: boolean
+    +hasRole: (role: string) = boolean
+    +signInWithKeycloak: () = void
+    +signInAsGuest: () = void
+    +logout: () = void
+  }
+
+  class DashboardAuthConfig ~interface~ {
+    +requiredRole: string
+    +clientId: string
+    +sessionKey: string
+    +guestName: string
+    -guestEmail: string
+    -guestIdPrefix: string
+    -extraGuestFields: Recordstring, unknown
+    -keycloakRealm: string
+    -keycloakBaseUrl: string
+    -basePath: string
+    -isDev: boolean
+    -isDemoMode: boolean
+  }
+
+  class StoredTokens ~interface~ {
+    +accessToken: string
+    +refreshToken: string
+    +expiresAt: number
+  }
+
+  class ExpoCryptoModule  {
+  }
+
+  class TokenStorage ~interface~ {
+  }
+
+  class NativeSecureStoreModule ~interface~ {
+  }
+
+  class AuthTokens ~interface~ {
+    +accessToken: string
+    +refreshToken: string
+    -idToken: string
+    +expiresAt: number
+  }
+
+  class KeycloakConfig ~interface~ {
+    +baseUrl: string
+    +realm: string
+    +clientId: string
+    +redirectUri: string
+    -scopes: string[]
+  }
+
+  class User ~interface~ {
+    +id: string
+    +email: string
+    +name: string
+    -givenName: string
+    -familyName: string
+    +roles: string[]
+    -tenantId: string
+    -avatar: string
+  }
+
+  class RealmAccess ~interface~ {
+    -roles: string[]
+  }
+
+  class ResourceAccess ~interface~ {
+  }
+
+  class AuthStateStatus  {
+  }
+
+  class AuthState  {
+  }
+
+  class NextAuthClientProviderProps ~interface~ {
+    +children: React.ReactNode
+    +initialSession: SessionData
+    +loginAction: (returnTo?: string) = Promisevoid
+    +logoutAction: () = Promisevoid
+  }
+
+  class NextAuthConfig ~interface~ {
+    -keycloakIssuerUrl: string
+    -keycloakClientId: string
+    -frontendUrl: string
+    -callbackPath: string
+    -medusaBackendUrl: string
+    -logoutRedirect: string
+    -cookieSecure: boolean
+    -loginPath: string
+  }
+
+  class WithAuthRequest ~interface~ {
+    +headers: { get(name: string): string | null }
+    -auth: CityOSJwtClaims
+  }
+
+  class JwksKey ~interface~ {
+    +kid: string
+    +kty: string
+    -alg: string
+    -n: string
+    -e: string
+    -x5c: string[]
+  }
+
+  class AuthGuardResult ~interface~ {
+    +session: SessionData
+  }
+
+  class RedirectTarget  {
+  }
+
+  %% Relationships
+  AuthState <|-- AuthContextType
+  MobileAuthContextValue --> AuthState : state
+  NextAuthClientProviderProps --> SessionData : initialSession
+  WithAuthRequest --> CityOSJwtClaims : auth
+  AuthGuardResult --> SessionData : session

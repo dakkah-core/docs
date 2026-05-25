@@ -1,0 +1,998 @@
+classDiagram
+  direction TB
+
+  class BffResponse ~interface~ {
+    +success: boolean
+    +data: T
+  }
+
+  class PaginatedResponse ~interface~ {
+    +data: T[]
+    +total: number
+    +page: number
+    +pageSize: number
+    +hasMore: boolean
+  }
+
+  class PaginationParams ~interface~ {
+    -page: number
+    -pageSize: number
+    -sort: string
+    -order: "asc" | "desc"
+  }
+
+  class CommerceProduct ~interface~ {
+    +id: string
+    +name: string
+    -description: string
+    +price: number
+    +currency: string
+    +images: string[]
+    +category: string
+    +available: boolean
+  }
+
+  class CommerceOrder ~interface~ {
+    +id: string
+    +status: "pending" | "confirmed" | "preparing" | "ready" | "delivered" | "cancelled"
+    +items: Array{ productId: string quantity: number unitPrice: number }
+    +total: number
+    +currency: string
+    +createdAt: string
+  }
+
+  class TransportRide ~interface~ {
+    +id: string
+    +status: "requested" | "accepted" | "arriving" | "in_progress" | "completed" | "cancelled"
+    +pickupLat: number
+    +pickupLng: number
+    +dropoffLat: number
+    +dropoffLng: number
+    +estimatedFare: number
+    +currency: string
+    -driverId: string
+    -eta: number
+  }
+
+  class TransportRoute ~interface~ {
+    +id: string
+    +name: string
+    +type: "bus" | "metro" | "tram" | "ferry"
+    +stops: Array{ id: string name: string lat: number lng: number }
+  }
+
+  class HealthcareAppointment ~interface~ {
+    +id: string
+    +providerId: string
+    +providerName: string
+    +specialty: string
+    +dateTime: string
+    +status: "scheduled" | "confirmed" | "in_progress" | "completed" | "cancelled"
+    -location: string
+  }
+
+  class GovernanceService ~interface~ {
+    +id: string
+    +name: string
+    +category: string
+    +description: string
+    +requiredDocuments: string[]
+    +estimatedDays: number
+  }
+
+  class GovernanceRequest ~interface~ {
+    +id: string
+    +serviceId: string
+    +status: "submitted" | "under_review" | "approved" | "rejected" | "completed"
+    +submittedAt: string
+    +referenceNumber: string
+  }
+
+  class EventListing ~interface~ {
+    +id: string
+    +title: string
+    +description: string
+    +venue: string
+    +startDate: string
+    +endDate: string
+    +category: string
+    -price: number
+    -currency: string
+    -imageUrl: string
+    -capacity: number
+    -attendees: number
+  }
+
+  class EventBooking ~interface~ {
+    +id: string
+    +eventId: string
+    +status: "confirmed" | "pending" | "cancelled"
+    +tickets: number
+    +totalPrice: number
+    +currency: string
+  }
+
+  class PlatformNotification ~interface~ {
+    +id: string
+    +type: "info" | "warning" | "success" | "error"
+    +title: string
+    +body: string
+    +read: boolean
+    +createdAt: string
+    -action: { type: string target: string }
+  }
+
+  class PlatformUserProfile ~interface~ {
+    +id: string
+    +name: string
+    +email: string
+    -phone: string
+    -avatar: string
+    +preferredLanguage: string
+    +tenantId: string
+  }
+
+  class IotDevice ~interface~ {
+    +id: string
+    +name: string
+    +type: string
+    +status: "online" | "offline" | "error"
+    +lastSeen: string
+    +metrics: Recordstring, number
+  }
+
+  class SocialPost ~interface~ {
+    +id: string
+    +authorId: string
+    +authorName: string
+    +content: string
+    +mediaUrls: string[]
+    +likes: number
+    +comments: number
+    +createdAt: string
+  }
+
+  class AgricultureCrop ~interface~ {
+    +id: string
+    +name: string
+    +type: string
+    +region: string
+    +status: string
+    +hectares: number
+    +yield: number
+    +harvestDate: string
+  }
+
+  class AgricultureSensor ~interface~ {
+    +id: string
+    +cropId: string
+    +type: string
+    +value: number
+    +unit: string
+    +status: string
+    +lastReading: string
+  }
+
+  class AgricultureActivity ~interface~ {
+    +id: string
+    +cropId: string
+    +type: string
+    +description: string
+    +date: string
+    +status: string
+  }
+
+  class AgricultureMarketItem ~interface~ {
+    +id: string
+    +crop: string
+    +pricePerKg: number
+    +currency: string
+    +trend: string
+    +volume: number
+  }
+
+  class CommunityCampaign ~interface~ {
+    +id: string
+    +title: string
+    +description: string
+    +goal: number
+    +raised: number
+    +currency: string
+    +status: string
+    +endDate: string
+  }
+
+  class CommunityDonation ~interface~ {
+    +id: string
+    +campaignId: string
+    +amount: number
+    +currency: string
+    +donorName: string
+    +date: string
+  }
+
+  class CrowdfundingProject ~interface~ {
+    +id: string
+    +title: string
+    +description: string
+    +goal: number
+    +pledged: number
+    +currency: string
+    +backers: number
+    +status: string
+    +endDate: string
+  }
+
+  class CommunityBoard ~interface~ {
+    +id: string
+    +name: string
+    +description: string
+    +members: number
+    +posts: number
+  }
+
+  class CulturalSite ~interface~ {
+    +id: string
+    +name: string
+    +description: string
+    +type: string
+    +location: string
+    +rating: number
+    -imageUrl: string
+  }
+
+  class CulturalTour ~interface~ {
+    +id: string
+    +name: string
+    +description: string
+    +duration: string
+    +price: number
+    +currency: string
+    +language: string
+    +sites: string[]
+  }
+
+  class Exhibition ~interface~ {
+    +id: string
+    +title: string
+    +description: string
+    +venue: string
+    +startDate: string
+    +endDate: string
+    +type: string
+  }
+
+  class HeritageSite ~interface~ {
+    +id: string
+    +name: string
+    +description: string
+    +era: string
+    +status: string
+    +significance: string
+  }
+
+  class EducationCourse ~interface~ {
+    +id: string
+    +title: string
+    +description: string
+    +institution: string
+    +level: string
+    +credits: number
+    +duration: string
+    +enrolled: number
+    +capacity: number
+  }
+
+  class EducationInstitution ~interface~ {
+    +id: string
+    +name: string
+    +type: string
+    +location: string
+    +rating: number
+    +students: number
+    +programs: number
+  }
+
+  class EducationEnrollment ~interface~ {
+    +id: string
+    +courseId: string
+    +studentId: string
+    +status: string
+    +enrolledAt: string
+    -grade: string
+  }
+
+  class EnvironmentAirQuality ~interface~ {
+    +stationId: string
+    +aqi: number
+    +pm25: number
+    +pm10: number
+    +no2: number
+    +o3: number
+    +status: string
+    +location: string
+    +timestamp: string
+  }
+
+  class EnvironmentSensor ~interface~ {
+    +id: string
+    +type: string
+    +location: string
+    +value: number
+    +unit: string
+    +status: string
+    +lastReading: string
+  }
+
+  class EnvironmentAlert ~interface~ {
+    +id: string
+    +type: string
+    +severity: string
+    +message: string
+    +location: string
+    +issuedAt: string
+    +expiresAt: string
+  }
+
+  class EventsCultureEvent ~interface~ {
+    +id: string
+    +title: string
+    +description: string
+    +venue: string
+    +startDate: string
+    +endDate: string
+    +category: string
+    +price: number
+    +currency: string
+    +capacity: number
+    +registered: number
+  }
+
+  class EventsCultureVenue ~interface~ {
+    +id: string
+    +name: string
+    +type: string
+    +capacity: number
+    +location: string
+    +amenities: string[]
+  }
+
+  class EventRegistration ~interface~ {
+    +id: string
+    +eventId: string
+    +userId: string
+    +status: string
+    +registeredAt: string
+    +tickets: number
+  }
+
+  class FacilityParking ~interface~ {
+    +id: string
+    +name: string
+    +location: string
+    +totalSpots: number
+    +availableSpots: number
+    +pricePerHour: number
+    +currency: string
+    +type: string
+  }
+
+  class FacilityFitness ~interface~ {
+    +id: string
+    +name: string
+    +type: string
+    +location: string
+    +capacity: number
+    +available: boolean
+    +pricePerSession: number
+    +currency: string
+  }
+
+  class FacilityRental ~interface~ {
+    +id: string
+    +name: string
+    +type: string
+    +location: string
+    +pricePerDay: number
+    +currency: string
+    +available: boolean
+  }
+
+  class FinanceWallet ~interface~ {
+    +id: string
+    +balance: number
+    +currency: string
+    +status: string
+    -type: string
+  }
+
+  class FinanceTransaction ~interface~ {
+    +id: string
+    +type: string
+    +amount: number
+    +currency: string
+    +description: string
+    -date: string
+    -createdAt: string
+    +status: string
+    -walletId: string
+  }
+
+  class FinanceInvoice ~interface~ {
+    +id: string
+    +amount: number
+    +currency: string
+    +status: string
+    +dueDate: string
+    -description: string
+    +issuedAt: string
+    -number: string
+    -vendorName: string
+  }
+
+  class FinanceGrant ~interface~ {
+    +id: string
+    +title: string
+    -description: string
+    +amount: number
+    +currency: string
+    +status: string
+    +deadline: string
+    +category: string
+    -eligibility: string[]
+  }
+
+  class FinanceTender ~interface~ {
+    +id: string
+    +title: string
+    -description: string
+    +budget: number
+    +currency: string
+    +status: string
+    +deadline: string
+    +category: string
+    -authority: string
+    -eligibility: string[]
+  }
+
+  class FleetVehicle ~interface~ {
+    +id: string
+    +type: string
+    +make: string
+    +model: string
+    +plateNumber: string
+    +status: string
+    -driverId: string
+    +lat: number
+    +lng: number
+    +fuelLevel: number
+    +mileage: number
+  }
+
+  class FleetShipment ~interface~ {
+    +id: string
+    +vehicleId: string
+    +origin: string
+    +destination: string
+    +status: string
+    +estimatedArrival: string
+    +weight: number
+  }
+
+  class FleetMaintenance ~interface~ {
+    +id: string
+    +vehicleId: string
+    +type: string
+    +status: string
+    +scheduledDate: string
+    +cost: number
+    +currency: string
+  }
+
+  class HealthProvider ~interface~ {
+    +id: string
+    +name: string
+    +specialty: string
+    +hospital: string
+    +rating: number
+    +available: boolean
+    +nextAvailable: string
+  }
+
+  class HealthFacility ~interface~ {
+    +id: string
+    +name: string
+    +type: string
+    +location: string
+    +capacity: number
+    +occupancy: number
+    +departments: string[]
+  }
+
+  class IotTelemetryDevice ~interface~ {
+    +id: string
+    +name: string
+    +type: string
+    +location: string
+    +status: string
+    +batteryLevel: number
+    +lastSeen: string
+    +metrics: Recordstring, number
+  }
+
+  class IotTelemetryReading ~interface~ {
+    +deviceId: string
+    +metric: string
+    +value: number
+    +unit: string
+    +timestamp: string
+  }
+
+  class JobListing ~interface~ {
+    +id: string
+    +title: string
+    +company: string
+    +location: string
+    +type: string
+    +salary: { min: number max: number currency: string }
+    +description: string
+    +requirements: string[]
+    +postedAt: string
+    +deadline: string
+  }
+
+  class JobApplication ~interface~ {
+    +id: string
+    +jobId: string
+    +applicantId: string
+    +status: string
+    +appliedAt: string
+    +resume: string
+  }
+
+  class MediaItem ~interface~ {
+    +id: string
+    +type: string
+    +title: string
+    +url: string
+    +thumbnailUrl: string
+    +mimeType: string
+    +size: number
+    +uploadedAt: string
+    +tags: string[]
+  }
+
+  class MerchantProfile ~interface~ {
+    +id: string
+    +name: string
+    +category: string
+    +location: string
+    +rating: number
+    +verified: boolean
+    +productsCount: number
+    +ordersCount: number
+  }
+
+  class MerchantProduct ~interface~ {
+    +id: string
+    +merchantId: string
+    +name: string
+    +price: number
+    +currency: string
+    +category: string
+    +available: boolean
+    +images: string[]
+  }
+
+  class PoiItem ~interface~ {
+    +id: string
+    +name: string
+    +type: string
+    +category: string
+    +lat: number
+    +lng: number
+    +address: string
+    +rating: number
+    +description: string
+    -imageUrl: string
+  }
+
+  class RealEstateProperty ~interface~ {
+    +id: string
+    +title: string
+    +type: string
+    +price: number
+    +currency: string
+    +location: string
+    +bedrooms: number
+    +bathrooms: number
+    +area: number
+    +imageUrl: string
+    +status: string
+  }
+
+  class RealEstateAgent ~interface~ {
+    +id: string
+    +name: string
+    +agency: string
+    +phone: string
+    +email: string
+    +rating: number
+    +listings: number
+  }
+
+  class SafetyIncident ~interface~ {
+    +id: string
+    +type: string
+    +severity: string
+    +description: string
+    +location: string
+    +lat: number
+    +lng: number
+    +status: string
+    +reportedAt: string
+    -resolvedAt: string
+    -photoUrl: string
+  }
+
+  class SafetyAlert ~interface~ {
+    +id: string
+    +type: string
+    +severity: string
+    +message: string
+    +area: string
+    +issuedAt: string
+    +expiresAt: string
+    +active: boolean
+  }
+
+  class SafetyZone ~interface~ {
+    +id: string
+    +name: string
+    +type: string
+    +riskLevel: string
+    +boundaries: Array{ lat: number lng: number }
+  }
+
+  class SportsEvent ~interface~ {
+    +id: string
+    +title: string
+    +sport: string
+    +venue: string
+    +startDate: string
+    +endDate: string
+    +teams: string[]
+    +status: string
+    +ticketPrice: number
+    +currency: string
+  }
+
+  class SportsVenue ~interface~ {
+    +id: string
+    +name: string
+    +type: string
+    +capacity: number
+    +location: string
+    +sports: string[]
+  }
+
+  class SportsBooking ~interface~ {
+    +id: string
+    +venueId: string
+    +date: string
+    +duration: string
+    +sport: string
+    +status: string
+  }
+
+  class SportsStanding ~interface~ {
+    +rank: number
+    +team: string
+    +played: number
+    +won: number
+    +drawn: number
+    +lost: number
+    +points: number
+  }
+
+  class Thread ~interface~ {
+    +id: string
+    +title: string
+    +authorId: string
+    +authorName: string
+    +content: string
+    +replies: number
+    +views: number
+    +createdAt: string
+    +tags: string[]
+  }
+
+  class UtilityOutage ~interface~ {
+    +id: string
+    +type: string
+    +area: string
+    +status: string
+    +startedAt: string
+    +estimatedResolution: string
+    +affectedCustomers: number
+    +description: string
+  }
+
+  class UtilityBilling ~interface~ {
+    +id: string
+    +type: string
+    +amount: number
+    +currency: string
+    +period: string
+    +dueDate: string
+    +status: string
+    +usage: number
+    +unit: string
+  }
+
+  class AnalyticsDashboard ~interface~ {
+    +id: string
+    +name: string
+    +description: string
+    +category: string
+    +widgets: number
+    +lastUpdated: string
+    +owner: string
+    +shared: boolean
+  }
+
+  class AnalyticsMetric ~interface~ {
+    +name: string
+    +current: number
+    +previous: number
+    +unit: string
+    +trend: string
+    +changePercent: number
+  }
+
+  class AnalyticsReport ~interface~ {
+    +id: string
+    +title: string
+    +type: string
+    +status: string
+    +generatedAt: string
+    +pages: number
+    +format: string
+    +size: string
+    +author: string
+    +category: string
+  }
+
+  class WorkflowDefinition ~interface~ {
+    +id: string
+    +name: string
+    +description: string
+    +domain: string
+    +trigger: string
+    +status: string
+    +version: number
+    +steps: number
+    +avgDuration: string
+    +successRate: number
+    +lastRun: string
+    +createdAt: string
+  }
+
+  class WorkflowExecution ~interface~ {
+    +id: string
+    +workflowId: string
+    +workflowName: string
+    +status: string
+    +startedAt: string
+    +completedAt: string | null
+    +duration: string | null
+    +triggeredBy: string
+    +input: Recordstring, unknown
+    +steps: Array{ name: string status: string duration: string | null }
+    -error: { step: string code: string message: string }
+  }
+
+  class WorkflowSchedule ~interface~ {
+    +id: string
+    +workflowId: string
+    +workflowName: string
+    +cron: string
+    +nextRun: string
+    +lastRun: string
+    +timezone: string
+    +enabled: boolean
+    +description: string
+  }
+
+  class WorkflowFailure ~interface~ {
+    +id: string
+    +executionId: string
+    +workflowId: string
+    +workflowName: string
+    +failedAt: string
+    +step: string
+    +errorCode: string
+    +errorMessage: string
+    +retryCount: number
+    +maxRetries: number
+    +resolved: boolean
+    -resolvedAt: string
+    ... 2 more
+  }
+
+  class TypedBffClients ~interface~ {
+    +commerce: CommerceClient
+    +governance: GovernanceClient
+    +healthcare: HealthcareClient
+    +transport: TransportClient
+    +events: EventsClient
+    +platform: PlatformClient
+    +iot: IotClient
+    +social: SocialClient
+    +agriculture: AgricultureClient
+    +ai: AiClient
+    +community: CommunityClient
+    +cultureTourism: CultureTourismClient
+    ... 19 more
+  }
+
+  class BffService  {
+  }
+
+  class GovernanceProposal  {
+  }
+
+  class GovernanceConsultation  {
+  }
+
+  class BffClient  {
+    +client: CityOSClient
+    +prefix: string
+  }
+
+  class CommerceClient  {
+  }
+
+  class TransportClient  {
+  }
+
+  class HealthcareClient  {
+  }
+
+  class GovernanceClient  {
+  }
+
+  class EventsClient  {
+  }
+
+  class PlatformClient  {
+  }
+
+  class IotClient  {
+  }
+
+  class SocialClient  {
+  }
+
+  class AgricultureClient  {
+  }
+
+  class AiClient  {
+  }
+
+  class CommunityClient  {
+  }
+
+  class CultureTourismClient  {
+  }
+
+  class EducationClient  {
+  }
+
+  class EnvironmentClient  {
+  }
+
+  class FacilitiesClient  {
+  }
+
+  class FinanceClient  {
+  }
+
+  class FleetClient  {
+  }
+
+  class HealthClient  {
+  }
+
+  class JobsClient  {
+  }
+
+  class MediaClient  {
+  }
+
+  class MerchantClient  {
+  }
+
+  class NotificationsClient  {
+  }
+
+  class PoiClient  {
+  }
+
+  class RealEstateClient  {
+  }
+
+  class SafetyClient  {
+  }
+
+  class SportsClient  {
+  }
+
+  class ThreadsClient  {
+  }
+
+  class UtilitiesClient  {
+  }
+
+  class AnalyticsClient  {
+  }
+
+  class WorkflowsClient  {
+  }
+
+  class SduiApiClient  {
+  }
+
+  class CityOSClientConfig ~interface~ {
+    +baseUrl: string
+    +getToken: () = Promisestring | null
+    -tenantId: string
+    -surface: Surface
+    -on401: () = Promisestring | null
+  }
+
+  class Surface  {
+  }
+
+  class CityOSClient  {
+    +config: CityOSClientConfig
+  }
+
+  class SduiClient  {
+    +client: CityOSClient
+  }
+
+  %% Relationships
+  BffClient <|-- CommerceClient
+  BffClient <|-- TransportClient
+  BffClient <|-- HealthcareClient
+  BffClient <|-- GovernanceClient
+  BffClient <|-- EventsClient
+  BffClient <|-- PlatformClient
+  BffClient <|-- IotClient
+  BffClient <|-- SocialClient
+  BffClient <|-- AgricultureClient
+  BffClient <|-- AiClient
+  BffClient <|-- CommunityClient
+  BffClient <|-- CultureTourismClient
+  BffClient <|-- EducationClient
+  BffClient <|-- EnvironmentClient
+  BffClient <|-- FacilitiesClient
+  BffClient <|-- FinanceClient
+  BffClient <|-- FleetClient
+  BffClient <|-- HealthClient
+  BffClient <|-- JobsClient
+  BffClient <|-- MediaClient
+  BffClient <|-- MerchantClient
+  BffClient <|-- NotificationsClient
+  BffClient <|-- PoiClient
+  BffClient <|-- RealEstateClient
+  BffClient <|-- SafetyClient
+  BffClient <|-- SportsClient
+  BffClient <|-- ThreadsClient
+  BffClient <|-- UtilitiesClient
+  BffClient <|-- AnalyticsClient
+  BffClient <|-- WorkflowsClient
+  BffClient <|-- SduiApiClient
+  CityOSClient --> CityOSClientConfig : config
+  SduiClient --> CityOSClient : client

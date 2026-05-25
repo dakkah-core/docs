@@ -1,0 +1,385 @@
+---
+title: "@cityos/blocks-core"
+description: "Deep dive into the blocks-core package"
+icon: "box"
+---
+
+> **Type:** SDUI Blocks Package | **Framework:** Expo/React Native | **Version:** 1.0.0
+> **Path:** `packages/blocks-core` | **LOC:** 1,214 lines across 19 files
+
+[Back to Generated Packages](/generated/packages)
+> **Depends on:** [design-runtime](/generated/packages/design-runtime), [design-system](/generated/packages/design-system), [design-tokens](/generated/packages/design-tokens)
+> **Used by:** [storefront](#), [blocks-b2b](/generated/packages/blocks-b2b), [blocks-booking](/generated/packages/blocks-booking), [blocks-commerce](/generated/packages/blocks-commerce), [blocks-finance](/generated/packages/blocks-finance) +1 more
+
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 19 | — |
+| Lines of Code | 1,214 | — |
+| Test Coverage | 26.3% | 🔴 |
+| Oversized Files | 0 | 🟢 |
+| Components | 4 | — |
+| Hooks | 1 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 32 | — |
+| Internal Deps | 3 | — |
+| Dependents | 6 | 🟡 Medium impact |
+
+## Architecture
+
+### File Structure
+
+```
+block-currency.ts (128L, 0C, 3T)
+block-data.ts (60L, 0C, 3T)
+block-i18n.ts (131L, 0C, 2T)
+block-kit.ts (133L, 0C, 13T)
+content-block.stories.tsx (71L, 0C, 1T)
+content-block.tsx (29L, 1C, 1T)
+env.ts (4L, 0C, 0T)
+features-block.stories.tsx (37L, 0C, 1T)
+features-block.tsx (50L, 1C, 2T)
+hero-block.stories.tsx (40L, 0C, 1T)
+hero-block.tsx (99L, 1C, 2T)
+index.test.ts (26L, 0C, 0T)
+index.ts (9L, 0C, 0T)
+stats-block.stories.tsx (66L, 0C, 1T)
+stats-block.tsx (133L, 1C, 2T)
+__tests__/
+  a11y.test.tsx (55L, 0C, 0T)
+  block-currency.test.ts (65L, 0C, 0T)
+  block-i18n.test.ts (68L, 0C, 0T)
+utils/
+  sanitize-html.ts (10L, 0C, 0T)
+```
+
+## Public API Surface
+
+### Components (20)
+
+| Name | Kind | File |
+|---|---|---|
+| SingleColumn | const | content-block.stories.tsx |
+| TwoColumn | const | content-block.stories.tsx |
+| Interactive | const | content-block.stories.tsx |
+| EmptyContent | const | content-block.stories.tsx |
+| ContentBlock | function | content-block.tsx |
+| Default | const | features-block.stories.tsx |
+| TwoColumns | const | features-block.stories.tsx |
+| FourColumns | const | features-block.stories.tsx |
+| WithoutTitle | const | features-block.stories.tsx |
+| FeaturesBlock | function | features-block.tsx |
+| Default | const | hero-block.stories.tsx |
+| TextOnly | const | hero-block.stories.tsx |
+| HeroBlock | function | hero-block.tsx |
+| Default | const | stats-block.stories.tsx |
+| CardVariant | const | stats-block.stories.tsx |
+| InlineVariant | const | stats-block.stories.tsx |
+| IconVariant | const | stats-block.stories.tsx |
+| TwoColumn | const | stats-block.stories.tsx |
+| AnimatedHover | const | stats-block.stories.tsx |
+| StatsBlock | function | stats-block.tsx |
+
+### Hooks (1)
+
+| Name | Kind | File |
+|---|---|---|
+| useBlockData | function | block-data.ts |
+
+### Functions (13)
+
+| Name | Kind | File |
+|---|---|---|
+| setTenantCurrencyResolver | function | block-currency.ts |
+| clearTenantCurrencyResolver | function | block-currency.ts |
+| resolveCurrency | function | block-currency.ts |
+| formatAmount | function | block-currency.ts |
+| createAmountFormatter | function | block-currency.ts |
+| setBlockI18nResolver | function | block-i18n.ts |
+| clearBlockI18nResolver | function | block-i18n.ts |
+| resolveMessage | function | block-i18n.ts |
+| createBlockMessageResolver | function | block-i18n.ts |
+| isBlockWithCta | function | block-kit.ts |
+| isBlockWithMedia | function | block-kit.ts |
+| blockTestId | function | block-kit.ts |
+| sanitizeHtml | function | utils/sanitize-html.ts |
+
+### Types (22)
+
+| Name | Kind | File |
+|---|---|---|
+| ResolveCurrencyInput | interface | block-currency.ts |
+| FormatAmountInput | interface | block-currency.ts |
+| FetchedState | interface | block-data.ts |
+| BlockDataInput | interface | block-data.ts |
+| BlockDataResult | interface | block-data.ts |
+| MessageBag | type | block-i18n.ts |
+| BlockI18nResolver | type | block-i18n.ts |
+| BaseBlockProps | interface | block-kit.ts |
+| BlockCta | interface | block-kit.ts |
+| BlockWithCTA | interface | block-kit.ts |
+| BlockWithHeading | interface | block-kit.ts |
+| BlockMedia | interface | block-kit.ts |
+| BlockWithMedia | interface | block-kit.ts |
+| AsyncBlockState | interface | block-kit.ts |
+| BlockWithAsyncData | interface | block-kit.ts |
+| BlockFormSubmitContext | interface | block-kit.ts |
+| BlockWithForm | interface | block-kit.ts |
+| BlockWithDensity | interface | block-kit.ts |
+| BlockWithCurrency | interface | block-kit.ts |
+| BlockCtaStyle | type | block-kit.ts |
+| ... | | | (2 more) |
+
+### Constants (1)
+
+| Name | Kind | File |
+|---|---|---|
+| blocksCoreEnv | const | env.ts |
+
+## Component Catalog
+
+| Component | File | Kind | Props |
+|---|---|---|---|
+| ContentBlock | content-block.tsx | arrow | content: any, layout?: 'single' | 'two-column', backgroundColor: string |
+| FeaturesBlock | features-block.tsx | arrow | title: string, features: Feature[], columns?: 2 | 3 | 4 |
+| HeroBlock | hero-block.tsx | arrow | heading: unknown, subheading: unknown, image: unknown, cta: unknown, branding: unknown, messages: MessageBag<HeroBlockMessageKey> |
+| StatsBlock | stats-block.tsx | arrow | heading: string, stats: Stat[], variant?: 'default' | 'card' | 'inline' | 'icon', columns?: 2 | 3 | 4, animated?: boolean |
+
+## Type System
+
+### ResolveCurrencyInput
+
+**Kind:** interface | **File:** `block-currency.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| currency | `string` | Yes |
+| locale | `string` | Yes |
+
+### FormatAmountInput
+
+**Kind:** interface | **File:** `block-currency.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| maximumFractionDigits | `number` | Yes |
+| minimumFractionDigits | `number` | Yes |
+
+### TenantCurrencyResolver
+
+**Kind:** type | **File:** `block-currency.ts`
+> Block-level currency formatter helper. -------------------------------------- Canonical way for a block to render a monetary amount. Resolves from: 1. Explicit `currency` prop on the block 2. Tenant default (when a resolver is installed) 3. Locale default (en → USD, fr → EUR, ar/ar-SA → SAR) 4. Hard-default 'SAR' Kept in @cityos/blocks-core to avoid every block package peer-depending on @cityos/i18n / @cityos/design-runtime directly.
+
+```ts
+type TenantCurrencyResolver = () => string | undefined;
+```
+
+### FetchedState
+
+**Kind:** interface | **File:** `block-data.ts`
+> Block data-adoption helper. -------------------------- Canonical pattern for blocks that accept either SSR-prefetched `initialData` OR an async hook result. The helper collapses both sources into a single `{ data, loading, error }` shape so blocks can render with one branch: const { data, loading, error } = useBlockData({ initialData: props.initialData, fetched, }) When `initialData` is provided, the hook is effectively inert — `loading` is false and `error` is null. When `initialData` is absent
+
+| Property | Type | Optional |
+|---|---|---|
+| data | `T | undefined` | — |
+| loading | `boolean` | — |
+| error | `Error | null` | — |
+
+### BlockDataInput
+
+**Kind:** interface | **File:** `block-data.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| initialData | `T` | Yes |
+| fetched | `FetchedState<T>` | Yes |
+
+### BlockDataResult
+
+**Kind:** interface | **File:** `block-data.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| data | `T | undefined` | — |
+| loading | `boolean` | — |
+| error | `Error | null` | — |
+
+### MessageBag
+
+**Kind:** type | **File:** `block-i18n.ts`
+
+```ts
+type MessageBag = Partial<Record<K, string>>;
+```
+
+### BlockI18nResolver
+
+**Kind:** type | **File:** `block-i18n.ts`
+
+```ts
+type BlockI18nResolver = (key: string) => string | undefined;
+```
+
+### BaseBlockProps
+
+**Kind:** interface | **File:** `block-kit.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| className | `string` | Yes |
+| 'data-testid' | `string` | Yes |
+| branding | `Branding | null` | Yes |
+| locale | `string` | Yes |
+
+### BlockCta
+
+**Kind:** interface | **File:** `block-kit.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| text | `string` | — |
+| url | `string` | — |
+| style | `BlockCtaStyle` | Yes |
+| target | `'_self' | '_blank'` | Yes |
+
+### BlockWithCTA
+
+**Kind:** interface | **File:** `block-kit.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| cta | `BlockCta[]` | Yes |
+
+### BlockWithHeading
+
+**Kind:** interface | **File:** `block-kit.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| heading | `string` | Yes |
+| subheading | `string` | Yes |
+
+### BlockMedia
+
+**Kind:** interface | **File:** `block-kit.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| url | `string` | — |
+| alt | `string` | Yes |
+| width | `number` | Yes |
+| height | `number` | Yes |
+
+### BlockWithMedia
+
+**Kind:** interface | **File:** `block-kit.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| image | `BlockMedia` | Yes |
+
+### AsyncBlockState
+
+**Kind:** interface | **File:** `block-kit.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| loading | `boolean` | Yes |
+| error | `Error | null` | Yes |
+
+### BlockWithAsyncData
+
+**Kind:** interface | **File:** `block-kit.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| initialData | `T` | Yes |
+
+### BlockFormSubmitContext
+
+**Kind:** interface | **File:** `block-kit.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| values | `TValues` | — |
+| signal | `AbortSignal` | Yes |
+
+### BlockWithForm
+
+**Kind:** interface | **File:** `block-kit.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| submitLabel | `string` | Yes |
+| onSubmit | `(ctx: BlockFormSubmitContext<TValues>) => void | Promise<void>` | Yes |
+| successMessage | `string` | Yes |
+
+### BlockWithDensity
+
+**Kind:** interface | **File:** `block-kit.ts`
+> Blocks that offer a `compact` / `default` variant toggle.
+
+| Property | Type | Optional |
+|---|---|---|
+| variant | `'default' | 'compact'` | Yes |
+
+### BlockWithCurrency
+
+**Kind:** interface | **File:** `block-kit.ts`
+> Blocks that render monetary amounts (SAR default for KSA deployments).
+
+| Property | Type | Optional |
+|---|---|---|
+| currency | `string` | Yes |
+
+*... and 12 more types*
+
+## Hooks
+
+| Hook | File | Params | Return |
+|---|---|---|---|
+| useBlockData | block-data.ts | input: BlockDataInput<T> | BlockDataResult<T> |
+
+## Dependencies
+
+### CityOS Core
+
+| Package | Type | Consumer |
+|---|---|---|
+| @cityos/design-runtime | prod | [design-runtime](/generated/packages/design-runtime) |
+| @cityos/design-system | prod | [design-system](/generated/packages/design-system) |
+| @cityos/design-tokens | prod | [design-tokens](/generated/packages/design-tokens) |
+
+## Consumers & Impact
+
+This package is used by:
+
+| Consumer | Type | Impact |
+|---|---|---|
+| [storefront](#) | apps | 🔴 Runtime dependency |
+| [blocks-b2b](/generated/packages/blocks-b2b) | packages | 🟡 Build-time dependency |
+| [blocks-booking](/generated/packages/blocks-booking) | packages | 🟡 Build-time dependency |
+| [blocks-commerce](/generated/packages/blocks-commerce) | packages | 🟡 Build-time dependency |
+| [blocks-finance](/generated/packages/blocks-finance) | packages | 🟡 Build-time dependency |
+| [blocks-governance](/generated/packages/blocks-governance) | packages | 🟡 Build-time dependency |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [blocks-core.mmd](/generated/diagrams/class/blocks-core.mmd) |
+| Dependency Graph | [blocks-core-dependencies.mmd](/generated/diagrams/dependencies/blocks-core-dependencies.mmd) |
+
+## Tests
+
+- `index.test.ts` (26 lines)
+- `__tests__/a11y.test.tsx` (55 lines)
+- `__tests__/block-currency.test.ts` (65 lines)
+- `__tests__/block-i18n.test.ts` (68 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

@@ -1,0 +1,86 @@
+classDiagram
+  direction TB
+
+  class CarActionHandlerConfig ~interface~ {
+    -onNavigate: CarNavigateHandler
+    -onMutation: CarMutationHandler
+    -onFormSubmit: CarFormSubmitHandler
+    -onVoiceInput: CarVoiceInputHandler
+    -onSpeak: (text: string) = void
+    -onBack: () = void
+    -onNavigateToDestination: (lat: number, lng: number, label?: string) = void
+  }
+
+  class CarNavigateHandler  {
+  }
+
+  class CarMutationHandler  {
+  }
+
+  class CarVoiceInputHandler  {
+  }
+
+  class CarFormSubmitHandler  {
+  }
+
+  class CarSduiRendererProps ~interface~ {
+    +node: SdNode
+    -theme: "light" | "dark"
+    -autoSpeak: boolean
+    -onVoiceActivate: () = void
+  }
+
+  class SpeechRecognitionAlternative ~interface~ {
+    +transcript: string
+  }
+
+  class SpeechRecognitionResultLike ~interface~ {
+    -isFinal: boolean
+    +0: SpeechRecognitionAlternative
+  }
+
+  class SpeechRecognitionResultListLike ~interface~ {
+    +length: number
+  }
+
+  class VoiceInputOptions ~interface~ {
+    -language: string
+    -continuous: boolean
+    -onPartialResult: (partial: string) = void
+    -onResult: (transcript: string) = void
+    -onError: (error: string) = void
+    -maxDurationMs: number
+  }
+
+  class VoiceInputState ~interface~ {
+    +isListening: boolean
+    +partialTranscript: string
+    +finalTranscript: string
+    +error: string | null
+    +startListening: () = void
+    +stopListening: () = void
+    +toggleListening: () = void
+  }
+
+  class SpeechRecognition  {
+    +lang: string
+    +continuous: boolean
+    +interimResults: boolean
+    +maxAlternatives: number
+    +onresult: ((event: SpeechRecognitionEvent) = void) | null
+    +onerror: ((event: SpeechRecognitionErrorEvent) = void) | null
+    +onend: (() = void) | null
+  }
+
+  class SpeechRecognitionEvent  {
+    +resultIndex: number
+    +results: SpeechRecognitionResultListLike
+  }
+
+  class SpeechRecognitionErrorEvent  {
+    +error: string
+  }
+
+  %% Relationships
+  SpeechRecognitionResultLike --> SpeechRecognitionAlternative : 0
+  SpeechRecognitionEvent --> SpeechRecognitionResultListLike : results

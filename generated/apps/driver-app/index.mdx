@@ -1,0 +1,354 @@
+---
+title: "Driver App"
+description: "Deep dive into the driver-app application"
+icon: "smartphone"
+---
+
+> **Type:** Mobile App (React Native / Expo) | **Framework:** Expo/React Native | **Version:** 0.1.0
+> **Path:** `apps/driver-app` | **Architectural Role:** Mobile App
+
+[Back to Generated Apps](/generated/apps)
+> **Dependencies:** [api-client](/generated/packages/api-client), [auth](/generated/packages/auth), [design-tokens](/generated/packages/design-tokens), [design-tokens-mobile](/generated/packages/design-tokens-mobile), [mobile-core](#), [sdui-renderer-native](#), [sdui-protocol](#)
+
+## Overview & Purpose
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 20 | — |
+| Lines of Code | 1,747 | — |
+| Test Coverage | 100.0% | 🟢 |
+| Oversized Files | 0 | 🟢 |
+| Components | 7 | — |
+| Hooks | 1 | — |
+| Types & Interfaces | 17 | — |
+| API Routes | 0 | — |
+| Page Routes | 0 | — |
+| Internal Deps | 7 | — |
+| Dependents | 0 | — |
+
+## Architecture
+
+### File Structure
+
+```
+env.test.ts (8L, 0C, 0T)
+env.ts (23L, 0C, 0T)
+app/
+  index.test.tsx (68L, 0C, 0T)
+  index.tsx (83L, 2C, 0T)
+hooks/
+  useDeliveryQueue.test.ts (8L, 0C, 0T)
+  useDeliveryQueue.ts (107L, 0C, 1T)
+lib/
+  inspection-photos.test.ts (8L, 0C, 0T)
+  inspection-photos.ts (229L, 0C, 6T)
+  lib/config/
+    env.test.ts (34L, 0C, 0T)
+    env.ts (37L, 0C, 0T)
+  lib/lib/
+    lib/lib/config/
+      env.test.ts (8L, 0C, 0T)
+      env.ts (33L, 0C, 0T)
+screens/
+  DeliveryQueueScreen.test.tsx (77L, 0C, 0T)
+  DeliveryQueueScreen.tsx (212L, 2C, 1T)
+  EarningsDashboardScreen.test.tsx (16L, 0C, 0T)
+  EarningsDashboardScreen.tsx (235L, 1C, 4T)
+  ProofOfDeliveryScreen.test.tsx (16L, 0C, 0T)
+  ProofOfDeliveryScreen.tsx (284L, 1C, 3T)
+  RouteNavigationScreen.test.tsx (16L, 0C, 0T)
+  RouteNavigationScreen.tsx (245L, 1C, 2T)
+```
+
+## Dependencies
+
+### Auth / Identity
+
+| Package | Type |
+|---|---|
+| [@cityos/auth](/generated/packages/auth) | prod |
+
+### CityOS Core
+
+| Package | Type |
+|---|---|
+| [@cityos/api-client](/generated/packages/api-client) | prod |
+| [@cityos/design-tokens](/generated/packages/design-tokens) | prod |
+| [@cityos/design-tokens-mobile](/generated/packages/design-tokens-mobile) | prod |
+| [@cityos/mobile-core](#) | prod |
+| [@cityos/sdui-renderer-native](#) | prod |
+
+### Other
+
+| Package | Type |
+|---|---|
+| [@dakkah/sdui-protocol](#) | prod |
+
+## Component Catalog
+
+| Component | File | Kind | Props |
+|---|---|---|---|
+| TabIcon | app/index.tsx | function | name: unknown, focused: unknown |
+| DriverApp | app/index.tsx | function | — |
+| DeliveryCard | screens/DeliveryQueueScreen.tsx | function | item: ReturnType<typeof useDeliveryQueue>['queue'][0], onAccept: (id: string) => void, onDecline: (id: string) => void, onStart: (id: string) => void |
+| DeliveryQueueScreen | screens/DeliveryQueueScreen.tsx | function | — |
+| EarningsDashboardScreen | screens/EarningsDashboardScreen.tsx | function | — |
+| ProofOfDeliveryScreen | screens/ProofOfDeliveryScreen.tsx | function | orderId: string, onComplete: () => void |
+| RouteNavigationScreen | screens/RouteNavigationScreen.tsx | function | orderId: string, destinationAddress: string |
+
+## Types & Interfaces
+
+### DeliveryItem
+
+**Kind:** interface | **File:** `hooks/useDeliveryQueue.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| orderId | `string` | — |
+| status | `'assigned' | 'in_progress' | 'completed' | 'cancelled'` | — |
+| priority | `'high' | 'medium' | 'low'` | — |
+| pickupAddress | `string` | — |
+| dropoffAddress | `string` | — |
+| itemCount | `number` | — |
+| estimatedMinutes | `number` | — |
+| distance | `number` | — |
+| estimatedEarning | `number` | — |
+| requiresSignature | `boolean` | — |
+| notes | `string` | Yes |
+| assignedAt | `string` | — |
+
+### InspectionPhoto
+
+**Kind:** interface | **File:** `lib/inspection-photos.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| angle | `InspectionAngle` | — |
+| uri | `string` | — |
+| width | `number` | — |
+| height | `number` | — |
+| fileSizeBytes | `number` | — |
+| capturedAt | `string` | — |
+
+### UploadedInspectionPhoto
+
+**Kind:** interface | **File:** `lib/inspection-photos.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| uploadedUri | `string` | — |
+| uploadedAt | `string` | — |
+| photoId | `string` | — |
+
+### InspectionSession
+
+**Kind:** interface | **File:** `lib/inspection-photos.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| vehicleId | `string` | — |
+| driverId | `string` | — |
+| sessionType | `"pre_trip" | "post_trip" | "damage_report" | "accident"` | — |
+| requiredAngles | `InspectionAngle[]` | — |
+| photos | `Record<InspectionAngle, InspectionPhoto | null>` | — |
+
+### PhotoUploadConfig
+
+**Kind:** interface | **File:** `lib/inspection-photos.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| uploadEndpoint | `string` | — |
+| authToken | `string` | — |
+| maxRetries | `number` | Yes |
+
+### OfflineInspectionEntry
+
+**Kind:** interface | **File:** `lib/inspection-photos.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| session | `InspectionSession` | — |
+| queuedAt | `string` | — |
+| uploadConfig | `Omit<PhotoUploadConfig, "authToken">` | — |
+
+### InspectionAngle
+
+**Kind:** type | **File:** `lib/inspection-photos.ts`
+
+```ts
+type InspectionAngle = | "front"
+  | "rear"
+  | "left_side"
+  | "right_side"
+  | "interior"
+  | "odometer"
+  | "damage";
+```
+
+### DeliveryCardProps
+
+**Kind:** interface | **File:** `screens/DeliveryQueueScreen.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| item | `ReturnType<typeof useDeliveryQueue>['queue'][0]` | — |
+| onAccept | `(id: string) => void` | — |
+| onDecline | `(id: string) => void` | — |
+| onStart | `(id: string) => void` | — |
+
+### EarningPeriod
+
+**Kind:** interface | **File:** `screens/EarningsDashboardScreen.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| label | `string` | — |
+| amount | `number` | — |
+| deliveries | `number` | — |
+| hours | `number` | — |
+
+### PayoutRecord
+
+**Kind:** interface | **File:** `screens/EarningsDashboardScreen.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| amount | `number` | — |
+| status | `'pending' | 'processing' | 'paid'` | — |
+| date | `string` | — |
+| method | `string` | — |
+
+### DriverEarnings
+
+**Kind:** interface | **File:** `screens/EarningsDashboardScreen.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| today | `EarningPeriod` | — |
+| thisWeek | `EarningPeriod` | — |
+| thisMonth | `EarningPeriod` | — |
+| pendingPayout | `number` | — |
+| totalLifetime | `number` | — |
+| rating | `number` | — |
+| completionRate | `number` | — |
+| recentPayouts | `PayoutRecord[]` | — |
+
+### PeriodKey
+
+**Kind:** type | **File:** `screens/EarningsDashboardScreen.tsx`
+
+```ts
+type PeriodKey = 'today' | 'thisWeek' | 'thisMonth';
+```
+
+### CapturedEvidence
+
+**Kind:** interface | **File:** `screens/ProofOfDeliveryScreen.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| photoId | `string` | Yes |
+| photoUri | `string` | Yes |
+| signatureDataUri | `string` | Yes |
+| notes | `string` | — |
+
+### ProofOfDeliveryScreenProps
+
+**Kind:** interface | **File:** `screens/ProofOfDeliveryScreen.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| orderId | `string` | — |
+| onComplete | `() => void` | Yes |
+
+### PODStep
+
+**Kind:** type | **File:** `screens/ProofOfDeliveryScreen.tsx`
+
+```ts
+type PODStep = 'photo' | 'signature' | 'confirm';
+```
+
+*... and 2 more types*
+
+## Hooks
+
+| Hook | File | Params | Return |
+|---|---|---|---|
+| useDeliveryQueue | hooks/useDeliveryQueue.ts | — | unknown |
+
+## Public API Surface
+
+| Export | Kind | File |
+|---|---|---|
+| env | const | env.ts |
+| requireEnv | function | env.ts |
+| DriverApp | function | app/index.tsx |
+| useDeliveryQueue | function | hooks/useDeliveryQueue.ts |
+| DeliveryItem | interface | hooks/useDeliveryQueue.ts |
+| INSPECTION_CAMERA_CONFIG | const | lib/inspection-photos.ts |
+| REQUIRED_ANGLES | const | lib/inspection-photos.ts |
+| createInspectionSession | function | lib/inspection-photos.ts |
+| isSessionComplete | function | lib/inspection-photos.ts |
+| getMissingAngles | function | lib/inspection-photos.ts |
+| uploadInspectionPhoto | function | lib/inspection-photos.ts |
+| captureAndUploadInspectionPhoto | function | lib/inspection-photos.ts |
+| uploadSessionPhotos | function | lib/inspection-photos.ts |
+| InspectionPhoto | interface | lib/inspection-photos.ts |
+| UploadedInspectionPhoto | interface | lib/inspection-photos.ts |
+| InspectionSession | interface | lib/inspection-photos.ts |
+| PhotoUploadConfig | interface | lib/inspection-photos.ts |
+| OfflineInspectionEntry | interface | lib/inspection-photos.ts |
+| InspectionAngle | type | lib/inspection-photos.ts |
+| env | const | lib/config/env.ts |
+| env | const | lib/lib/config/env.ts |
+| DeliveryQueueScreen | function | screens/DeliveryQueueScreen.tsx |
+| EarningsDashboardScreen | function | screens/EarningsDashboardScreen.tsx |
+| ProofOfDeliveryScreen | function | screens/ProofOfDeliveryScreen.tsx |
+| RouteNavigationScreen | function | screens/RouteNavigationScreen.tsx |
+
+## Related Apps
+
+Apps that share dependencies or serve similar roles:
+
+| App | Shared Dependencies | Relationship |
+|---|---|---|
+| [mobile](/generated/apps/mobile) | @cityos/design-tokens, @cityos/design-tokens-mobile, @cityos/api-client +4 more | Same domain |
+| [mobile-driver](#) | @cityos/design-tokens, @cityos/design-tokens-mobile, @cityos/api-client +4 more | Same domain |
+| [mobile-merchant](#) | @cityos/design-tokens, @cityos/design-tokens-mobile, @cityos/api-client +4 more | Same domain |
+| [mobile-pos](#) | @cityos/design-tokens, @cityos/design-tokens-mobile, @cityos/api-client +4 more | Same domain |
+| [superapp](#) | @cityos/design-tokens, @cityos/design-tokens-mobile, @cityos/api-client +4 more | Same domain |
+| [merchant-app-mobile](/generated/apps/merchant-app-mobile) | @cityos/api-client, @cityos/auth, @cityos/design-tokens-mobile +3 more | Same domain |
+| [mobile-government](#) | @cityos/auth, @cityos/design-tokens, @cityos/design-tokens-mobile +3 more | Same domain |
+| [mobile-inspector](#) | @cityos/auth, @cityos/design-tokens, @cityos/design-tokens-mobile +3 more | Same domain |
+| [watch-app](#) | @cityos/design-tokens, @cityos/design-tokens-mobile, @cityos/api-client +2 more | Same domain |
+| [car-app](/generated/apps/car-app) | @cityos/design-tokens, @cityos/design-tokens-mobile, @cityos/mobile-core +1 more | Same domain |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Component Hierarchy | [driver-app-hierarchy.mmd](/generated/diagrams/components/driver-app-hierarchy.mmd) |
+| Dependency Graph | [driver-app-dependencies.mmd](/generated/diagrams/dependencies/driver-app-dependencies.mmd) |
+
+## Tests
+
+- `env.test.ts` (8 lines)
+- `app/index.test.tsx` (68 lines)
+- `hooks/useDeliveryQueue.test.ts` (8 lines)
+- `lib/inspection-photos.test.ts` (8 lines)
+- `lib/config/env.test.ts` (34 lines)
+- `lib/lib/config/env.test.ts` (8 lines)
+- `screens/DeliveryQueueScreen.test.tsx` (77 lines)
+- `screens/EarningsDashboardScreen.test.tsx` (16 lines)
+- `screens/ProofOfDeliveryScreen.test.tsx` (16 lines)
+- `screens/RouteNavigationScreen.test.tsx` (16 lines)
+
+---
+*Generated by scripts/docs/generators/deep/app-deep-dive.mjs*

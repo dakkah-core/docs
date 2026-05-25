@@ -1,0 +1,344 @@
+---
+title: "Car App"
+description: "Deep dive into the car-app application"
+icon: "smartphone"
+---
+
+> **Type:** Mobile App (React Native / Expo) | **Framework:** Expo/React Native | **Version:** 1.0.0
+> **Path:** `apps/car-app` | **Architectural Role:** Mobile App, Automotive App
+
+[Back to Generated Apps](/generated/apps)
+> **Dependencies:** [design-tokens](/generated/packages/design-tokens), [design-tokens-mobile](/generated/packages/design-tokens-mobile), [mobile-core](#), [sdui-renderer-car](#), [sdui-protocol](#)
+
+## Overview & Purpose
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 27 | — |
+| Lines of Code | 1,814 | — |
+| Test Coverage | 96.3% | 🟢 |
+| Oversized Files | 0 | 🟢 |
+| Components | 5 | — |
+| Hooks | 6 | — |
+| Types & Interfaces | 18 | — |
+| API Routes | 0 | — |
+| Page Routes | 0 | — |
+| Internal Deps | 5 | — |
+| Dependents | 0 | — |
+
+## Architecture
+
+### File Structure
+
+```
+CarPlaySDUIBridge.ts (120L, 0C, 4T)
+env.test.ts (8L, 0C, 0T)
+env.ts (23L, 0C, 0T)
+__tests__/
+  App.test.tsx (62L, 0C, 0T)
+  CarPlaySDUIBridge.test.ts (103L, 0C, 0T)
+  SduiScreen.test.tsx (80L, 0C, 0T)
+  __tests__/hooks/
+    useCarAlerts.test.ts (155L, 0C, 0T)
+    useVehicleTelemetry.test.ts (164L, 0C, 0T)
+  __tests__/providers/
+    KuzzleProvider.test.tsx (67L, 1C, 0T)
+components/
+  SafetyDashboard.test.tsx (16L, 0C, 0T)
+  SafetyDashboard.tsx (305L, 2C, 2T)
+  SduiScreen.test.tsx (16L, 0C, 0T)
+  SduiScreen.tsx (30L, 1C, 1T)
+contexts/
+  KuzzleProvider.test.tsx (16L, 0C, 0T)
+  KuzzleProvider.tsx (58L, 1C, 2T)
+hooks/
+  useCarAlerts.test.ts (8L, 0C, 0T)
+  useCarAlerts.ts (102L, 0C, 2T)
+  useCrashDetection.test.ts (8L, 0C, 0T)
+  useCrashDetection.ts (121L, 0C, 2T)
+  useVehicleDiagnostics.test.ts (8L, 0C, 0T)
+  useVehicleDiagnostics.ts (134L, 0C, 3T)
+  useVehicleSafetyBridge.test.ts (8L, 0C, 0T)
+  useVehicleSafetyBridge.ts (84L, 0C, 2T)
+  useVehicleTelemetry.test.ts (8L, 0C, 0T)
+  useVehicleTelemetry.ts (62L, 0C, 0T)
+lib/
+  lib/config/
+    env.test.ts (8L, 0C, 0T)
+    env.ts (40L, 0C, 0T)
+```
+
+## Dependencies
+
+### CityOS Core
+
+| Package | Type |
+|---|---|
+| [@cityos/design-tokens](/generated/packages/design-tokens) | prod |
+| [@cityos/design-tokens-mobile](/generated/packages/design-tokens-mobile) | prod |
+| [@cityos/mobile-core](#) | prod |
+| [@cityos/sdui-renderer-car](#) | prod |
+
+### Other
+
+| Package | Type |
+|---|---|
+| [@dakkah/sdui-protocol](#) | prod |
+
+## Component Catalog
+
+| Component | File | Kind | Props |
+|---|---|---|---|
+| DummyConsumer | __tests__/providers/KuzzleProvider.test.tsx | arrow | — |
+| MetricGauge | components/SafetyDashboard.tsx | function | label: string, value: number, unit: string, min: number, max: number, dangerAbove: number, warningAbove: number, warningBelow: number, dangerBelow: number |
+| SafetyDashboard | components/SafetyDashboard.tsx | function | vehicleId: string |
+| SduiScreen | components/SduiScreen.tsx | function | screenId: string, surface: string, children: React.ReactNode |
+| KuzzleProvider | contexts/KuzzleProvider.tsx | function | children: unknown |
+
+## Types & Interfaces
+
+### BlockPlacement
+
+**Kind:** interface | **File:** `CarPlaySDUIBridge.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| blockId | `string` | — |
+| domain | `string` | — |
+| position | `string` | — |
+| priority | `number` | — |
+| span | `number` | Yes |
+
+### ResolvedAction
+
+**Kind:** interface | **File:** `CarPlaySDUIBridge.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| key | `string` | — |
+| label | `string` | Yes |
+| icon | `string` | Yes |
+
+### CompositionPayload
+
+**Kind:** interface | **File:** `CarPlaySDUIBridge.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| dashboardBlocks | `BlockPlacement[]` | Yes |
+| mainBlocks | `BlockPlacement[]` | Yes |
+| quickActions | `BlockPlacement[]` | Yes |
+| resolvedActions | `ResolvedAction[]` | Yes |
+
+### CarPlaySDUIBridge
+
+**Kind:** class | **File:** `CarPlaySDUIBridge.ts`
+
+### MetricGaugeProps
+
+**Kind:** interface | **File:** `components/SafetyDashboard.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| label | `string` | — |
+| value | `number` | — |
+| unit | `string` | — |
+| min | `number` | — |
+| max | `number` | — |
+| dangerAbove | `number` | Yes |
+| warningAbove | `number` | Yes |
+| warningBelow | `number` | Yes |
+| dangerBelow | `number` | Yes |
+
+### SafetyDashboardProps
+
+**Kind:** interface | **File:** `components/SafetyDashboard.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| vehicleId | `string` | — |
+
+### SduiScreenProps
+
+**Kind:** interface | **File:** `components/SduiScreen.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| screenId | `string` | — |
+| surface | `string` | — |
+| children | `React.ReactNode` | — |
+
+### KuzzleContextType
+
+**Kind:** interface | **File:** `contexts/KuzzleProvider.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| kuzzle | `KuzzleClient | null` | — |
+| connected | `boolean` | — |
+
+### KuzzleError
+
+**Kind:** type | **File:** `contexts/KuzzleProvider.tsx`
+
+```ts
+type KuzzleError = Error & { message: string };
+```
+
+### TrafficAlert
+
+**Kind:** interface | **File:** `hooks/useCarAlerts.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| roadId | `string` | — |
+| congestion | `number` | — |
+| message | `string` | — |
+
+### GeofenceEvent
+
+**Kind:** interface | **File:** `hooks/useCarAlerts.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| fenceName | `string` | — |
+| deviceId | `string` | — |
+| scope | `'in' | 'out'` | — |
+
+### CrashEvent
+
+**Kind:** interface | **File:** `hooks/useCrashDetection.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| detectedAt | `string` | — |
+| gForce | `number` | — |
+| vehicleId | `string` | — |
+| location | `{ lat: number; lng: number }` | Yes |
+| severity | `'minor' | 'moderate' | 'severe'` | — |
+
+### KuzzleAccelNotification
+
+**Kind:** interface | **File:** `hooks/useCrashDetection.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| action | `string` | Yes |
+| result | `{
+    _source?: {
+      deviceId?: string;
+      measures?: {
+        acceleration?: { value?: number };
+        gps?: { latitudeDegrees?: number; longitudeDegrees?: number };
+      };
+    };
+  }` | Yes |
+
+### DiagnosticCode
+
+**Kind:** interface | **File:** `hooks/useVehicleDiagnostics.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| code | `string` | — |
+| description | `string` | — |
+| severity | `'info' | 'warning' | 'critical'` | — |
+| reportedAt | `string` | — |
+
+### VehicleDiagnostics
+
+**Kind:** interface | **File:** `hooks/useVehicleDiagnostics.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| engineTemp | `number` | — |
+| fuelLevel | `number` | — |
+| batteryVoltage | `number` | — |
+| oilPressure | `number` | — |
+| tirePressure | `{ fl: number; fr: number; rl: number; rr: number }` | — |
+| odometer | `number` | — |
+| fuelEfficiency | `number` | — |
+| dtcCodes | `DiagnosticCode[]` | — |
+| lastUpdated | `string` | — |
+
+*... and 3 more types*
+
+## Hooks
+
+| Hook | File | Params | Return |
+|---|---|---|---|
+| useKuzzle | contexts/KuzzleProvider.tsx | — | unknown |
+| useCarAlerts | hooks/useCarAlerts.ts | vehicleId: string | unknown |
+| useCrashDetection | hooks/useCrashDetection.ts | vehicleId: string, onCrash: (event: CrashEvent) => void | unknown |
+| useVehicleDiagnostics | hooks/useVehicleDiagnostics.ts | vehicleId: string | unknown |
+| useVehicleSafetyBridge | hooks/useVehicleSafetyBridge.ts | vehicleId: string | unknown |
+| useVehicleTelemetry | hooks/useVehicleTelemetry.ts | vehicleId: string | unknown |
+
+## Public API Surface
+
+| Export | Kind | File |
+|---|---|---|
+| CarPlaySDUIBridge | class | CarPlaySDUIBridge.ts |
+| env | const | env.ts |
+| requireEnv | function | env.ts |
+| SafetyDashboard | function | components/SafetyDashboard.tsx |
+| SduiScreen | function | components/SduiScreen.tsx |
+| KuzzleProvider | function | contexts/KuzzleProvider.tsx |
+| useKuzzle | function | contexts/KuzzleProvider.tsx |
+| useCarAlerts | function | hooks/useCarAlerts.ts |
+| useCrashDetection | function | hooks/useCrashDetection.ts |
+| CrashEvent | interface | hooks/useCrashDetection.ts |
+| useVehicleDiagnostics | function | hooks/useVehicleDiagnostics.ts |
+| DiagnosticCode | interface | hooks/useVehicleDiagnostics.ts |
+| VehicleDiagnostics | interface | hooks/useVehicleDiagnostics.ts |
+| useVehicleSafetyBridge | function | hooks/useVehicleSafetyBridge.ts |
+| useVehicleTelemetry | function | hooks/useVehicleTelemetry.ts |
+| env | const | lib/config/env.ts |
+
+## Related Apps
+
+Apps that share dependencies or serve similar roles:
+
+| App | Shared Dependencies | Relationship |
+|---|---|---|
+| [driver-app](/generated/apps/driver-app) | @cityos/design-tokens, @cityos/design-tokens-mobile, @cityos/mobile-core +1 more | Same domain |
+| [mobile](/generated/apps/mobile) | @cityos/design-tokens, @cityos/design-tokens-mobile, @cityos/mobile-core +1 more | Same domain |
+| [mobile-driver](#) | @cityos/design-tokens, @cityos/design-tokens-mobile, @cityos/mobile-core +1 more | Same domain |
+| [mobile-government](#) | @cityos/design-tokens, @cityos/design-tokens-mobile, @cityos/mobile-core +1 more | Same domain |
+| [mobile-inspector](#) | @cityos/design-tokens, @cityos/design-tokens-mobile, @cityos/mobile-core +1 more | Same domain |
+| [mobile-merchant](#) | @cityos/design-tokens, @cityos/design-tokens-mobile, @cityos/mobile-core +1 more | Same domain |
+| [mobile-pos](#) | @cityos/design-tokens, @cityos/design-tokens-mobile, @cityos/mobile-core +1 more | Same domain |
+| [superapp](#) | @cityos/design-tokens, @cityos/design-tokens-mobile, @cityos/mobile-core +1 more | Same domain |
+| [tv-app](#) | @cityos/design-tokens, @cityos/design-tokens-mobile, @cityos/mobile-core +1 more | Same domain |
+| [merchant-app-mobile](/generated/apps/merchant-app-mobile) | @cityos/design-tokens-mobile, @cityos/mobile-core, @dakkah/sdui-protocol | Same domain |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Component Hierarchy | [car-app-hierarchy.mmd](/generated/diagrams/components/car-app-hierarchy.mmd) |
+| Dependency Graph | [car-app-dependencies.mmd](/generated/diagrams/dependencies/car-app-dependencies.mmd) |
+
+## Tests
+
+- `env.test.ts` (8 lines)
+- `__tests__/App.test.tsx` (62 lines)
+- `__tests__/CarPlaySDUIBridge.test.ts` (103 lines)
+- `__tests__/SduiScreen.test.tsx` (80 lines)
+- `__tests__/hooks/useCarAlerts.test.ts` (155 lines)
+- `__tests__/hooks/useVehicleTelemetry.test.ts` (164 lines)
+- `__tests__/providers/KuzzleProvider.test.tsx` (67 lines)
+- `components/SafetyDashboard.test.tsx` (16 lines)
+- `components/SduiScreen.test.tsx` (16 lines)
+- `contexts/KuzzleProvider.test.tsx` (16 lines)
+- `hooks/useCarAlerts.test.ts` (8 lines)
+- `hooks/useCrashDetection.test.ts` (8 lines)
+- `hooks/useVehicleDiagnostics.test.ts` (8 lines)
+- `hooks/useVehicleSafetyBridge.test.ts` (8 lines)
+- `hooks/useVehicleTelemetry.test.ts` (8 lines)
+- `lib/config/env.test.ts` (8 lines)
+
+---
+*Generated by scripts/docs/generators/deep/app-deep-dive.mjs*

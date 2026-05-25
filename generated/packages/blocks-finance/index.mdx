@@ -1,0 +1,305 @@
+---
+title: "@cityos/blocks-finance"
+description: "Deep dive into the blocks-finance package"
+icon: "box"
+---
+
+> **Type:** SDUI Blocks Package | **Framework:** Node.js | **Version:** 1.0.0
+> **Path:** `packages/blocks-finance` | **LOC:** 989 lines across 10 files
+
+[Back to Generated Packages](/generated/packages)
+> **Depends on:** [blocks-core](/generated/packages/blocks-core), [design-runtime](/generated/packages/design-runtime), [design-system](/generated/packages/design-system), [design-tokens](/generated/packages/design-tokens)
+> **Used by:** [storefront](#)
+
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 10 | — |
+| Lines of Code | 989 | — |
+| Test Coverage | 30.0% | 🟡 |
+| Oversized Files | 0 | 🟢 |
+| Components | 3 | — |
+| Hooks | 0 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 13 | — |
+| Internal Deps | 4 | — |
+| Dependents | 1 | 🟢 Low impact |
+
+## Architecture
+
+### File Structure
+
+```
+env.ts (4L, 0C, 0T)
+index.test.ts (24L, 0C, 0T)
+index.ts (7L, 0C, 0T)
+loan-calculator-block.stories.tsx (57L, 0C, 1T)
+loan-calculator-block.tsx (249L, 1C, 4T)
+subscription-manage-block.stories.tsx (26L, 0C, 1T)
+subscription-manage-block.tsx (273L, 1C, 3T)
+wallet-balance-block.stories.tsx (77L, 0C, 1T)
+wallet-balance-block.tsx (221L, 1C, 3T)
+__tests__/
+  a11y.test.tsx (51L, 0C, 0T)
+```
+
+## Public API Surface
+
+### Components (16)
+
+| Name | Kind | File |
+|---|---|---|
+| Default | const | loan-calculator-block.stories.tsx |
+| PersonalLoan | const | loan-calculator-block.stories.tsx |
+| REDFMortgage | const | loan-calculator-block.stories.tsx |
+| ArabicRTL | const | loan-calculator-block.stories.tsx |
+| LoanCalculatorBlock | function | loan-calculator-block.tsx |
+| Default | const | subscription-manage-block.stories.tsx |
+| CannotPause | const | subscription-manage-block.stories.tsx |
+| WithoutUsage | const | subscription-manage-block.stories.tsx |
+| SubscriptionManageBlock | function | subscription-manage-block.tsx |
+| Default | const | wallet-balance-block.stories.tsx |
+| Compact | const | wallet-balance-block.stories.tsx |
+| Loading | const | wallet-balance-block.stories.tsx |
+| Empty | const | wallet-balance-block.stories.tsx |
+| ErrorState | const | wallet-balance-block.stories.tsx |
+| SaudiRiyal | const | wallet-balance-block.stories.tsx |
+| WalletBalanceBlock | function | wallet-balance-block.tsx |
+
+### Types (7)
+
+| Name | Kind | File |
+|---|---|---|
+| LoanCalculatorBlockProps | interface | loan-calculator-block.tsx |
+| LoanCalculatorMessageKey | type | loan-calculator-block.tsx |
+| SubscriptionManageBlockProps | interface | subscription-manage-block.tsx |
+| SubscriptionManageMessageKey | type | subscription-manage-block.tsx |
+| WalletTransaction | interface | wallet-balance-block.tsx |
+| WalletBalanceBlockProps | interface | wallet-balance-block.tsx |
+| WalletBalanceMessageKey | type | wallet-balance-block.tsx |
+
+### Constants (1)
+
+| Name | Kind | File |
+|---|---|---|
+| blocksFinanceEnv | const | env.ts |
+
+## Component Catalog
+
+| Component | File | Kind | Props |
+|---|---|---|---|
+| LoanCalculatorBlock | loan-calculator-block.tsx | arrow | currency?: string, locale?: string, shariaByDefault?: boolean, initialPrincipal?: number, initialRate?: number, initialTermMonths?: number, className?: string, heading: string, messages: MessageBag<LoanCalculatorMessageKey> |
+| SubscriptionManageBlock | subscription-manage-block.tsx | arrow | _subscriptionId: unknown, showUsage?: boolean, allowPause?: boolean, allowUpgrade?: boolean, currency?: string, locale?: string, onTogglePause: (next: boolean) => void, onUpgrade: () => void, onConfirmCancel: () => void, messages: MessageBag<SubscriptionManageMessageKey> |
+| WalletBalanceBlock | wallet-balance-block.tsx | arrow | balance?: number, pendingBalance?: number, currency?: string, locale?: string, transactions?: WalletTransaction[], loading?: boolean, error?: Error | null, onTopUp: () => void, onWithdraw: () => void, heading?: string, variant?: 'default' | 'compact', className?: string, messages: MessageBag<WalletBalanceMessageKey> |
+
+## Type System
+
+### Story
+
+**Kind:** type | **File:** `loan-calculator-block.stories.tsx`
+
+```ts
+type Story = StoryObj<typeof LoanCalculatorBlock>;
+```
+
+### LoanCalculatorBlockProps
+
+**Kind:** interface | **File:** `loan-calculator-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| currency | `string` | Yes |
+| locale | `string` | Yes |
+| shariaByDefault | `boolean` | Yes |
+| initialPrincipal | `number` | Yes |
+| initialRate | `number` | Yes |
+| initialTermMonths | `number` | Yes |
+| className | `string` | Yes |
+| heading | `string` | Yes |
+| messages | `MessageBag<LoanCalculatorMessageKey>` | Yes |
+
+### Schedule
+
+**Kind:** interface | **File:** `loan-calculator-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| monthlyPayment | `number` | — |
+| totalPayment | `number` | — |
+| totalInterestOrProfit | `number` | — |
+
+### LoanCalculatorMessageKey
+
+**Kind:** type | **File:** `loan-calculator-block.tsx`
+
+```ts
+type LoanCalculatorMessageKey = | 'heading'
+  | 'modeLegend'
+  | 'modeSharia'
+  | 'modeInterest'
+  | 'principal'
+  | 'rateInterest'
+  | 'rateProfit'
+  | 'termMonths'
+  | 'monthlyPayment'
+  | 'totalRepayable'
+  | 'totalInterest'
+  | 'totalProfit';
+```
+
+### Mode
+
+**Kind:** type | **File:** `loan-calculator-block.tsx`
+
+```ts
+type Mode = 'interest' | 'murabaha';
+```
+
+### Story
+
+**Kind:** type | **File:** `subscription-manage-block.stories.tsx`
+
+```ts
+type Story = StoryObj<typeof meta>;
+```
+
+### SubscriptionManageBlockProps
+
+**Kind:** interface | **File:** `subscription-manage-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| subscriptionId | `string` | Yes |
+| showUsage | `boolean` | Yes |
+| allowPause | `boolean` | Yes |
+| allowUpgrade | `boolean` | Yes |
+| currency | `string` | Yes |
+| locale | `string` | Yes |
+| onTogglePause | `(next: boolean) => void` | Yes |
+| onUpgrade | `() => void` | Yes |
+| onConfirmCancel | `() => void` | Yes |
+| messages | `MessageBag<SubscriptionManageMessageKey>` | Yes |
+
+### BillingRecord
+
+**Kind:** interface | **File:** `subscription-manage-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| date | `string` | — |
+| amount | `number` | — |
+| status | `'paid' | 'pending' | 'failed'` | — |
+| invoice | `string` | Yes |
+
+### SubscriptionManageMessageKey
+
+**Kind:** type | **File:** `subscription-manage-block.tsx`
+
+```ts
+type SubscriptionManageMessageKey = | 'heading'
+  | 'pause'
+  | 'resume'
+  | 'upgrade'
+  | 'cancel'
+  | 'confirmCancel'
+  | 'keepSubscription'
+  | 'usage'
+  | 'billingHistory'
+  | 'download';
+```
+
+### Story
+
+**Kind:** type | **File:** `wallet-balance-block.stories.tsx`
+
+```ts
+type Story = StoryObj<typeof meta>;
+```
+
+### WalletTransaction
+
+**Kind:** interface | **File:** `wallet-balance-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| date | `string` | — |
+| amount | `number` | — |
+| description | `string` | — |
+| status | `'pending' | 'completed' | 'failed'` | Yes |
+
+### WalletBalanceBlockProps
+
+**Kind:** interface | **File:** `wallet-balance-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| balance | `number` | Yes |
+| pendingBalance | `number` | Yes |
+| currency | `string` | Yes |
+| locale | `string` | Yes |
+| transactions | `WalletTransaction[]` | Yes |
+| loading | `boolean` | Yes |
+| error | `Error | null` | Yes |
+| onTopUp | `() => void` | Yes |
+| onWithdraw | `() => void` | Yes |
+| heading | `string` | Yes |
+| variant | `'default' | 'compact'` | Yes |
+| className | `string` | Yes |
+| messages | `MessageBag<WalletBalanceMessageKey>` | Yes |
+
+### WalletBalanceMessageKey
+
+**Kind:** type | **File:** `wallet-balance-block.tsx`
+
+```ts
+type WalletBalanceMessageKey = | 'available'
+  | 'pending'
+  | 'topUp'
+  | 'withdraw'
+  | 'recentTransactions'
+  | 'noTransactions'
+  | 'loadError'
+  | 'loadingTransactions'
+  | 'credit'
+  | 'debit';
+```
+
+## Dependencies
+
+### CityOS Core
+
+| Package | Type | Consumer |
+|---|---|---|
+| @cityos/blocks-core | prod | [blocks-core](/generated/packages/blocks-core) |
+| @cityos/design-runtime | prod | [design-runtime](/generated/packages/design-runtime) |
+| @cityos/design-system | prod | [design-system](/generated/packages/design-system) |
+| @cityos/design-tokens | prod | [design-tokens](/generated/packages/design-tokens) |
+
+## Consumers & Impact
+
+This package is used by:
+
+| Consumer | Type | Impact |
+|---|---|---|
+| [storefront](#) | apps | 🔴 Runtime dependency |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [blocks-finance.mmd](/generated/diagrams/class/blocks-finance.mmd) |
+| Dependency Graph | [blocks-finance-dependencies.mmd](/generated/diagrams/dependencies/blocks-finance-dependencies.mmd) |
+
+## Tests
+
+- `index.test.ts` (24 lines)
+- `__tests__/a11y.test.tsx` (51 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

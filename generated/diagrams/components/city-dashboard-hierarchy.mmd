@@ -1,0 +1,100 @@
+graph TD
+  direction TB
+
+  city-dashboard[city-dashboard]
+
+  subgraph Layouts[
+    Layouts
+  end
+  RootLayout[RootLayout]
+  city-dashboard --> RootLayout
+  GovernmentLayoutClient[GovernmentLayoutClient]
+  city-dashboard --> GovernmentLayoutClient
+  GovernmentLayout[GovernmentLayout]
+  city-dashboard --> GovernmentLayout
+  DashboardLayout[DashboardLayout]
+  city-dashboard --> DashboardLayout
+
+  subgraph Pages[
+    Pages
+  end
+  Page[Page]
+  RootLayout --> Page
+  GovernmentDashboardPage[GovernmentDashboardPage]
+  RootLayout --> GovernmentDashboardPage
+  EmergencyDashboardPage[EmergencyDashboardPage]
+  RootLayout --> EmergencyDashboardPage
+  IoTSensorMapPage[IoTSensorMapPage]
+  RootLayout --> IoTSensorMapPage
+  PermitsPage[PermitsPage]
+  RootLayout --> PermitsPage
+  ServiceRequestsPage[ServiceRequestsPage]
+  RootLayout --> ServiceRequestsPage
+  ServiceRequestDetailPage[ServiceRequestDetailPage]
+  RootLayout --> ServiceRequestDetailPage
+  Page[Page]
+  RootLayout --> Page
+  AuthCallbackPage[AuthCallbackPage]
+  RootLayout --> AuthCallbackPage
+  LegacyCallbackPage[LegacyCallbackPage]
+  RootLayout --> LegacyCallbackPage
+
+  subgraph Components[
+    Shared Components
+  end
+  Error[Error]
+  Page --> Error
+  Loading[Loading]
+  Page --> Loading
+  NotFound[NotFound]
+  Page --> NotFound
+  Providers[Providers]
+  Page --> Providers
+  TrendIndicator[TrendIndicator]
+  GovernmentDashboardPage --> TrendIndicator
+  Sparkline[Sparkline]
+  GovernmentDashboardPage --> Sparkline
+  KpiCard[KpiCard]
+  GovernmentDashboardPage --> KpiCard
+  SeverityPulse[SeverityPulse]
+  EmergencyDashboardPage --> SeverityPulse
+  AlertRow[AlertRow]
+  IoTSensorMapPage --> AlertRow
+  TimelineIcon[TimelineIcon]
+  ServiceRequestsPage --> TimelineIcon
+  GET[GET]
+  RootLayout --> GET
+  GET[GET]
+  RootLayout --> GET
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef layout fill:#fff3e0,stroke:#e65100,stroke-width:1px
+  classDef page fill:#e8f5e9,stroke:#1b5e20,stroke-width:1px
+  classDef component fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class city-dashboard app
+  class RootLayout layout
+  class GovernmentLayoutClient layout
+  class GovernmentLayout layout
+  class DashboardLayout layout
+  class Page page
+  class GovernmentDashboardPage page
+  class EmergencyDashboardPage page
+  class IoTSensorMapPage page
+  class PermitsPage page
+  class ServiceRequestsPage page
+  class ServiceRequestDetailPage page
+  class Page page
+  class AuthCallbackPage page
+  class LegacyCallbackPage page
+  class Error component
+  class Loading component
+  class NotFound component
+  class Providers component
+  class TrendIndicator component
+  class Sparkline component
+  class KpiCard component
+  class SeverityPulse component
+  class AlertRow component
+  class TimelineIcon component
+  class GET component
+  class GET component

@@ -1,0 +1,260 @@
+---
+title: "Medusa Backend"
+description: "Deep dive into the medusa-backend application"
+icon: "smartphone"
+---
+
+> **Type:** Backend Service | **Framework:** Medusa | **Version:** 0.0.1
+> **Path:** `apps/medusa-backend` | **Architectural Role:** Commerce Engine
+
+[Back to Generated Apps](/generated/apps)
+## Overview & Purpose
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 4014 | — |
+| Lines of Code | 400,860 | — |
+| Test Coverage | 4.5% | 🔴 |
+| Oversized Files | 10 | 🔴 |
+| Components | 28 | — |
+| Hooks | 289 | — |
+| Types & Interfaces | 299 | — |
+| API Routes | 0 | — |
+| Page Routes | 0 | — |
+| Internal Deps | 0 | — |
+| Dependents | 0 | — |
+
+### ⚠️ Oversized Files
+
+| File | Lines |
+|---|---|
+| apps/medusa-backend/src/types/generated-module-interfaces.ts | 3472 |
+| apps/medusa-backend/src/lib/notification-templates.ts | 2658 |
+| apps/medusa-backend/src/integrations/payload-sync/block-specs.ts | 2398 |
+| apps/medusa-backend/src/integrations/erpnext/chart-of-accounts.ts | 1783 |
+| apps/medusa-backend/src/lib/integrations/temporal-spec.ts | 1662 |
+| apps/medusa-backend/src/lib/integrations/erpnext-spec.ts | 1594 |
+| apps/medusa-backend/src/integrations/payload-sync/collection-specs.ts | 1525 |
+| apps/medusa-backend/src/scripts/seed-full.ts | 1498 |
+| apps/medusa-backend/src/lib/integrations/waltid-spec.ts | 1437 |
+| apps/medusa-backend/src/integrations/payload-sync/cms-domain-map.ts | 1372 |
+
+## Architecture
+
+### File Structure
+
+```
+instrumentation.ts (2L, 0C, 0T)
+__tests__/
+  auth-keycloak.spec.ts (531L, 0C, 0T)
+  temporal-activities.spec.ts (456L, 0C, 0T)
+  __tests__/activities/
+    fleetbase-activities.spec.ts (57L, 0C, 0T)
+  __tests__/integration/
+    cart-checkout.spec.ts (96L, 0C, 0T)
+  __tests__/modules/
+    booking-service.spec.ts (577L, 0C, 1T)
+  __tests__/subscribers/
+    order-state-machine.spec.ts (458L, 0C, 1T)
+    settlement-create.spec.ts (328L, 0C, 2T)
+activities/
+  activities/__tests__/
+    driver-routing.spec.ts (32L, 0C, 0T)
+admin/
+  admin/components/
+    index.ts (21L, 0C, 0T)
+    admin/components/charts/
+      stats-grid.tsx (85L, 1C, 2T)
+    admin/components/common/
+      action-menu.tsx (45L, 1C, 2T)
+      archetype-badge.tsx (68L, 1C, 2T)
+      domain-badge.tsx (68L, 1C, 1T)
+      empty-state.tsx (36L, 1C, 1T)
+      index.ts (11L, 0C, 0T)
+      loading-state.tsx (17L, 1C, 1T)
+      metadata-viewer.tsx (149L, 2C, 1T)
+      money-display.tsx (50L, 1C, 1T)
+      price-display.tsx (49L, 1C, 1T)
+      stats-card.tsx (61L, 1C, 1T)
+      status-badge.tsx (124L, 1C, 2T)
+      tier-badge.tsx (23L, 1C, 1T)
+      timeline-view.tsx (88L, 1C, 2T)
+    admin/components/detail/
+      detail-layout.tsx (150L, 2C, 3T)
+      section-card.tsx (70L, 2C, 2T)
+      tab-layout.tsx (40L, 1C, 2T)
+    admin/components/forms/
+... and 506 more files
+```
+
+## Component Catalog
+
+| Component | File | Kind | Props |
+|---|---|---|---|
+| StatsGrid | admin/components/charts/stats-grid.tsx | function | stats: Stat[], columns: 2 | 3 | 4 | 5 | 6 |
+| ActionMenu | admin/components/common/action-menu.tsx | function | actions: ActionItem[], trigger: React.ReactNode |
+| ArchetypeBadge | admin/components/common/archetype-badge.tsx | function | archetype: string |
+| DomainBadge | admin/components/common/domain-badge.tsx | function | domain: string |
+| EmptyState | admin/components/common/empty-state.tsx | function | title: string, description: string, icon: React.ReactNode, action: {, label: string, onClick: () => void |
+| LoadingState | admin/components/common/loading-state.tsx | function | message: string |
+| JsonNode | admin/components/common/metadata-viewer.tsx | function | metadata: Record<string, unknown> | null | undefined, title: string |
+| MetadataViewer | admin/components/common/metadata-viewer.tsx | function | — |
+| MoneyDisplay | admin/components/common/money-display.tsx | function | amount: number, currency: string, className: string, size: "small" | "medium" | "large" |
+| PriceDisplay | admin/components/common/price-display.tsx | function | amount: number | null | undefined, currencyCode: string, size: "small" | "base" | "large", zeroLabel: string |
+| StatsCard | admin/components/common/stats-card.tsx | function | title: string, value: string | number, change: number, changeLabel: string, icon: React.ReactNode |
+| StatusBadge | admin/components/common/status-badge.tsx | function | status: string |
+| TierBadge | admin/components/common/tier-badge.tsx | function | tier: string |
+| TimelineView | admin/components/common/timeline-view.tsx | function | events: TimelineEvent[], showRelativeTime: boolean |
+| FieldValue | admin/components/detail/detail-layout.tsx | function | title: string, subtitle: string, status: string, backPath: string, sections: SectionDef[], actions: React.ReactNode, loading: boolean, children: React.ReactNode |
+| DetailLayout | admin/components/detail/detail-layout.tsx | function | title: string, subtitle: string, status: string, backPath: string, sections: SectionDef[], actions: React.ReactNode, loading: boolean, children: React.ReactNode |
+| SectionCard | admin/components/detail/section-card.tsx | function | title: string, subtitle: string, actions: React.ReactNode, cols: 1 | 2 | 3 | 4, children: React.ReactNode |
+| FieldRow | admin/components/detail/section-card.tsx | function | title: string, subtitle: string, actions: React.ReactNode, cols: 1 | 2 | 3 | 4, children: React.ReactNode |
+| TabLayout | admin/components/detail/tab-layout.tsx | function | tabs: TabDef[], defaultTab: string |
+| FormDrawer | admin/components/forms/form-drawer.tsx | function | open: boolean, onOpenChange: (open, title: string, description: string, children: React.ReactNode, onSubmit: () => void, submitLabel: string, loading: boolean, size: "small" | "medium" | "large" |
+| MultiFieldForm | admin/components/forms/multi-field-form.tsx | function | fields: FieldConfig[], onSubmit: (values, onCancel: () => void, submitLabel: string, initialValues: Record<string, unknown>, loading: boolean |
+| ConfirmModal | admin/components/modals/confirm-modal.tsx | function | open: boolean, onOpenChange: (open, title: string, description: string, onConfirm: () => void, confirmLabel: string, cancelLabel: string, variant: "danger" | "warning" | "default", loading: boolean |
+| DataTable | admin/components/tables/data-table.tsx | function | — |
+| FilterableTable | admin/components/tables/filterable-table.tsx | function | — |
+| Heading | admin/components/ui/heading.tsx | function | default: h1) */, level: "h1" | "h2" | "h3", className: string, children: ReactNode, id: string, style: CSSProperties |
+| CreditManagementSection | admin/routes/companies/[id]/page.tsx | function | — |
+| SpendingLimitsSection | admin/routes/companies/[id]/page.tsx | function | — |
+| TaxExemptionsSection | admin/routes/companies/[id]/page.tsx | function | — |
+
+## Types & Interfaces
+
+### BookingServiceData
+
+**Kind:** interface | **File:** `__tests__/modules/booking-service.spec.ts`
+
+### MockOrchestrationService
+
+**Kind:** interface | **File:** `__tests__/subscribers/order-state-machine.spec.ts`
+
+### SettlementCreateEvent
+
+**Kind:** interface | **File:** `__tests__/subscribers/settlement-create.spec.ts`
+
+### MockSettlementService
+
+**Kind:** interface | **File:** `__tests__/subscribers/settlement-create.spec.ts`
+
+### Stat
+
+**Kind:** type | **File:** `admin/components/charts/stats-grid.tsx`
+
+### StatsGridProps
+
+**Kind:** type | **File:** `admin/components/charts/stats-grid.tsx`
+
+### ActionItem
+
+**Kind:** interface | **File:** `admin/components/common/action-menu.tsx`
+
+### ActionMenuProps
+
+**Kind:** interface | **File:** `admin/components/common/action-menu.tsx`
+
+### Archetype
+
+**Kind:** type | **File:** `admin/components/common/archetype-badge.tsx`
+
+### ArchetypeBadgeProps
+
+**Kind:** interface | **File:** `admin/components/common/archetype-badge.tsx`
+
+### DomainBadgeProps
+
+**Kind:** interface | **File:** `admin/components/common/domain-badge.tsx`
+
+### EmptyStateProps
+
+**Kind:** interface | **File:** `admin/components/common/empty-state.tsx`
+
+### LoadingStateProps
+
+**Kind:** interface | **File:** `admin/components/common/loading-state.tsx`
+
+### MetadataViewerProps
+
+**Kind:** interface | **File:** `admin/components/common/metadata-viewer.tsx`
+
+### MoneyDisplayProps
+
+**Kind:** type | **File:** `admin/components/common/money-display.tsx`
+
+*... and 284 more types*
+
+## Hooks
+
+| Hook | File | Params | Return |
+|---|---|---|---|
+| useAdvertising | admin/hooks/use-advertising.ts | — | — |
+| useCreateAdCampaign | admin/hooks/use-advertising.ts | — | — |
+| useAffiliates | admin/hooks/use-affiliates.ts | — | — |
+| useCreateAffiliate | admin/hooks/use-affiliates.ts | — | — |
+| useAgriProducts | admin/hooks/use-agriculture.ts | — | — |
+| useCreateAgriProduct | admin/hooks/use-agriculture.ts | — | — |
+| useAnalytics | admin/hooks/use-analytics.ts | — | — |
+| useAnalyticsDetail | admin/hooks/use-analytics.ts | — | — |
+| useVerticalDashboards | admin/hooks/use-analytics.ts | — | — |
+| useVerticalDashboard | admin/hooks/use-analytics.ts | — | — |
+| useAnalyticsFunnel | admin/hooks/use-analytics.ts | — | — |
+| useTopProducts | admin/hooks/use-analytics.ts | — | — |
+| useAttractions | admin/hooks/use-attractions.ts | — | — |
+| useCreateAttraction | admin/hooks/use-attractions.ts | — | — |
+| useAuctions | admin/hooks/use-auctions.ts | — | — |
+| ... | | | | (274 more) |
+
+## Public API Surface
+
+| Export | Kind | File |
+|---|---|---|
+| StatsGrid | function | admin/components/charts/stats-grid.tsx |
+| ActionItem | interface | admin/components/common/action-menu.tsx |
+| ActionMenu | function | admin/components/common/action-menu.tsx |
+| ArchetypeBadge | function | admin/components/common/archetype-badge.tsx |
+| DomainBadge | function | admin/components/common/domain-badge.tsx |
+| EmptyState | function | admin/components/common/empty-state.tsx |
+| LoadingState | function | admin/components/common/loading-state.tsx |
+| MetadataViewer | function | admin/components/common/metadata-viewer.tsx |
+| MoneyDisplay | function | admin/components/common/money-display.tsx |
+| PriceDisplay | function | admin/components/common/price-display.tsx |
+| StatsCard | function | admin/components/common/stats-card.tsx |
+| StatusBadge | function | admin/components/common/status-badge.tsx |
+| TierBadge | function | admin/components/common/tier-badge.tsx |
+| TimelineView | function | admin/components/common/timeline-view.tsx |
+| FieldDef | type | admin/components/detail/detail-layout.tsx |
+| SectionDef | type | admin/components/detail/detail-layout.tsx |
+| DetailLayout | function | admin/components/detail/detail-layout.tsx |
+| SectionCard | function | admin/components/detail/section-card.tsx |
+| FieldRow | function | admin/components/detail/section-card.tsx |
+| TabDef | interface | admin/components/detail/tab-layout.tsx |
+| TabLayout | function | admin/components/detail/tab-layout.tsx |
+| FormDrawer | function | admin/components/forms/form-drawer.tsx |
+| FieldType | type | admin/components/forms/multi-field-form.tsx |
+| FieldConfig | interface | admin/components/forms/multi-field-form.tsx |
+| MultiFieldForm | function | admin/components/forms/multi-field-form.tsx |
+| ... | | | (662 more) |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Component Hierarchy | [medusa-backend-hierarchy.mmd](/generated/diagrams/components/medusa-backend-hierarchy.mmd) |
+| Dependency Graph | [medusa-backend-dependencies.mmd](#) |
+
+## Tests
+
+- `__tests__/auth-keycloak.spec.ts` (531 lines)
+- `__tests__/temporal-activities.spec.ts` (456 lines)
+- `__tests__/activities/fleetbase-activities.spec.ts` (57 lines)
+- `__tests__/integration/cart-checkout.spec.ts` (96 lines)
+- `__tests__/modules/booking-service.spec.ts` (577 lines)
+- `__tests__/subscribers/order-state-machine.spec.ts` (458 lines)
+- `__tests__/subscribers/settlement-create.spec.ts` (328 lines)
+- `activities/__tests__/driver-routing.spec.ts` (32 lines)
+
+---
+*Generated by scripts/docs/generators/deep/app-deep-dive.mjs*

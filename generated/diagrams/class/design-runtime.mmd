@@ -1,0 +1,89 @@
+classDiagram
+  direction TB
+
+  class ThemeConfig ~interface~ {
+    -primaryColor: string
+    -secondaryColor: string
+    -fontFamily: string
+  }
+
+  class Branding ~interface~ {
+    -id: string
+    -name: string
+    -handle: string
+    -logo: {
+    url: string
+    alt?: string
+  }
+    -favicon: {
+    url: string
+  }
+    -themeConfig: ThemeConfig
+    -seo: {
+    title?: string
+    description?: string
+    ogImage?: string | { url: string width?: number height?: number }
+  }
+  }
+
+  class BrandingContextType ~interface~ {
+    +branding: Branding | null
+    +platform: 'web' | 'native'
+    +nativeTokens: Recordstring, string | number | null
+  }
+
+  class BrandingProviderProps ~interface~ {
+    +children: React.ReactNode
+    -branding: Branding | null
+    -platform: 'web' | 'native'
+    -bffThemeUrl: string
+  }
+
+  class CityOSProviderProps ~interface~ {
+    +children: ReactNode
+    -tenant: TenantContextValue
+    -branding: Branding | null
+    -platform: "web" | "native"
+    -bffThemeUrl: string
+  }
+
+  class TenantConfig ~interface~ {
+    +id: string
+    +name: string
+    +slug: string
+    +handle: string
+    -domain: string
+    +residencyZone: string
+    +defaultLocale: string
+    +supportedLocales: string[]
+    +defaultCurrency: string
+    +timezone: string
+    -logoUrl: string
+    -faviconUrl: string
+    ... 4 more
+  }
+
+  class TenantContextValue ~interface~ {
+    +tenant: TenantConfig | null
+    +tenantSlug: string
+    +locale: string
+    +direction: "ltr" | "rtl"
+  }
+
+  class NativeBrandingContextValue ~interface~ {
+    +themeName: ThemeName
+    +setThemeName: (name: ThemeName) = void
+    +tokens: typeof nativeDesignTokens
+    +theme: (typeof nativeThemePresets)[ThemeName]['tokens']
+  }
+
+  class NativeBrandingProviderProps ~interface~ {
+    +children: React.ReactNode
+    -initialTheme: ThemeName
+  }
+
+  class ThemeName  {
+  }
+
+  %% Relationships
+  Branding --> ThemeConfig : themeConfig

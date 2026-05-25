@@ -1,0 +1,94 @@
+graph TD
+  direction TB
+
+  fleetops[fleetops]
+
+  subgraph Layouts[
+    Layouts
+  end
+  MainLayout[MainLayout]
+  fleetops --> MainLayout
+  SettingsLayout[SettingsLayout]
+  fleetops --> SettingsLayout
+
+  subgraph Pages[
+    Pages
+  end
+  PageHeader[PageHeader]
+  MainLayout --> PageHeader
+  FleetbaseTestPage[FleetbaseTestPage]
+  MainLayout --> FleetbaseTestPage
+  SetupPage[SetupPage]
+  MainLayout --> SetupPage
+  AnalyticsPage[AnalyticsPage]
+  MainLayout --> AnalyticsPage
+  AuthCallbackPage[AuthCallbackPage]
+  MainLayout --> AuthCallbackPage
+  LoginPage[LoginPage]
+  MainLayout --> LoginPage
+  RegisterPage[RegisterPage]
+  MainLayout --> RegisterPage
+  DevicesPage[DevicesPage]
+  MainLayout --> DevicesPage
+  EventsPage[EventsPage]
+  MainLayout --> EventsPage
+  SensorsPage[SensorsPage]
+  MainLayout --> SensorsPage
+
+  subgraph Components[
+    Shared Components
+  end
+  FullscreenLoader[FullscreenLoader]
+  MainLayout --> FullscreenLoader
+  AuthGuard[AuthGuard]
+  MainLayout --> AuthGuard
+  AdminGuard[AdminGuard]
+  MainLayout --> AdminGuard
+  ProtectedRoutes[ProtectedRoutes]
+  MainLayout --> ProtectedRoutes
+  Router[Router]
+  MainLayout --> Router
+  App[App]
+  MainLayout --> App
+  CityOSContextSelector[CityOSContextSelector]
+  MainLayout --> CityOSContextSelector
+  ContextRow[ContextRow]
+  MainLayout --> ContextRow
+  CommandPalette[CommandPalette]
+  MainLayout --> CommandPalette
+  DataSourceToggle[DataSourceToggle]
+  MainLayout --> DataSourceToggle
+  MapController[MapController]
+  MainLayout --> MapController
+  Map[Map]
+  MainLayout --> Map
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef layout fill:#fff3e0,stroke:#e65100,stroke-width:1px
+  classDef page fill:#e8f5e9,stroke:#1b5e20,stroke-width:1px
+  classDef component fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class fleetops app
+  class MainLayout layout
+  class SettingsLayout layout
+  class PageHeader page
+  class FleetbaseTestPage page
+  class SetupPage page
+  class AnalyticsPage page
+  class AuthCallbackPage page
+  class LoginPage page
+  class RegisterPage page
+  class DevicesPage page
+  class EventsPage page
+  class SensorsPage page
+  class FullscreenLoader component
+  class AuthGuard component
+  class AdminGuard component
+  class ProtectedRoutes component
+  class Router component
+  class App component
+  class CityOSContextSelector component
+  class ContextRow component
+  class CommandPalette component
+  class DataSourceToggle component
+  class MapController component
+  class Map component

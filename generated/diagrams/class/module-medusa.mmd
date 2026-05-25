@@ -1,0 +1,159 @@
+classDiagram
+  direction TB
+
+  class MedusaClientConfig ~interface~ {
+    +baseUrl: string
+    -apiKey: string
+    -publishableKey: string
+    -timeout: number
+  }
+
+  class MedusaNodeContext ~interface~ {
+    +tenantSlug: string
+    -locale: string
+    -channel: string
+    -nodeId: string
+    -personaId: string
+  }
+
+  class MedusaClientOptions ~interface~ {
+    -nodeContext: MedusaNodeContext
+    -authToken: string
+  }
+
+  class MedusaCart ~interface~ {
+    +id: string
+    -region_id: string
+    +items: MedusaLineItem[]
+    -total: number
+    -subtotal: number
+    -payment_sessions: Recordstring, unknown[]
+  }
+
+  class MedusaProduct ~interface~ {
+    +id: string
+    +title: string
+    -description: string
+    -handle: string
+    +status: string
+    -variants: MedusaVariant[]
+    -images: MedusaImage[]
+    -categories: MedusaCategory[]
+    -metadata: Recordstring, unknown
+  }
+
+  class MedusaVariant ~interface~ {
+    +id: string
+    +title: string
+    -sku: string
+    -prices: MedusaPrice[]
+    -inventory_quantity: number
+  }
+
+  class CreateMedusaVariant ~interface~ {
+    +title: string
+    -sku: string
+    -prices: Array{ amount: number currency_code: string }
+    -inventory_quantity: number
+    -manage_inventory: boolean
+    -options: Array{ value: string }
+  }
+
+  class CreateMedusaProduct ~interface~ {
+    +title: string
+    -handle: string
+    -description: string
+    -status: "draft" | "proposed" | "published" | "rejected"
+    -type: { value: string }
+    -variants: CreateMedusaVariant[]
+    -options: Array{ title: string values?: string[] }
+    -metadata: Recordstring, unknown
+  }
+
+  class MedusaPrice ~interface~ {
+    +id: string
+    +amount: number
+    +currency_code: string
+  }
+
+  class MedusaImage ~interface~ {
+    +id: string
+    +url: string
+  }
+
+  class MedusaCategory ~interface~ {
+    +id: string
+    +name: string
+  }
+
+  class MedusaOrder ~interface~ {
+    +id: string
+    +status: string
+    -customer_id: string
+    +items: MedusaLineItem[]
+    +total: number
+    +currency_code: string
+    +created_at: string
+    -metadata: Recordstring, unknown
+  }
+
+  class MedusaLineItem ~interface~ {
+    +id: string
+    -product_id: string
+    +title: string
+    +quantity: number
+    +unit_price: number
+  }
+
+  class MedusaCustomer ~interface~ {
+    +id: string
+    +email: string
+    -first_name: string
+    -last_name: string
+    -metadata: Recordstring, unknown
+  }
+
+  class MedusaInventoryLevel ~interface~ {
+    +id: string
+    +inventory_item_id: string
+    +location_id: string
+    +stocked_quantity: number
+    +reserved_quantity: number
+    +available_quantity: number
+  }
+
+  class PaginatedResult ~interface~ {
+    +data: T[]
+    +count: number
+    +offset: number
+    +limit: number
+  }
+
+  class MedusaSalesChannel ~interface~ {
+    +id: string
+    +name: string
+    -description: string
+    -is_disabled: boolean
+  }
+
+  class ListFilters ~interface~ {
+    -offset: number
+    -limit: number
+    -q: string
+  }
+
+  class MedusaClient  {
+    +config: MedusaClientConfig
+    -nodeContext: MedusaNodeContext
+    -authToken: string
+  }
+
+  class MedusaApiError  {
+  }
+
+  %% Relationships
+  MedusaClientOptions --> MedusaNodeContext : nodeContext
+  CreateMedusaProduct --> CreateMedusaVariant : variants
+  MedusaClient --> MedusaClientConfig : config
+  MedusaClient --> MedusaNodeContext : nodeContext
+  Error <|-- MedusaApiError

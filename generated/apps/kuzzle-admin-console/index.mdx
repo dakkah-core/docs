@@ -1,0 +1,302 @@
+---
+title: "Kuzzle Admin Console"
+description: "Deep dive into the kuzzle-admin-console application"
+icon: "smartphone"
+---
+
+> **Type:** Web Application (Next.js) | **Framework:** Vitest | **Version:** 4.4.0
+> **Path:** `apps/kuzzle-admin-console` | **Architectural Role:** Admin Dashboard, IoT & Realtime
+
+[Back to Generated Apps](/generated/apps)
+## Overview & Purpose
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 79 | — |
+| Lines of Code | 3,763 | — |
+| Test Coverage | 100.0% | 🟢 |
+| Oversized Files | 1 | 🟡 |
+| Components | 0 | — |
+| Hooks | 0 | — |
+| Types & Interfaces | 35 | — |
+| API Routes | 0 | — |
+| Page Routes | 0 | — |
+| Internal Deps | 0 | — |
+| Dependents | 0 | — |
+
+### ⚠️ Oversized Files
+
+| File | Lines |
+|---|---|
+| apps/kuzzle-admin-console/src/stores/auth.ts | 452 |
+
+## Architecture
+
+### File Structure
+
+```
+main.test.ts (8L, 0C, 0T)
+main.ts (68L, 0C, 1T)
+utils.test.ts (8L, 0C, 0T)
+utils.ts (83L, 0C, 0T)
+validators.test.ts (8L, 0C, 0T)
+validators.ts (36L, 0C, 0T)
+assets/
+  assets/fonts/
+    assets/fonts/anonymous-pro/
+    assets/fonts/gobold/
+    assets/fonts/roboto/
+  assets/images/
+  assets/styles/
+components/
+  components/ApiAction/
+  components/Common/
+    components/Common/Environments/
+    components/Common/Filters/
+    components/Common/Login/
+    components/Common/MappingForm/
+  components/Data/
+    itemsStorage.test.ts (8L, 0C, 0T)
+    itemsStorage.ts (8L, 0C, 0T)
+    components/Data/Collections/
+    components/Data/Documents/
+      components/Data/Documents/Common/
+      components/Data/Documents/FormInputs/
+      components/Data/Documents/Views/
+        components/Data/Documents/Views/Column/
+    components/Data/Indexes/
+    components/Data/Leftnav/
+    components/Data/Realtime/
+  components/Error/
+  components/Materialize/
+  components/Security/
+    components/Security/Common/
+      components/Security/Common/Filters/
+    components/Security/Profiles/
+    components/Security/Roles/
+      components/Security/Roles/Filters/
+... and 81 more files
+```
+
+## Types & Interfaces
+
+### RootVueOptions
+
+**Kind:** type | **File:** `main.ts`
+
+```ts
+type RootVueOptions = NonNullable<ConstructorParameters<typeof Vue>[0]> & {
+  router: ReturnType<typeof createRoutes>;
+  pinia: ReturnType<typeof createPinia>;
+};
+```
+
+### SessionUser
+
+**Kind:** class | **File:** `models/SessionUser.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `any` | — |
+| token | `any` | — |
+| params | `any` | — |
+| rights | `any[]` | — |
+
+### FilterState
+
+**Kind:** interface | **File:** `services/filterManager.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| active | `string | null` | — |
+| quick | `string` | — |
+| basic | `unknown` | — |
+| raw | `unknown` | — |
+| sorting | `unknown` | — |
+| from | `number` | — |
+| size | `number` | — |
+
+### BasicFilterItem
+
+**Kind:** interface | **File:** `services/filterManager.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| attribute | `string | null` | — |
+| operator | `'contains' | 'not_contains' | 'regexp' | 'exists' | 'missing' | string` | — |
+| value | `unknown` | Yes |
+
+### BasicFilterGroups
+
+**Kind:** type | **File:** `services/filterManager.ts`
+
+```ts
+type BasicFilterGroups = BasicFilterItem[][];
+```
+
+### FormField
+
+**Kind:** interface | **File:** `services/formSchema.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| type | `string` | — |
+| inputType | `string` | — |
+| label | `string` | — |
+| model | `string` | — |
+| mapping | `object` | — |
+
+### Schema
+
+**Kind:** interface | **File:** `services/formSchema.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| fields | `FormField[]` | — |
+| unavailable | `string[]` | — |
+
+### FormSchemaService
+
+**Kind:** class | **File:** `services/formSchema.ts`
+
+### KuzzleCompatibilityError
+
+**Kind:** type | **File:** `services/kuzzleWrapper-v1.ts`
+
+```ts
+type KuzzleCompatibilityError = Error & { id: string };
+```
+
+### KuzzleWrapperV1
+
+**Kind:** class | **File:** `services/kuzzleWrapper-v1.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| version | `unknown` | — |
+| kuzzle | `Kuzzle` | — |
+
+### KuzzleWrapperV2
+
+**Kind:** class | **File:** `services/kuzzleWrapper-v2.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| version | `unknown` | — |
+
+### CollectionSettings
+
+**Kind:** interface | **File:** `services/localSettings.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| listViewType | `ListViewType` | Yes |
+| autoSync | `boolean` | Yes |
+| columnView | `{
+    fields: string[];
+  }` | Yes |
+
+### ListViewType
+
+**Kind:** enum | **File:** `services/localSettings.ts`
+
+**Members:** LIST_VIEW_LIST, LIST_VIEW_MAP, LIST_VIEW_TIME_SERIES, LIST_VIEW_COLUMN
+
+### MappingAttributes
+
+**Kind:** interface | **File:** `services/mappingHelpers.ts`
+
+### AttributeProperties
+
+**Kind:** interface | **File:** `services/mappingHelpers.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| fullPath | `string` | — |
+| type | `string` | — |
+
+*... and 20 more types*
+
+## Public API Surface
+
+| Export | Kind | File |
+|---|---|---|
+| antiGlitchOverlayTimeout | const | utils.ts |
+| LS_ENVIRONMENTS | const | utils.ts |
+| LS_LAST_ENV | const | utils.ts |
+| SS_CURRENT_ENV | const | utils.ts |
+| NO_ADMIN_WARNING_HOSTS | const | utils.ts |
+| DEFAULT_COLOR | const | utils.ts |
+| ENV_COLORS | const | utils.ts |
+| formatForDom | function | utils.ts |
+| sortObject | function | utils.ts |
+| truncateName | function | utils.ts |
+| dateFromTimestamp | function | utils.ts |
+| wait | function | utils.ts |
+| startsWithSpace | function | validators.ts |
+| isWhitespace | function | validators.ts |
+| isValidHostname | function | validators.ts |
+| notIncludeScheme | function | validators.ts |
+| isUppercase | function | validators.ts |
+| isValidEnvironment | function | validators.ts |
+| getPersistedItem | function | components/Data/itemsStorage.ts |
+| setPersistedItem | function | components/Data/itemsStorage.ts |
+| env | const | config/env.ts |
+| elements | const | config/schemaMapping.ts |
+| elementJson | const | config/schemaMapping.ts |
+| config | const | config/schemaMapping.ts |
+| highlight | function | filters/highlight.filter.ts |
+| ... | | | (94 more) |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Component Hierarchy | [kuzzle-admin-console-hierarchy.mmd](#) |
+| Dependency Graph | [kuzzle-admin-console-dependencies.mmd](#) |
+
+## Tests
+
+- `main.test.ts` (8 lines)
+- `utils.test.ts` (8 lines)
+- `validators.test.ts` (8 lines)
+- `components/Data/itemsStorage.test.ts` (8 lines)
+- `config/env.test.ts` (8 lines)
+- `config/schemaMapping.test.ts` (8 lines)
+- `directives/focus.directive.test.ts` (8 lines)
+- `directives/json-formatter.directive.test.ts` (8 lines)
+- `filters/highlight.filter.test.ts` (8 lines)
+- `models/SessionUser.test.ts` (8 lines)
+- `plugins/logger.test.ts` (8 lines)
+- `routes/index.test.ts` (8 lines)
+- `routes/children/data.test.ts` (8 lines)
+- `routes/children/errors.test.ts` (8 lines)
+- `routes/children/security.test.ts` (8 lines)
+- `services/collectionHelper.test.ts` (8 lines)
+- `services/documentNotifications.test.ts` (8 lines)
+- `services/filterManager.test.ts` (8 lines)
+- `services/formSchema.test.ts` (8 lines)
+- `services/indexHelpers.test.ts` (8 lines)
+- `services/kuzzleWrapper-v1.test.ts` (8 lines)
+- `services/kuzzleWrapper-v2.test.ts` (8 lines)
+- `services/localSettings.test.ts` (8 lines)
+- `services/mappingHelpers.test.ts` (8 lines)
+- `services/telemetryCookies.test.ts` (8 lines)
+- `services/userCookies.test.ts` (8 lines)
+- `stores/auth.test.ts` (8 lines)
+- `stores/index.test.ts` (8 lines)
+- `stores/kuzzle.test.ts` (8 lines)
+- `stores/routing.test.ts` (8 lines)
+- `stores/storage-index.test.ts` (8 lines)
+- `stores/toaster.test.ts` (8 lines)
+- `stores/types/auth.test.ts` (8 lines)
+- `stores/types/index.test.ts` (8 lines)
+- `stores/types/kuzzle.test.ts` (8 lines)
+- `stores/types/routing.test.ts` (8 lines)
+- `stores/types/storage-index.test.ts` (8 lines)
+- `stores/types/toaster.test.ts` (8 lines)
+
+---
+*Generated by scripts/docs/generators/deep/app-deep-dive.mjs*

@@ -1,0 +1,517 @@
+---
+title: "@cityos/design-system"
+description: "Deep dive into the design-system package"
+icon: "palette"
+---
+
+> **Type:** Design System Package | **Framework:** Node.js | **Version:** 0.1.0
+> **Path:** `packages/design-system` | **LOC:** 13,894 lines across 152 files
+
+[Back to Generated Packages](/generated/packages)
+> **Depends on:** [design-runtime](/generated/packages/design-runtime), [design-tokens](/generated/packages/design-tokens), [universal-ui](#)
+> **Used by:** [business-dashboard](/generated/apps/business-dashboard), [city-dashboard](/generated/apps/city-dashboard), [dev-portal](/generated/apps/dev-portal), [fleetops](/generated/apps/fleetops), [hostinger-root-portal](/generated/apps/hostinger-root-portal) +11 more
+
+## Overview & Design Philosophy
+
+The `@cityos/design-system` package is a comprehensive design system designed to support the Dakkah CityOS monorepo. It provides a set of reusable components, hooks, and theming capabilities that ensure consistency across various platforms and applications within the ecosystem.
+
+## Design Tokens, Component Primitives, and Theming Architecture
+
+### Design Tokens
+Design tokens are centralized values that define the visual language of the design system. They include colors, typography, spacing, and other styling properties. These tokens are defined in the `@cityos/design-tokens` package and are used across all components to maintain consistency.
+
+### Component Primitives
+The design system includes a set of low-level component primitives that serve as building blocks for more complex components. These primitives ensure a consistent look and feel across the platform and facilitate rapid development.
+
+### Theming Architecture
+Theming is managed through a theming architecture that allows for customization and extension of the default theme. The `@cityos/design-system` package provides a set of default themes, which can be overridden or extended by individual applications to meet specific branding requirements.
+
+## Accessibility Standards (WCAG) and Inclusive Design Patterns
+
+The design system adheres to WCAG 2.1 accessibility standards to ensure that all users, including those with disabilities, can access and interact with the platform effectively. Key inclusive design patterns include:
+
+- **Keyboard Navigation**: All interactive components are fully keyboard navigable.
+- **Screen Reader Support**: Components are designed to be accessible to screen readers, ensuring that all content is readable by assistive technologies.
+- **Color Contrast**: The design system enforces sufficient color contrast ratios to meet WCAG guidelines.
+- **Aria Attributes**: Appropriate ARIA attributes are used to enhance the accessibility of interactive components.
+
+## Cross-Platform Strategy (Web vs Native vs Embedded)
+
+The `@cityos/design-system` package is designed with a cross-platform strategy in mind, supporting web, native, and embedded platforms. This is achieved through:
+
+- **Universal UI Components**: The design system includes universal UI components that can be rendered on both web and native platforms using the `@cityos/universal-ui` library.
+- **Platform-Specific Implementations**: For platform-specific features or optimizations, the design system provides hooks and utilities that allow developers to implement platform-specific logic.
+
+## Component Composition Patterns and Slot Architecture
+
+### Component Composition
+Components are composed of smaller, reusable components following a modular architecture. This approach allows for easy customization and extension of individual components while maintaining consistency across the design system.
+
+### Slot Architecture
+The slot architecture enables developers to customize the appearance and behavior of components by providing slots for content injection. This pattern is particularly useful for creating flexible UI elements that can adapt to different use cases.
+
+## Design Governance — How Components are Validated and Approved
+
+### Validation Process
+Components undergo a rigorous validation process to ensure they meet design, accessibility, and performance standards. The validation process includes:
+
+- **Automated Testing**: Automated tests cover various aspects of component functionality, including visual regression, accessibility checks, and performance benchmarks.
+- **Manual Review**: Components are reviewed by a team of designers and developers to ensure they align with the overall design system guidelines.
+
+### Approval Process
+Components are approved through a formal review process that involves:
+
+- **Design Reviews**: Designers review components for consistency with the design language and user experience principles.
+- **Development Reviews**: Developers review components for code quality, performance, and maintainability.
+- **Stakeholder Approvals**: Key stakeholders from various teams provide input and approval before components are released.
+
+## Directory Structure
+
+The `@cityos/design-system` package follows a well-organized directory structure that facilitates development and maintenance:
+
+```
+packages/design-system/
+├── app-loading.ts
+├── env.ts
+├── index.ts
+├── lazy.test.ts
+├── lazy.ts
+├── skip-link.ts
+├── __tests__/
+│   ├── a11y.test.tsx
+│   ├── block-error-boundary.test.tsx
+│   ├── index-contract.test.ts
+├── blocks/
+│   ├── AppErrorBoundary.tsx
+│   ├── AppLoading.tsx
+│   ├── BlockErrorBoundary.tsx
+│   ├── CityOSBlocks.stories.tsx
+│   ├── CityOSBlocks.tsx
+│   ├── blockErrorTransport.test.ts
+│   ├── blockErrorTransport.ts
+├── components/
+│   └── components/manage/
+```
+
+## Key Exports
+
+The package exports a variety of components, hooks, and types that are essential for building applications within the Dakkah CityOS ecosystem:
+
+- **Lazy Components**: Lazy-loaded components such as `LazyDataTable`, `LazyCommandPalette`, etc., which improve performance by deferring loading until necessary.
+- **Error Handling Components**: Components like `AppErrorBoundary` and `BlockErrorBoundary` for robust error handling and user feedback.
+- **Utility Functions and Types**: Various utility functions and types that support component development and ensure type safety.
+
+## Dependencies
+
+The design system relies on several key dependencies to function:
+
+- **@cityos/design-runtime**: Provides runtime utilities and services required by the design system.
+- **@cityos/design-tokens**: Contains the design tokens used throughout the design system.
+- **@cityos/universal-ui**: Enables universal UI components that can be rendered across different platforms.
+
+## Consumers
+
+The `@cityos/design-system` package is consumed by a wide range of applications and packages within the Dakkah CityOS monorepo, ensuring consistent design and functionality across the ecosystem:
+
+- **Business Dashboard**
+- **City Dashboard**
+- **Dev Portal**
+- **FleetOps**
+- **Hostinger Root Portal**
+- **Smart City Portal**
+- **Storefront**
+- **Storybook**
+- **Web Platform**
+- **AI Assistant**
+
+By adhering to these guidelines and strategies, the
+
+## Architecture
+
+The `@cityos/design-system` package is a comprehensive design system built using Node.js, designed to provide a consistent look and feel across various applications within the CityOS ecosystem. This document outlines the architecture of the package, focusing on token hierarchy, component implementation patterns, cross-renderer support, build optimization, and integration with design tools.
+
+## Token Hierarchy
+
+The design tokens in `@cityos/design-system` are organized into a hierarchical structure to ensure consistency and scalability:
+
+1. **Primitive Tokens**: These are the foundational values that define basic properties such as colors, typography, spacing, and sizing.
+2. **Semantic Tokens**: Built on top of primitives, semantic tokens represent higher-level design concepts like button styles or card layouts.
+3. **Component Tokens**: Specific to individual components, these tokens provide detailed styling for each component type.
+4. **Theme Tokens**: These tokens allow for theming by overriding the default values with custom themes.
+
+## Component Implementation Patterns
+
+The package employs several patterns to ensure flexible and reusable component implementations:
+
+1. **Compound Components**: A compound component pattern is used where a parent component manages the state and behavior of its child components, allowing for complex interactions.
+2. **Controlled Components**: These components manage their own internal state but allow external control through props, enhancing reusability and predictability.
+3. **Headless Components**: Designed to provide functionality without any UI, headless components are useful for creating highly customizable interfaces.
+
+## Cross-Renderer Architecture
+
+To support both web and native platforms, the design system uses a cross-renderer architecture:
+
+1. **Web Component Variants**: Components are designed using React or other web frameworks, ensuring they work seamlessly in browser environments.
+2. **Native Component Variants**: For mobile applications, native components are implemented using React Native or similar frameworks, maintaining platform-specific performance and behavior.
+
+## Build and Tree-Shaking Optimization
+
+The package is optimized for build size and performance through:
+
+1. **Lazy Loading**: Components are lazily loaded to reduce initial bundle size, improving load times.
+2. **Tree Shaking**: Unused code is automatically removed during the build process, ensuring that only necessary modules are included in the final bundle.
+
+## Design Tool Integration
+
+The design system integrates with popular design tools to facilitate collaboration and development:
+
+1. **Figma**: The design tokens and components are exported to Figma for visual design and prototyping.
+2. **Storybook**: A Storybook setup is provided to document and showcase all components, allowing developers to explore and test them in isolation.
+
+## Directory Structure
+
+The package follows a structured directory layout to organize code and assets:
+
+```
+packages/design-system/
+├── app-loading.ts
+├── env.ts
+├── index.ts
+├── lazy.test.ts
+├── lazy.ts
+├── skip-link.ts
+├── __tests__/
+│   ├── a11y.test.tsx
+│   ├── block-error-boundary.test.tsx
+│   ├── index-contract.test.ts
+├── blocks/
+│   ├── AppErrorBoundary.tsx
+│   ├── AppLoading.tsx
+│   ├── BlockErrorBoundary.tsx
+│   ├── CityOSBlocks.stories.tsx
+│   ├── CityOSBlocks.tsx
+│   ├── blockErrorTransport.test.ts
+│   ├── blockErrorTransport.ts
+├── components/
+│   └── components/manage/
+```
+
+## Key Exports
+
+The package exports a variety of components, hooks, and types:
+
+- **Components**: `LazyDataTable`, `LazyCommandPalette`, `LazyCalendar`, etc.
+- **Hooks**: Not explicitly listed in the provided information.
+- **Types**: Various interfaces and type definitions.
+- **Utility Functions**: `designSystemEnv`, `AppErrorBoundaryProps`, `AppLoadingProps`, etc.
+
+## Dependencies
+
+The package relies on several other CityOS packages:
+
+- `@cityos/design-runtime`: Provides runtime utilities for design system components.
+- `@cityos/design-tokens`: Contains the design tokens used across the system.
+- `@cityos/universal-ui`: Offers cross-platform UI components and utilities.
+
+## Consumers
+
+The design system is consumed by multiple applications and packages within the CityOS ecosystem:
+
+- **Apps**: `business-dashboard`, `city-dashboard`, `dev-portal`, `fleetops`, `hostinger-root-portal`, `smart-city-portal`, `storefront`, `storybook`, `web-platform`.
+- **Packages**: `ai-assistant`.
+
+## Conclusion
+
+The `@cityos/design-system` package is a robust and scalable design system that supports both web and native platforms. Its modular architecture, optimized build process, and integration with design tools make it an essential component of the CityOS ecosystem.
+
+## Public API Surface
+
+### Components (461)
+
+| Name | Kind | File |
+|---|---|---|
+| LazyDataTable | const | lazy.ts |
+| LazyCommandPalette | const | lazy.ts |
+| LazyCalendar | const | lazy.ts |
+| LazyFileUpload | const | lazy.ts |
+| LazyMapPicker | const | lazy.ts |
+| LazyRichTextEditor | const | lazy.ts |
+| LazyMediaUploader | const | lazy.ts |
+| AppErrorBoundary | function | blocks/AppErrorBoundary.tsx |
+| Loading | function | blocks/AppLoading.tsx |
+| AppLoading | function | blocks/AppLoading.tsx |
+| EmptyBlocks | const | blocks/CityOSBlocks.stories.tsx |
+| SingleBlock | const | blocks/CityOSBlocks.stories.tsx |
+| MultiBlockPage | const | blocks/CityOSBlocks.stories.tsx |
+| CrossDomainPage | const | blocks/CityOSBlocks.stories.tsx |
+| UnknownBlockTypeFallback | const | blocks/CityOSBlocks.stories.tsx |
+| NoFallbackSilentDrop | const | blocks/CityOSBlocks.stories.tsx |
+| CustomWrapperClass | const | blocks/CityOSBlocks.stories.tsx |
+| RTLPage | const | blocks/CityOSBlocks.stories.tsx |
+| CityOSBlocks | const | blocks/CityOSBlocks.tsx |
+| Container | function | components/manage/container.tsx |
+| ... | | | (441 more) |
+
+### Hooks (5)
+
+| Name | Kind | File |
+|---|---|---|
+| useCarousel | function | components/ui/carousel.tsx |
+| useChartColors | const | components/ui/chart.tsx |
+| useA11yAnnouncer | function | components/ui/live-region.tsx |
+| useToast | function | components/ui/toast-system.tsx |
+| useReducedMotionPreference | function | hooks/useReducedMotionPreference.ts |
+
+### Functions (10)
+
+| Name | Kind | File |
+|---|---|---|
+| createBlockErrorReporter | function | blocks/blockErrorTransport.ts |
+| cn | function | utils/cn.ts |
+| getStatusClasses | function | utils/style-migration-helpers.ts |
+| getStatusClass | function | utils/style-migration-helpers.ts |
+| getStateClasses | function | utils/style-migration-helpers.ts |
+| cssVarStyle | function | utils/style-migration-helpers.ts |
+| cssVarsStyle | function | utils/style-migration-helpers.ts |
+| conditionalBorder | function | utils/style-migration-helpers.ts |
+| conditionalColors | function | utils/style-migration-helpers.ts |
+| priorityToStatus | function | utils/style-migration-helpers.ts |
+
+### Types (128)
+
+| Name | Kind | File |
+|---|---|---|
+| AppErrorBoundaryProps | interface | blocks/AppErrorBoundary.tsx |
+| AppLoadingProps | interface | blocks/AppLoading.tsx |
+| BlockErrorBoundaryProps | interface | blocks/BlockErrorBoundary.tsx |
+| BaseBlock | interface | blocks/CityOSBlocks.tsx |
+| BlockComponentProps | type | blocks/CityOSBlocks.tsx |
+| BlockComponentsMap | type | blocks/CityOSBlocks.tsx |
+| CityOSBlocksProps | interface | blocks/CityOSBlocks.tsx |
+| BlockErrorPayload | interface | blocks/blockErrorTransport.ts |
+| ReportBlockErrorContext | interface | blocks/blockErrorTransport.ts |
+| ReportBlockErrorOptions | interface | blocks/blockErrorTransport.ts |
+| FieldType | type | components/manage/form-drawer.tsx |
+| FormField | interface | components/manage/form-drawer.tsx |
+| FieldType | type | components/manage/types.ts |
+| FormField | interface | components/manage/types.ts |
+| A11yFieldRenderProps | interface | components/ui/a11y-field.tsx |
+| A11yFieldProps | interface | components/ui/a11y-field.tsx |
+| AccessibleIconButtonProps | interface | components/ui/accessible-icon-button.tsx |
+| AccordionProps | interface | components/ui/accordion.tsx |
+| AccordionItemProps | interface | components/ui/accordion.tsx |
+| AccordionTriggerProps | interface | components/ui/accordion.tsx |
+| ... | | | (108 more) |
+
+### Classes (2)
+
+| Name | Kind | File |
+|---|---|---|
+| BlockErrorBoundary | class | blocks/BlockErrorBoundary.tsx |
+| ErrorBoundary | class | components/ui/error-boundary.tsx |
+
+### Constants (8)
+
+| Name | Kind | File |
+|---|---|---|
+| designSystemEnv | const | env.ts |
+| reportBlockError | const | blocks/blockErrorTransport.ts |
+| buttonPrimitiveVariants | const | components/ui/button-primitive.tsx |
+| buttonVariants | const | components/ui/button.tsx |
+| navigationMenuTriggerStyle | const | components/ui/navigation-menu.tsx |
+| reducer | const | hooks/use-toast.tsx |
+| statusToClasses | const | utils/style-migration-helpers.ts |
+| stateToClasses | const | utils/style-migration-helpers.ts |
+
+## Component Catalog
+
+| Component | File | Kind | Props |
+|---|---|---|---|
+| AppErrorBoundary | blocks/AppErrorBoundary.tsx | function | error: Error & { digest |
+| Loading | blocks/AppLoading.tsx | function | loadingLabel: string |
+| AppLoading | blocks/AppLoading.tsx | function | loadingLabel: string |
+| Container | components/manage/container.tsx | function | children: ReactNode, className: string |
+| FocusModal | components/manage/focus-modal.tsx | function | open: boolean, onClose: () => void, title: string, children: ReactNode, className: string |
+| FormDrawer | components/manage/form-drawer.tsx | function | open: boolean, onClose: () => void, title: string, description: string, fields: FormField[], values: Record<string, unknown>, onChange: (key, onSubmit: () => void, loading: boolean, submitLabel: string, cancelLabel: string |
+| Heading | components/manage/heading.tsx | function | level: HeadingLevel, children: ReactNode, className: string |
+| IconButton | components/manage/icon-button.tsx | function | — |
+| ManageDrawer | components/manage/manage-drawer.tsx | function | open: boolean, onClose: () => void, title: string, description: string, children: ReactNode, footer: ReactNode, className: string |
+| PageHeader | components/manage/page-header.tsx | function | title: string, subtitle: string, breadcrumbs: ReactNode, actions: ReactNode, className: string |
+| SectionCard | components/manage/section-card.tsx | function | title: string, subtitle: string, headerAction: ReactNode, children: ReactNode, noPadding: boolean, className: string |
+| StatCard | components/manage/stats-grid.tsx | function | icon: ReactNode, label: string, value: string | number, trend: { value, positive: boolean |
+| StatsGrid | components/manage/stats-grid.tsx | function | icon: ReactNode, label: string, value: string | number, trend: { value, positive: boolean |
+| Text | components/manage/text.tsx | function | size: TextSize, color: TextColor, weight: "normal" | "medium" | "semibold", as: "p" | "span" | "div", leading: "tight" | "normal" | "relaxed", children: ReactNode, className: string |
+| A11yField | components/ui/a11y-field.tsx | function | id: string, required: boolean |
+| CalendarDemo | components/ui/calendar.stories.tsx | function | — |
+| RangeCalendarDemo | components/ui/calendar.stories.tsx | function | — |
+| Calendar | components/ui/calendar.tsx | function | selected: Date | null, onSelect: (date, rangeStart: Date | null, rangeEnd: Date | null, onRangeSelect: (start, minDate: Date, maxDate: Date, className: string |
+| RadioGroup | components/ui/checkbox.tsx | function | value: string, defaultValue: string, onValueChange: (value, name: string, children: React.ReactNode, className: string |
+| ChipBar | components/ui/chip-bar.tsx | function | items: ChipBarItem[], previousLabel: string, nextLabel: string, renderLink: (props, children: React.ReactNode, className: string, onClick: () => void |
+| CommandPaletteDemo | components/ui/command-palette.stories.tsx | function | — |
+| CommandPalette | components/ui/command-palette.tsx | function | items: CommandItem[], open: boolean, onClose: () => void, onSelect: (item, placeholder: string, emptyText: string, renderItem: (props, item: CommandItem, active: boolean, index: number, onClick: () => void, onMouseEnter: () => void |
+| ComparisonTable | components/ui/comparison-table.tsx | function | products: ComparisonProduct[], featureLabels: { key, label: string |
+| DataTable | components/ui/data-table.tsx | function | — |
+| Dialog | components/ui/dialog.tsx | function | open: boolean, onOpenChange: (open, children: React.ReactNode |
+| DialogTrigger | components/ui/dialog.tsx | function | open: boolean, onOpenChange: (open, children: React.ReactNode |
+| DialogContent | components/ui/dialog.tsx | function | — |
+| DialogHeader | components/ui/dialog.tsx | function | — |
+| DialogTitle | components/ui/dialog.tsx | function | — |
+| DialogDescription | components/ui/dialog.tsx | function | — |
+| DialogFooter | components/ui/dialog.tsx | function | — |
+| DialogClose | components/ui/dialog.tsx | function | — |
+| FileUpload | components/ui/file-upload.tsx | function | accept: string, multiple: boolean, maxSizeMB: number, onFiles: (files, disabled: boolean, className: string |
+| FormError | components/ui/form-error.tsx | function | error: string | null, className: string |
+| FormField | components/ui/form-error.tsx | function | error: string | null, className: string |
+| ImageGallery | components/ui/image-gallery.tsx | function | images: GalleryImage[], className: string |
+| InfiniteScroll | components/ui/infinite-scroll.tsx | function | onLoadMore: () => void, hasMore: boolean, loading: boolean, children: React.ReactNode, threshold: number, loadingText: string |
+| LiveRegionProvider | components/ui/live-region.tsx | function | — |
+| MapPickerDemo | components/ui/map-picker.stories.tsx | function | — |
+| MapPicker | components/ui/map-picker.tsx | function | value: LatLng | null, onChange: (point, zoom: number, height: string, placeholder: string, className: string |
+| ... | | | | (20 more) |
+
+## Type System
+
+### GlobalWithProcessEnv
+
+**Kind:** type | **File:** `env.ts`
+
+### ButtonPrimitiveProps
+
+**Kind:** type | **File:** `index.ts`
+
+### SelectProps
+
+**Kind:** type | **File:** `index.ts`
+
+### SelectMode
+
+**Kind:** type | **File:** `index.ts`
+
+### SelectOption
+
+**Kind:** type | **File:** `index.ts`
+
+### NativeSelectProps
+
+**Kind:** type | **File:** `index.ts`
+
+### TextareaProps
+
+**Kind:** type | **File:** `index.ts`
+
+### AvatarProps
+
+**Kind:** type | **File:** `index.ts`
+
+### SkeletonProps
+
+**Kind:** type | **File:** `index.ts`
+
+### ProgressProps
+
+**Kind:** type | **File:** `index.ts`
+
+### SeparatorProps
+
+**Kind:** type | **File:** `index.ts`
+
+### TooltipProps
+
+**Kind:** type | **File:** `index.ts`
+
+### ToastProps
+
+**Kind:** type | **File:** `index.ts`
+
+### ToastActionElement
+
+**Kind:** type | **File:** `index.ts`
+
+### ToastType
+
+**Kind:** type | **File:** `index.ts`
+
+### ToastItem
+
+**Kind:** type | **File:** `index.ts`
+
+### ToastContextValue
+
+**Kind:** type | **File:** `index.ts`
+
+### ToastProviderProps
+
+**Kind:** type | **File:** `index.ts`
+
+### ToasterToast
+
+**Kind:** type | **File:** `index.ts`
+
+### AppErrorBoundaryProps
+
+**Kind:** type | **File:** `index.ts`
+
+*... and 221 more types*
+
+## Hooks
+
+| Hook | File | Params | Return |
+|---|---|---|---|
+| useCarousel | components/ui/carousel.tsx | — | — |
+| useChartColors | components/ui/chart.tsx | — | — |
+| useA11yAnnouncer | components/ui/live-region.tsx | — | — |
+| useToast | components/ui/toast-system.tsx | — | — |
+| useToast | hooks/use-toast.tsx | — | — |
+| useReducedMotionPreference | hooks/useReducedMotionPreference.ts | — | — |
+
+## Dependencies
+
+### CityOS Core
+
+| Package | Type | Consumer |
+|---|---|---|
+| @cityos/design-runtime | prod | [design-runtime](/generated/packages/design-runtime) |
+| @cityos/design-tokens | prod | [design-tokens](/generated/packages/design-tokens) |
+| @cityos/universal-ui | prod | [universal-ui](#) |
+
+## Consumers & Impact
+
+This package is used by:
+
+| Consumer | Type | Impact |
+|---|---|---|
+| [business-dashboard](/generated/apps/business-dashboard) | apps | 🔴 Runtime dependency |
+| [city-dashboard](/generated/apps/city-dashboard) | apps | 🔴 Runtime dependency |
+| [dev-portal](/generated/apps/dev-portal) | apps | 🔴 Runtime dependency |
+| [fleetops](/generated/apps/fleetops) | apps | 🔴 Runtime dependency |
+| [hostinger-root-portal](/generated/apps/hostinger-root-portal) | apps | 🔴 Runtime dependency |
+| [smart-city-portal](#) | apps | 🔴 Runtime dependency |
+| [storefront](#) | apps | 🔴 Runtime dependency |
+| [storybook](#) | apps | 🔴 Runtime dependency |
+| [web-platform](#) | apps | 🔴 Runtime dependency |
+| [ai-assistant](/generated/packages/ai-assistant) | packages | 🟡 Build-time dependency |
+| [blocks-b2b](/generated/packages/blocks-b2b) | packages | 🟡 Build-time dependency |
+| [blocks-booking](/generated/packages/blocks-booking) | packages | 🟡 Build-time dependency |
+| [blocks-commerce](/generated/packages/blocks-commerce) | packages | 🟡 Build-time dependency |
+| [blocks-core](/generated/packages/blocks-core) | packages | 🟡 Build-time dependency |
+| [blocks-finance](/generated/packages/blocks-finance) | packages | 🟡 Build-time dependency |
+| [blocks-governance](/generated/packages/blocks-governance) | packages | 🟡 Build-time dependency |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [design-system.mmd](/generated/diagrams/class/design-system.mmd) |
+| Dependency Graph | [design-system-dependencies.mmd](/generated/diagrams/dependencies/design-system-dependencies.mmd) |
+
+## Tests
+
+- `lazy.test.ts` (31 lines)
+- `__tests__/a11y.test.tsx` (256 lines)
+- `__tests__/block-error-boundary.test.tsx` (73 lines)
+- `__tests__/index-contract.test.ts` (21 lines)
+- `blocks/blockErrorTransport.test.ts` (84 lines)
+- `utils/cn.test.ts` (13 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

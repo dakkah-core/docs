@@ -1,0 +1,1304 @@
+classDiagram
+  direction TB
+
+  class ActionHandlerConfig ~interface~ {
+    -onNavigate: NavigateHandler
+    -onMutation: MutationHandler
+    -onHardwareAccess: HardwareAccessHandler
+    -onCopyText: CopyTextHandler
+    -onShare: ShareHandler
+    -onOpenUrl: OpenUrlHandler
+    -onIntent: IntentHandler
+    -onFormSubmit: FormSubmitHandler
+  }
+
+  class NavigateHandler  {
+  }
+
+  class MutationHandler  {
+  }
+
+  class HardwareAccessHandler  {
+  }
+
+  class CopyTextHandler  {
+  }
+
+  class ShareHandler  {
+  }
+
+  class OpenUrlHandler  {
+  }
+
+  class IntentHandler  {
+  }
+
+  class FormSubmitHandler  {
+  }
+
+  class SpacingKey  {
+  }
+
+  class RadiusKey  {
+  }
+
+  class SdFormField ~interface~ {
+    +name: string
+    +label: string
+    +fieldType: "text" | "email" | "tel" | "number" | "textarea" | "select" | "radio" | "checkbox" | "date" | "time"
+    -placeholder: string
+    -required: boolean
+    -defaultValue: string
+    -options: { value: string label: string }[]
+  }
+
+  class SdFormNode ~interface~ {
+    +type: "form"
+    +id: string
+    +fields: SdFormField[]
+    +submitAction: SdAction
+    -submitLabel: string
+    -title: string
+    -description: string
+    -modifiers: import("@dakkah/sdui-protocol").SdModifiers
+  }
+
+  class SduiRendererProps ~interface~ {
+    +node: RenderableSdNode
+    -theme: "light" | "dark"
+    -MapViewComponent: React.ComponentTypeMapViewProps
+  }
+
+  class MapViewProps ~interface~ {
+    +latitude: number
+    +longitude: number
+    -zoom: number
+    -height: number
+    -markers: SdMapNode["markers"]
+    -style: ViewStyle
+  }
+
+  class ExtendedSdNode  {
+  }
+
+  class RenderableSdNode  {
+  }
+
+  class RenderableFormNode  {
+  }
+
+  class FontWeightValue  {
+  }
+
+  class SpacingKey  {
+  }
+
+  class BorderRadiusKey  {
+  }
+
+  class CapturedQueryOptions  {
+  }
+
+  class SduiNode ~interface~ {
+    +type: string
+    -id: string
+    -title: string
+    -subtitle: string
+    -badge: string
+    -image: string
+    -content: string
+    -label: string
+    -value: string | number
+    -icon: string
+    -trend: string
+    -variant: string
+    ... 7 more
+  }
+
+  class UseSduiScreenOptions ~interface~ {
+    +screenId: string
+    -surface: string
+    -baseUrl: string
+    -fetcher: SduiFetcher
+    -refetchInterval: number
+    -staleTime: number
+    -retry: number | boolean
+    -fallback: SduiNode | (() = SduiNode)
+    -enabled: boolean
+  }
+
+  class SduiFetcher  {
+  }
+
+  class KpiItem ~interface~ {
+    +label: string
+    +value: string
+    +change: string
+    +trend: "up" | "down" | "flat"
+  }
+
+  class ChartDataset ~interface~ {
+    +label: string
+    +values: number[]
+  }
+
+  class ChartData ~interface~ {
+    +labels: string[]
+    +datasets: ChartDataset[]
+  }
+
+  class SdAnalyticsPanelNode ~interface~ {
+    +type: "analytics_panel"
+    +id: string
+    +kpis: KpiItem[]
+    -chartData: ChartData
+    +period: AnalyticsPeriod
+    +periodAction: SdAction
+    -modifiers: SdModifiers
+  }
+
+  class SdAnalyticsPanelProps ~interface~ {
+    +node: SdAnalyticsPanelNode
+    +theme: "light" | "dark"
+  }
+
+  class AnalyticsStrings ~interface~ {
+    +periodLabels: RecordAnalyticsPeriod, string
+    +trendUp: string
+    +trendDown: string
+    +trendFlat: string
+    +chartTitle: string
+  }
+
+  class AnalyticsPeriod  {
+  }
+
+  class FontWeightValue  {
+  }
+
+  class ServiceType ~interface~ {
+    +id: string
+    +name: string
+    +icon: string
+    +estimatedDuration: number
+    +price: number
+  }
+
+  class Garage ~interface~ {
+    +id: string
+    +name: string
+    +rating: number
+    +distance: string
+    +nextSlot: string
+    +bookAction: SdAction
+  }
+
+  class VehicleInfo ~interface~ {
+    +make: string
+    +model: string
+    +year: number
+    +plate: string
+  }
+
+  class SdAutomotiveServiceNode ~interface~ {
+    +type: "automotive_service"
+    +id: string
+    +serviceTypes: ServiceType[]
+    +garages: Garage[]
+    -vehicleInfo: VehicleInfo
+    -modifiers: SdModifiers
+  }
+
+  class SdAutomotiveServiceProps ~interface~ {
+    +node: SdAutomotiveServiceNode
+    +theme: "light" | "dark"
+  }
+
+  class FontWeightValue  {
+  }
+
+  class SdBiometricNode ~interface~ {
+    +type: "biometric_gate"
+    +id: string
+    +prompt: string
+    +onSuccess: SdAction
+    +onFailure: SdAction
+    -modifiers: SdModifiers
+  }
+
+  class LocalAuthModule ~interface~ {
+    +hasHardwareAsync: () = Promiseboolean
+    +isEnrolledAsync: () = Promiseboolean
+    +authenticateAsync: (opts: {
+    promptMessage: string
+    fallbackLabel?: string
+    disableDeviceFallback?: boolean
+  }) = Promise{ success: boolean }
+  }
+
+  class BiometricState  {
+  }
+
+  class FontWeightValue  {
+  }
+
+  class BookingSlot ~interface~ {
+    +date: string
+    +time: string
+    +available: boolean
+    -price: number | string
+  }
+
+  class SdBookingGridNode ~interface~ {
+    +type: "booking_grid"
+    +id: string
+    +slots: BookingSlot[]
+    +onSelect: SdAction
+    -title: string
+    -currency: string
+    -modifiers: SdModifiers
+  }
+
+  class SdBookingGridProps ~interface~ {
+    +node: SdBookingGridNode
+    +theme: "light" | "dark"
+  }
+
+  class FontWeightValue  {
+  }
+
+  class CampaignItem ~interface~ {
+    +id: string
+    +name: string
+    +status: CampaignStatus
+    +startDate: string
+    +endDate: string
+    +budget: number
+    +spent: number
+    +impressions: number
+    -createAction: SdAction
+  }
+
+  class SdCampaignBuilderNode ~interface~ {
+    +type: "campaign_builder"
+    +id: string
+    +campaigns: CampaignItem[]
+    +createAction: SdAction
+    -modifiers: SdModifiers
+  }
+
+  class SdCampaignBuilderProps ~interface~ {
+    +node: SdCampaignBuilderNode
+    +theme: "light" | "dark"
+  }
+
+  class CampaignStrings ~interface~ {
+    +title: string
+    +createCampaign: string
+    +budget: string
+    +spent: string
+    +impressions: string
+    +noCampaigns: string
+    +statusLabels: RecordCampaignStatus, string
+    +dateRange: (start: string, end: string) = string
+  }
+
+  class CampaignStatus  {
+  }
+
+  class FontWeightValue  {
+  }
+
+  class CustomerEntry ~interface~ {
+    +id: string
+    +name: string
+    +email: string
+    +totalOrders: number
+    +totalSpent: number
+    +lastOrderDate: string
+    +detailAction: SdAction
+  }
+
+  class SdCustomerListNode ~interface~ {
+    +type: "customer_list"
+    +customers: CustomerEntry[]
+    +searchAction: SdAction
+    +totalCount: number
+    -modifiers: SdModifiers
+  }
+
+  class SdCustomerListProps ~interface~ {
+    +node: SdCustomerListNode
+    +theme: "light" | "dark"
+  }
+
+  class CustomerStrings ~interface~ {
+    +customers: string
+    +searchPlaceholder: string
+    +orders: string
+    +lifetimeValue: string
+    +lastOrder: string
+    +sarSymbol: string
+    +noCustomers: string
+  }
+
+  class FontWeightValue  {
+  }
+
+  class DisputeTimelineEntry ~interface~ {
+    +date: string
+    +event: string
+    +actor: string
+  }
+
+  class SdDisputeHandlerNode ~interface~ {
+    +type: "dispute_handler"
+    +id: string
+    +disputeId: string
+    +orderId: string
+    +status: DisputeStatus
+    +reason: string
+    +timeline: DisputeTimelineEntry[]
+    -evidenceAction: SdAction
+    -resolveAction: SdAction
+    -modifiers: SdModifiers
+  }
+
+  class DisputeStatus  {
+  }
+
+  class FontWeightValue  {
+  }
+
+  class ValidationRule ~interface~ {
+    -required: boolean
+    -minLength: number
+    -maxLength: number
+    -pattern: string
+    -patternMessage: string
+  }
+
+  class FormFieldSpec ~interface~ {
+    +name: string
+    +label: string
+    +fieldType: "text" | "email" | "phone" | "select" | "date" | "toggle" | "textarea" | "number"
+    -placeholder: string
+    -defaultValue: string
+    -options: Array{ value: string label: string }
+    -validation: ValidationRule
+  }
+
+  class SdFormNode ~interface~ {
+    +type: "form"
+    +id: string
+    +fields: FormFieldSpec[]
+    +submitAction: SdAction
+    -submitLabel: string
+    -title: string
+    -description: string
+    -modifiers: SdModifiers
+  }
+
+  class SdFormProps ~interface~ {
+    +node: SdFormNode
+    +theme: "light" | "dark"
+  }
+
+  class FieldError ~interface~ {
+    +field: string
+    +message: string
+  }
+
+  class FontWeightValue  {
+  }
+
+  class FieldRendererProps ~interface~ {
+    +spec: FormFieldSpec
+    +value: string
+    +error: string | undefined
+    +onChange: (val: string) = void
+    +theme: "light" | "dark"
+  }
+
+  class FontWeightValue  {
+  }
+
+  class GroceryCategory ~interface~ {
+    +name: string
+    +icon: string
+  }
+
+  class GroceryProduct ~interface~ {
+    +id: string
+    +name: string
+    +image: string
+    +price: number
+    +unit: string
+    +inStock: boolean
+    +quantity: number
+    +addAction: SdAction
+    +removeAction: SdAction
+  }
+
+  class DeliverySlot ~interface~ {
+    +date: string
+    +times: string[]
+  }
+
+  class SdGroceryBrowserNode ~interface~ {
+    +type: "grocery_browser"
+    +categories: GroceryCategory[]
+    +products: GroceryProduct[]
+    +deliverySlots: DeliverySlot[]
+    +cartCount: number
+    +checkoutAction: SdAction
+    -modifiers: SdModifiers
+  }
+
+  class SdGroceryBrowserProps ~interface~ {
+    +node: SdGroceryBrowserNode
+    +theme: "light" | "dark"
+  }
+
+  class GroceryStrings ~interface~ {
+    +all: string
+    +outOfStock: string
+    +notifyMe: string
+    +checkout: string
+    +deliverySlot: string
+    +selectSlot: string
+    +confirm: string
+    +cancel: string
+    +sar: string
+    +itemsInCart: string
+    +perUnit: string
+  }
+
+  class FontWeightValue  {
+  }
+
+  class Specialty ~interface~ {
+    +name: string
+    +icon: string
+  }
+
+  class Doctor ~interface~ {
+    +id: string
+    +name: string
+    +specialty: string
+    +rating: number
+    +nextAvailable: string
+    -photo: string
+    +consultationFee: number
+    +bookAction: SdAction
+  }
+
+  class SdHealthcareBookingNode ~interface~ {
+    +type: "healthcare_booking"
+    +id: string
+    +specialties: Specialty[]
+    +doctors: Doctor[]
+    +consultationType: ConsultationType
+    -modifiers: SdModifiers
+  }
+
+  class SdHealthcareBookingProps ~interface~ {
+    +node: SdHealthcareBookingNode
+    +theme: "light" | "dark"
+  }
+
+  class ConsultationType  {
+  }
+
+  class FontWeightValue  {
+  }
+
+  class HeroCarouselItem ~interface~ {
+    +image: string
+    +title: string
+    -subtitle: string
+    -action: SdAction
+  }
+
+  class SdHeroCarouselNode ~interface~ {
+    +type: "hero_carousel"
+    +id: string
+    +items: HeroCarouselItem[]
+    -modifiers: SdModifiers
+  }
+
+  class SdHeroCarouselProps ~interface~ {
+    +node: SdHeroCarouselNode
+    +theme: "light" | "dark"
+  }
+
+  class FontWeightValue  {
+  }
+
+  class ServiceType ~interface~ {
+    +id: string
+    +name: string
+    +icon: string
+    +startingPrice: number
+  }
+
+  class Provider ~interface~ {
+    +id: string
+    +name: string
+    +rating: number
+    +completedJobs: number
+    -photo: string
+    +price: number
+    +bookAction: SdAction
+  }
+
+  class SchedulePicker ~interface~ {
+    +dates: string[]
+    +timeSlots: string[]
+  }
+
+  class SdHomeServiceBookingNode ~interface~ {
+    +type: "home_service_booking"
+    +id: string
+    +serviceTypes: ServiceType[]
+    -selectedService: string
+    +providers: Provider[]
+    +schedulePicker: SchedulePicker
+    -modifiers: SdModifiers
+  }
+
+  class SdHomeServiceBookingProps ~interface~ {
+    +node: SdHomeServiceBookingNode
+    +theme: "light" | "dark"
+  }
+
+  class FontWeightValue  {
+  }
+
+  class InvoiceLineItem ~interface~ {
+    +description: string
+    +quantity: number
+    +unitPrice: number
+    +total: number
+  }
+
+  class SdInvoiceViewerNode ~interface~ {
+    +type: "invoice_viewer"
+    +id: string
+    +invoiceId: string
+    +merchantName: string
+    +date: string
+    -dueDate: string
+    +status: InvoiceStatus
+    +lineItems: InvoiceLineItem[]
+    +subtotal: number
+    +taxRate: number
+    +taxAmount: number
+    +total: number
+    ... 4 more
+  }
+
+  class InvoiceStatus  {
+  }
+
+  class FontWeightValue  {
+  }
+
+  class LocationEntry ~interface~ {
+    +id: string
+    +name: string
+    +address: string
+    +isActive: boolean
+    +ordersToday: number
+    +revenue: number
+    +switchAction: SdAction
+  }
+
+  class SdLocationSwitcherNode ~interface~ {
+    +type: "location_switcher"
+    +locations: LocationEntry[]
+    +currentLocationId: string
+    -modifiers: SdModifiers
+  }
+
+  class SdLocationSwitcherProps ~interface~ {
+    +node: SdLocationSwitcherNode
+    +theme: "light" | "dark"
+  }
+
+  class LocationStrings ~interface~ {
+    +currentLocation: string
+    +ordersToday: string
+    +revenue: string
+    +switchLocation: string
+    +allLocations: string
+    +active: string
+    +inactive: string
+    +sarSymbol: string
+  }
+
+  class FontWeightValue  {
+  }
+
+  class SdLoyaltyCardNode ~interface~ {
+    +type: "loyalty_card"
+    +memberName: string
+    +points: number
+    +tier: string
+    -nextTier: {
+    name: string
+    pointsRequired: number
+  }
+    -redeemAction: SdAction
+    -historyAction: SdAction
+    -modifiers: SdModifiers
+  }
+
+  class SdLoyaltyCardProps ~interface~ {
+    +node: SdLoyaltyCardNode
+    +theme: "light" | "dark"
+  }
+
+  class LoyaltyStrings ~interface~ {
+    +points: string
+    +redeemPoints: string
+    +viewHistory: string
+    +nextTierLabel: (name: string, remaining: number) = string
+  }
+
+  class FontWeightValue  {
+  }
+
+  class BookingTimeSlot ~interface~ {
+    +time: string
+    +available: boolean
+    +price: number
+  }
+
+  class SdMultiPartyBookingNode ~interface~ {
+    +type: "multi_party_booking"
+    +id: string
+    +title: string
+    +date: string
+    +maxParticipants: number
+    +currentParticipants: number
+    +slots: BookingTimeSlot[]
+    +participantCount: number
+    +bookAction: SdAction
+    -modifiers: SdModifiers
+  }
+
+  class SdMultiPartyBookingProps ~interface~ {
+    +node: SdMultiPartyBookingNode
+    +theme: "light" | "dark"
+  }
+
+  class FontWeightValue  {
+  }
+
+  class FontWeightValue  {
+  }
+
+  class ParkingZone ~interface~ {
+    +id: string
+    +name: string
+    +available: number
+    +total: number
+    +pricePerHour: number
+    +distance: string
+  }
+
+  class TimeSlot ~interface~ {
+    +start: string
+    +end: string
+    +available: boolean
+  }
+
+  class SdParkingReservationNode ~interface~ {
+    +type: "parking_reservation"
+    +id: string
+    +zones: ParkingZone[]
+    -selectedZone: string
+    +timeSlots: TimeSlot[]
+    +reserveAction: SdAction
+    -modifiers: SdModifiers
+  }
+
+  class SdParkingReservationProps ~interface~ {
+    +node: SdParkingReservationNode
+    +theme: "light" | "dark"
+  }
+
+  class FontWeightValue  {
+  }
+
+  class AvailabilityTier  {
+  }
+
+  class SdPaymentSheetNode ~interface~ {
+    +type: "payment_sheet"
+    +id: string
+    +amount: number
+    +currency: string
+    +methods: string[]
+    +merchantName: string
+    +onSuccess: SdAction
+    +onCancel: SdAction
+    -modifiers: SdModifiers
+  }
+
+  class PaymentMethodMeta ~interface~ {
+    +label: string
+    +glyph: string
+    +accentColor: string
+  }
+
+  class FontWeightValue  {
+  }
+
+  class PayoutEntry ~interface~ {
+    +id: string
+    +amount: number
+    +date: string
+    +status: "completed" | "pending" | "failed"
+    +method: string
+  }
+
+  class PeriodSummary ~interface~ {
+    +totalEarnings: number
+    +totalFees: number
+    +netPayout: number
+    +currency: string
+  }
+
+  class NextPayoutInfo ~interface~ {
+    +amount: number
+    +date: string
+    +method: string
+  }
+
+  class SdPayoutScheduleNode ~interface~ {
+    +type: "payout_schedule"
+    +id: string
+    -nextPayout: NextPayoutInfo
+    +recentPayouts: PayoutEntry[]
+    +periodSummary: PeriodSummary
+    -downloadAction: SdAction
+    -modifiers: SdModifiers
+  }
+
+  class SdPayoutScheduleProps ~interface~ {
+    +node: SdPayoutScheduleNode
+    +theme: "light" | "dark"
+  }
+
+  class FontWeightValue  {
+  }
+
+  class Property ~interface~ {
+    +id: string
+    +title: string
+    +type: PropertyType
+    +price: number
+    +area: number
+    +bedrooms: number
+    +bathrooms: number
+    +location: string
+    +image: string
+    +detailAction: SdAction
+  }
+
+  class PropertyFilters ~interface~ {
+    -type: string
+    -minPrice: number
+    -maxPrice: number
+    -bedrooms: number
+  }
+
+  class SdPropertyBrowserNode ~interface~ {
+    +type: "property_browser"
+    +id: string
+    +properties: Property[]
+    +filters: PropertyFilters
+    -modifiers: SdModifiers
+  }
+
+  class SdPropertyBrowserProps ~interface~ {
+    +node: SdPropertyBrowserNode
+    +theme: "light" | "dark"
+  }
+
+  class PropertyType  {
+  }
+
+  class FontWeightValue  {
+  }
+
+  class RecurringSchedule ~interface~ {
+    +frequency: RecurringFrequency
+    -dayOfWeek: string
+    -timeSlot: string
+    +nextOccurrence: string
+  }
+
+  class SdRecurringBookingManagerNode ~interface~ {
+    +type: "recurring_booking_manager"
+    +id: string
+    +schedule: RecurringSchedule
+    +status: RecurringBookingStatus
+    -pauseAction: SdAction
+    -resumeAction: SdAction
+    -editAction: SdAction
+    -cancelAction: SdAction
+    -modifiers: SdModifiers
+  }
+
+  class SdRecurringBookingManagerProps ~interface~ {
+    +node: SdRecurringBookingManagerNode
+    +theme: "light" | "dark"
+  }
+
+  class RecurringFrequency  {
+  }
+
+  class RecurringBookingStatus  {
+  }
+
+  class FontWeightValue  {
+  }
+
+  class FontWeightValue  {
+  }
+
+  class MenuCustomization ~interface~ {
+    +name: string
+    +options: string[]
+  }
+
+  class MenuItem ~interface~ {
+    +id: string
+    +name: string
+    +description: string
+    +price: number
+    -image: string
+    -customizations: MenuCustomization[]
+    +addAction: SdAction
+  }
+
+  class MenuCategory ~interface~ {
+    +name: string
+    +items: MenuItem[]
+  }
+
+  class SdRestaurantMenuNode ~interface~ {
+    +type: "restaurant_menu"
+    +restaurantName: string
+    +categories: MenuCategory[]
+    +orderType: OrderType
+    +cartCount: number
+    +viewCartAction: SdAction
+    -modifiers: SdModifiers
+  }
+
+  class SdRestaurantMenuProps ~interface~ {
+    +node: SdRestaurantMenuNode
+    +theme: "light" | "dark"
+  }
+
+  class MenuStrings ~interface~ {
+    +add: string
+    +viewCart: string
+    +customize: string
+    +confirm: string
+    +cancel: string
+    +dineIn: string
+    +takeaway: string
+    +delivery: string
+    +emptyCategory: string
+    +sar: string
+    +itemsInCart: string
+  }
+
+  class OrderType  {
+  }
+
+  class FontWeightValue  {
+  }
+
+  class LatLngAddress ~interface~ {
+    +lat: number
+    +lng: number
+    +address: string
+  }
+
+  class VehicleType ~interface~ {
+    +type: string
+    +name: string
+    +fare: number
+    +eta: string
+    +icon: string
+  }
+
+  class DriverInfo ~interface~ {
+    +name: string
+    +rating: number
+    +vehicle: string
+    +plate: string
+    -photo: string
+  }
+
+  class SdRideHailingNode ~interface~ {
+    +type: "ride_hailing"
+    +id: string
+    -pickup: LatLngAddress
+    -destination: LatLngAddress
+    -estimatedFare: number
+    -estimatedTime: string
+    +vehicleTypes: VehicleType[]
+    +requestAction: SdAction
+    -status: RideStatus
+    -driver: DriverInfo
+    -modifiers: SdModifiers
+  }
+
+  class SdRideHailingProps ~interface~ {
+    +node: SdRideHailingNode
+    +theme: "light" | "dark"
+  }
+
+  class RideStatus  {
+  }
+
+  class FontWeightValue  {
+  }
+
+  class CurrentPlanInfo ~interface~ {
+    +name: string
+    +price: number
+    +interval: string
+    +status: SubscriptionStatus
+    -nextBillingDate: string
+  }
+
+  class AvailablePlan ~interface~ {
+    +id: string
+    +name: string
+    +price: number
+    +interval: string
+    +features: string[]
+  }
+
+  class SubscriptionActions ~interface~ {
+    -pause: SdAction
+    -resume: SdAction
+    -cancel: SdAction
+    -upgrade: SdAction
+    -downgrade: SdAction
+  }
+
+  class SdSubscriptionManagerNode ~interface~ {
+    +type: "subscription_manager"
+    +id: string
+    -currentPlan: CurrentPlanInfo
+    +availablePlans: AvailablePlan[]
+    +actions: SubscriptionActions
+    -modifiers: SdModifiers
+  }
+
+  class SdSubscriptionManagerProps ~interface~ {
+    +node: SdSubscriptionManagerNode
+    +theme: "light" | "dark"
+  }
+
+  class SubscriptionStatus  {
+  }
+
+  class FontWeightValue  {
+  }
+
+  class Labels ~interface~ {
+    +currentPlan: string
+    +noPlan: string
+    +nextBilling: string
+    +availablePlans: string
+    +perInterval: (interval: string) = string
+    +pause: string
+    +resume: string
+    +cancel: string
+    +upgrade: string
+    +downgrade: string
+    +select: string
+    +selected: string
+    ... 4 more
+  }
+
+  class FontWeightValue  {
+  }
+
+  class SupplierEntry ~interface~ {
+    +id: string
+    +name: string
+    +leadTime: string
+  }
+
+  class SupplierProduct ~interface~ {
+    +id: string
+    +name: string
+    +currentStock: number
+    +reorderPoint: number
+    +unitPrice: number
+    +supplier: string
+  }
+
+  class SdSupplierOrderFormNode ~interface~ {
+    +type: "supplier_order_form"
+    +suppliers: SupplierEntry[]
+    +products: SupplierProduct[]
+    +submitAction: SdAction
+    -modifiers: SdModifiers
+  }
+
+  class SdSupplierOrderFormProps ~interface~ {
+    +node: SdSupplierOrderFormNode
+    +theme: "light" | "dark"
+  }
+
+  class OrderFormStrings ~interface~ {
+    +orderForm: string
+    +product: string
+    +stock: string
+    +reorderPt: string
+    +qty: string
+    +supplier: string
+    +leadTime: string
+    +orderSummary: string
+    +totalItems: string
+    +totalCost: string
+    +submitOrder: string
+    +submitting: string
+    ... 3 more
+  }
+
+  class FontWeightValue  {
+  }
+
+  class TaxLine ~interface~ {
+    +label: string
+    +rate: number
+    +amount: number
+  }
+
+  class SdTaxCalculatorNode ~interface~ {
+    +type: "tax_calculator"
+    +id: string
+    +subtotal: number
+    +taxLines: TaxLine[]
+    +total: number
+    +currency: string
+    -modifiers: SdModifiers
+  }
+
+  class FontWeightValue  {
+  }
+
+  class SdUnifiedCalendarNode ~interface~ {
+    +type: "unified_calendar"
+    +events: CalendarEvent[]
+    -selectedDate: string
+    -modifiers: SdModifiers
+  }
+
+  class SdUnifiedCalendarProps ~interface~ {
+    +node: SdUnifiedCalendarNode
+    +theme: "light" | "dark"
+  }
+
+  class FontWeightValue  {
+  }
+
+  class CalendarEvent ~interface~ {
+    +id: string
+    +title: string
+    +type: CalendarEventType
+    +date: string
+    +time: string
+    +status: string
+    +detailAction: SdAction
+  }
+
+  class CalendarStrings ~interface~ {
+    +noEvents: string
+    +booking: string
+    +order: string
+    +appointment: string
+    +subscription: string
+    +weekDays: string[]
+    +months: string[]
+  }
+
+  class CalendarEventType  {
+  }
+
+  class FontWeightValue  {
+  }
+
+  class SdWaitlistUINode ~interface~ {
+    +type: "waitlist_ui"
+    +serviceName: string
+    -position: number
+    -estimatedWait: string
+    +isOnWaitlist: boolean
+    +joinAction: SdAction
+    +leaveAction: SdAction
+    -notifyPreference: NotifyPreference
+    -modifiers: SdModifiers
+  }
+
+  class SdWaitlistUIProps ~interface~ {
+    +node: SdWaitlistUINode
+    +theme: "light" | "dark"
+  }
+
+  class WaitlistStrings ~interface~ {
+    +position: string
+    +estimatedWait: string
+    +joinWaitlist: string
+    +leaveWaitlist: string
+    +notifications: string
+    +push: string
+    +sms: string
+    +both: string
+    +notOnWaitlist: string
+    +youAreOnWaitlist: string
+  }
+
+  class NotifyPreference  {
+  }
+
+  class FontWeightValue  {
+  }
+
+  class SdWalletPassNode ~interface~ {
+    +type: "wallet_pass"
+    +id: string
+    +format: "qr" | "barcode"
+    +data: string
+    +label: string
+    -addToWalletAction: SdAction
+    -modifiers: SdModifiers
+  }
+
+  class BrightnessModule ~interface~ {
+    +getBrightnessAsync: () = Promisenumber
+    +setBrightnessAsync: (val: number) = Promisevoid
+  }
+
+  class FontWeightValue  {
+  }
+
+  class WishlistItem ~interface~ {
+    +id: string
+    +image: string
+    +title: string
+    +price: number
+    +available: boolean
+    +addToCartAction: SdAction
+    +removeAction: SdAction
+  }
+
+  class SdWishlistGridNode ~interface~ {
+    +type: "wishlist_grid"
+    +items: WishlistItem[]
+    -modifiers: SdModifiers
+  }
+
+  class SdWishlistGridProps ~interface~ {
+    +node: SdWishlistGridNode
+    +theme: "light" | "dark"
+  }
+
+  class WishlistStrings ~interface~ {
+    +addToCart: string
+    +inStock: string
+    +outOfStock: string
+    +emptyTitle: string
+    +emptySubtitle: string
+    +removeItem: string
+  }
+
+  class FontWeightValue  {
+  }
+
+  %% Relationships
+  SdFormNode --> SdFormField : fields
+  ChartData --> ChartDataset : datasets
+  SdAnalyticsPanelNode --> KpiItem : kpis
+  SdAnalyticsPanelNode --> ChartData : chartData
+  SdAnalyticsPanelProps --> SdAnalyticsPanelNode : node
+  SdAutomotiveServiceNode --> ServiceType : serviceTypes
+  SdAutomotiveServiceNode --> Garage : garages
+  SdAutomotiveServiceNode --> VehicleInfo : vehicleInfo
+  SdAutomotiveServiceProps --> SdAutomotiveServiceNode : node
+  SdBookingGridNode --> BookingSlot : slots
+  SdBookingGridProps --> SdBookingGridNode : node
+  SdCampaignBuilderNode --> CampaignItem : campaigns
+  SdCampaignBuilderProps --> SdCampaignBuilderNode : node
+  SdCustomerListNode --> CustomerEntry : customers
+  SdCustomerListProps --> SdCustomerListNode : node
+  SdDisputeHandlerNode --> DisputeTimelineEntry : timeline
+  FormFieldSpec --> ValidationRule : validation
+  SdFormNode --> FormFieldSpec : fields
+  SdFormProps --> SdFormNode : node
+  FieldRendererProps --> FormFieldSpec : spec
+  SdGroceryBrowserNode --> GroceryCategory : categories
+  SdGroceryBrowserNode --> GroceryProduct : products
+  SdGroceryBrowserNode --> DeliverySlot : deliverySlots
+  SdGroceryBrowserProps --> SdGroceryBrowserNode : node
+  SdHealthcareBookingNode --> Specialty : specialties
+  SdHealthcareBookingNode --> Doctor : doctors
+  SdHealthcareBookingProps --> SdHealthcareBookingNode : node
+  SdHeroCarouselNode --> HeroCarouselItem : items
+  SdHeroCarouselProps --> SdHeroCarouselNode : node
+  SdHomeServiceBookingNode --> ServiceType : serviceTypes
+  SdHomeServiceBookingNode --> Provider : providers
+  SdHomeServiceBookingNode --> SchedulePicker : schedulePicker
+  SdHomeServiceBookingProps --> SdHomeServiceBookingNode : node
+  SdInvoiceViewerNode --> InvoiceLineItem : lineItems
+  SdLocationSwitcherNode --> LocationEntry : locations
+  SdLocationSwitcherProps --> SdLocationSwitcherNode : node
+  SdLoyaltyCardProps --> SdLoyaltyCardNode : node
+  SdMultiPartyBookingNode --> BookingTimeSlot : slots
+  SdMultiPartyBookingProps --> SdMultiPartyBookingNode : node
+  SdParkingReservationNode --> ParkingZone : zones
+  SdParkingReservationNode --> TimeSlot : timeSlots
+  SdParkingReservationProps --> SdParkingReservationNode : node
+  SdPayoutScheduleNode --> NextPayoutInfo : nextPayout
+  SdPayoutScheduleNode --> PayoutEntry : recentPayouts
+  SdPayoutScheduleNode --> PeriodSummary : periodSummary
+  SdPayoutScheduleProps --> SdPayoutScheduleNode : node
+  SdPropertyBrowserNode --> Property : properties
+  SdPropertyBrowserNode --> PropertyFilters : filters
+  SdPropertyBrowserProps --> SdPropertyBrowserNode : node
+  SdRecurringBookingManagerNode --> RecurringSchedule : schedule
+  SdRecurringBookingManagerProps --> SdRecurringBookingManagerNode : node
+  MenuItem --> MenuCustomization : customizations
+  MenuCategory --> MenuItem : items
+  SdRestaurantMenuNode --> MenuCategory : categories
+  SdRestaurantMenuProps --> SdRestaurantMenuNode : node
+  SdRideHailingNode --> LatLngAddress : pickup
+  SdRideHailingNode --> LatLngAddress : destination
+  SdRideHailingNode --> VehicleType : vehicleTypes
+  SdRideHailingNode --> DriverInfo : driver
+  SdRideHailingProps --> SdRideHailingNode : node
+  SdSubscriptionManagerNode --> CurrentPlanInfo : currentPlan
+  SdSubscriptionManagerNode --> AvailablePlan : availablePlans
+  SdSubscriptionManagerNode --> SubscriptionActions : actions
+  SdSubscriptionManagerProps --> SdSubscriptionManagerNode : node
+  SdSupplierOrderFormNode --> SupplierEntry : suppliers
+  SdSupplierOrderFormNode --> SupplierProduct : products
+  SdSupplierOrderFormProps --> SdSupplierOrderFormNode : node
+  SdTaxCalculatorNode --> TaxLine : taxLines
+  SdUnifiedCalendarProps --> SdUnifiedCalendarNode : node
+  SdWaitlistUIProps --> SdWaitlistUINode : node
+  SdWishlistGridNode --> WishlistItem : items
+  SdWishlistGridProps --> SdWishlistGridNode : node

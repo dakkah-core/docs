@@ -1,0 +1,18 @@
+graph LR
+  superapp[superapp]
+  superapp --> design-tokens[design-tokens]
+  superapp --> design-tokens-mobile[design-tokens-mobile]
+  superapp --> api-client[api-client]
+  superapp --> api-client-react[api-client-react]
+  superapp --> auth[auth]
+  superapp --> i18n[i18n]
+  superapp --> mobile-core[mobile-core]
+  superapp --> mobile-offline[mobile-offline]
+  superapp --> mobile-payments[mobile-payments]
+  superapp --> mobile-telemetry[mobile-telemetry]
+  superapp --> sdui-renderer-native[sdui-renderer-native]
+  superapp --> sdui-protocol[sdui-protocol]
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef dep fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class superapp app

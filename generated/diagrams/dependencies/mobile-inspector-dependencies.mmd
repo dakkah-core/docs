@@ -1,0 +1,12 @@
+graph LR
+  mobile-inspector[mobile-inspector]
+  mobile-inspector --> auth[auth]
+  mobile-inspector --> design-tokens[design-tokens]
+  mobile-inspector --> design-tokens-mobile[design-tokens-mobile]
+  mobile-inspector --> mobile-core[mobile-core]
+  mobile-inspector --> sdui-renderer-native[sdui-renderer-native]
+  mobile-inspector --> sdui-protocol[sdui-protocol]
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef dep fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class mobile-inspector app

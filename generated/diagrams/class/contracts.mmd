@@ -1,0 +1,273 @@
+classDiagram
+  direction TB
+
+  class BaseEntity  {
+  }
+
+  class TenantScopedEntity  {
+  }
+
+  class NodeScopedEntity  {
+  }
+
+  class StatusField  {
+  }
+
+  class SortOrder  {
+  }
+
+  class Pagination  {
+  }
+
+  class BookingType  {
+  }
+
+  class BookingStatus  {
+  }
+
+  class TimeSlot  {
+  }
+
+  class BookableService  {
+  }
+
+  class Attendee  {
+  }
+
+  class Booking  {
+  }
+
+  class ChannelType  {
+  }
+
+  class SupportedLocale  {
+  }
+
+  class IntegrationLogContext ~interface~ {
+    +sourceSystem: | "fleetbase"
+    | "medusa"
+    | "erpnext"
+    | "tryton"
+    | "pallet-wms"
+    | "temporal"
+    | "waltid"
+    | "keycloak"
+    | "citybus"
+    -tenantId: string | null
+    -correlationId: string | null
+  }
+
+  class IntegrationLog ~interface~ {
+    +id: string
+    +context: IntegrationLogContext
+    +eventType: string
+    -reference: string | null
+    +status: "received" | "success" | "failed" | "skipped"
+    -rawPayload: Recordstring, unknown | null
+    -error: string | null
+    -retryCount: number | null
+    -processedAt: string | null
+    +createdAt: string
+    +updatedAt: string
+  }
+
+  class SupportedCurrency  {
+  }
+
+  class MoneyAmount  {
+  }
+
+  class CartRuleType  {
+  }
+
+  class CartRule  {
+  }
+
+  class Affiliate  {
+  }
+
+  class TaxZone  {
+  }
+
+  class TaxConfig  {
+  }
+
+  class CityOSOrderMetadata  {
+  }
+
+  class CommercePolicies ~interface~ {
+    +vatRate: number
+    +restrictedCategories: string[]
+    +paymentProviders: string[]
+    +maxRefundDays: number
+    +requiresInvoice: boolean
+    +dataRetentionDays: number
+    +crossBorderAllowed: boolean
+    +localStorageRequired: boolean
+    +minimumDataClassification: string
+  }
+
+  class EffectivePolicies ~interface~ {
+    +dataResidency: Recordstring, unknown
+    +compliance: Recordstring, unknown
+    +dataHandling: Recordstring, unknown
+    +mandates: Recordstring, unknown
+    +commerce: PartialCommercePolicies
+    +sources: Array{ level: string name: string id: string }
+  }
+
+  class ResidencyZone  {
+  }
+
+  class CartPayload  {
+  }
+
+  class NodeContext ~interface~ {
+    +tenantId: string
+    +tenantSlug: string
+    +locale: Locale
+    +channel: Channel
+    -nodeId: string
+    -nodeType: NodeType
+    -sessionId: string
+    -userId: string
+    -personaId: string
+    -residencyZone: ResidencyZone
+  }
+
+  class NodeType  {
+  }
+
+  class ResidencyZone  {
+  }
+
+  class Channel  {
+  }
+
+  class Locale  {
+  }
+
+  class DataClassification  {
+  }
+
+  class NodeType  {
+  }
+
+  class PersonaConstraints ~interface~ {
+    +kidSafe: boolean
+    +readOnly: boolean
+    +geoScope: GeoScope
+    +maxDataClassification: "public" | "internal" | "confidential" | "restricted"
+  }
+
+  class PersonaAxes ~interface~ {
+    +audience: string[]
+    +economic: string[]
+    +ecosystem: string[]
+    +government: string[]
+    +interaction: string[]
+    +ai_mode: string[]
+  }
+
+  class PersonaAxis  {
+  }
+
+  class PersonaCategory  {
+  }
+
+  class PersonaScope  {
+  }
+
+  class GeoScope  {
+  }
+
+  class RBACRole  {
+  }
+
+  class ReviewStatus  {
+  }
+
+  class Review  {
+  }
+
+  class ReviewAggregate  {
+  }
+
+  class DisputeStatus  {
+  }
+
+  class DisputeReason  {
+  }
+
+  class DisputeResolution  {
+  }
+
+  class Dispute  {
+  }
+
+  class SearchSort  {
+  }
+
+  class SearchFilter  {
+  }
+
+  class FacetValue  {
+  }
+
+  class Facet  {
+  }
+
+  class GeoSearch  {
+  }
+
+  class SearchRequest  {
+  }
+
+  class SearchHit  {
+  }
+
+  class SearchResponse  {
+  }
+
+  class BillingInterval  {
+  }
+
+  class SubscriptionStatus  {
+  }
+
+  class ServicePlanFeature  {
+  }
+
+  class SubscriptionTier  {
+  }
+
+  class Subscription  {
+  }
+
+  class TemporalQueue  {
+  }
+
+  class TravelType  {
+  }
+
+  class TravelStatus  {
+  }
+
+  class GeoPoint  {
+  }
+
+  class TravelLocation  {
+  }
+
+  class TravelSegment  {
+  }
+
+  class TravelPackage  {
+  }
+
+  class TravelSearchRequest  {
+  }
+
+  %% Relationships
+  IntegrationLog --> IntegrationLogContext : context
+  NodeContext --> ResidencyZone : residencyZone

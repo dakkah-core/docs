@@ -1,0 +1,58 @@
+graph TD
+  direction TB
+
+  storybook[storybook]
+
+  subgraph Pages[
+    Pages
+  end
+  PageBuilder[PageBuilder]
+  storybook --> PageBuilder
+  PageRenderer[PageRenderer]
+  storybook --> PageRenderer
+
+  subgraph Components[
+    Shared Components
+  end
+  App[App]
+  Error[Error]
+  ColorSwatch[ColorSwatch]
+  PageBuilder --> ColorSwatch
+  ThemePreviewCard[ThemePreviewCard]
+  PageBuilder --> ThemePreviewCard
+  VehicleCard[VehicleCard]
+  PageBuilder --> VehicleCard
+  RepairOrderRow[RepairOrderRow]
+  PageBuilder --> RepairOrderRow
+  StudentRow[StudentRow]
+  PageBuilder --> StudentRow
+  CourseCard[CourseCard]
+  PageBuilder --> CourseCard
+  EventCard[EventCard]
+  PageBuilder --> EventCard
+  TicketTypeRow[TicketTypeRow]
+  PageBuilder --> TicketTypeRow
+  EmployeeRow[EmployeeRow]
+  PageBuilder --> EmployeeRow
+  PayrollCard[PayrollCard]
+  PageBuilder --> PayrollCard
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef layout fill:#fff3e0,stroke:#e65100,stroke-width:1px
+  classDef page fill:#e8f5e9,stroke:#1b5e20,stroke-width:1px
+  classDef component fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class storybook app
+  class PageBuilder page
+  class PageRenderer page
+  class App component
+  class Error component
+  class ColorSwatch component
+  class ThemePreviewCard component
+  class VehicleCard component
+  class RepairOrderRow component
+  class StudentRow component
+  class CourseCard component
+  class EventCard component
+  class TicketTypeRow component
+  class EmployeeRow component
+  class PayrollCard component

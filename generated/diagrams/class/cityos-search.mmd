@@ -1,0 +1,92 @@
+classDiagram
+  direction TB
+
+  class IndexerService ~interface~ {
+  }
+
+  class IndexSettings ~interface~ {
+    -searchableAttributes: string[]
+    -filterableAttributes: string[]
+    -sortableAttributes: string[]
+    -displayedAttributes: string[]
+    -rankingRules: string[]
+  }
+
+  class KuzzleSearchConfig ~interface~ {
+    +host: string
+    +port: number
+  }
+
+  class SearchService ~interface~ {
+  }
+
+  class SurfaceSearchConfig ~interface~ {
+    +allowedIndexes: SearchIndex[]
+    +defaultIndexes: SearchIndex[]
+    -boostFields: Recordstring, number
+    +requiresAuth: boolean
+    -requiredRoles: string[]
+  }
+
+  class SearchConfig ~interface~ {
+    +host: string
+    +apiKey: string
+  }
+
+  class SearchQuery ~interface~ {
+    +query: string
+    -indices: SearchIndex[]
+    -filters: Recordstring, string | number | boolean
+    -sort: string[]
+    -limit: number
+    -offset: number
+    -facets: string[]
+    -tenantId: string
+    -nodeId: string
+    -locale: string
+    -geo: { lat: number lng: number radiusKm?: number }
+  }
+
+  class SearchHit ~interface~ {
+    +id: string
+    +index: SearchIndex
+    +score: number
+    +title: string
+    -description: string
+    -imageUrl: string
+    -url: string
+    +type: string
+    -highlights: Recordstring, string
+    -geo: { lat: number lng: number }
+    -metadata: Recordstring, unknown
+  }
+
+  class SearchResult ~interface~ {
+    +hits: SearchHit[]
+    +totalHits: number
+    +processingTimeMs: number
+    -facets: Recordstring, Recordstring, number
+    +query: string
+  }
+
+  class IndexDocument ~interface~ {
+    +id: string
+    +title: string
+    -description: string
+    -content: string
+    +type: string
+    +tenantId: string
+    -nodeId: string
+    -locale: string
+    -imageUrl: string
+    -url: string
+    -geo: { lat: number lng: number }
+    -tags: string[]
+    ... 5 more
+  }
+
+  class SearchIndex  {
+  }
+
+  %% Relationships
+  SearchResult --> SearchHit : hits

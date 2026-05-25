@@ -1,0 +1,12 @@
+graph LR
+  watch-app[watch-app]
+  watch-app --> design-tokens[design-tokens]
+  watch-app --> design-tokens-mobile[design-tokens-mobile]
+  watch-app --> sdui-renderer-watch[sdui-renderer-watch]
+  watch-app --> api-client[api-client]
+  watch-app --> auth[auth]
+  watch-app --> mobile-core[mobile-core]
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef dep fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class watch-app app

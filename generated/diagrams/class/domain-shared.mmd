@@ -1,0 +1,272 @@
+classDiagram
+  direction TB
+
+  class BlockStyles  {
+  }
+
+  class RichTextNode  {
+  }
+
+  class RichTextContent  {
+  }
+
+  class MediaLike  {
+  }
+
+  class LucideIconComponent  {
+  }
+
+  class Locale  {
+  }
+
+  class Halala  {
+  }
+
+  class SAR  {
+  }
+
+  class SearchResult  {
+  }
+
+  class SearchMeta  {
+  }
+
+  class SearchAnalyticsRow  {
+  }
+
+  class SearchFacetOption  {
+  }
+
+  class SearchFacet  {
+  }
+
+  class SearchGridResult  {
+  }
+
+  class SearchTopic  {
+  }
+
+  class SearchBlock  {
+  }
+
+  class VerticalDefinition ~interface~ {
+    +id: VerticalID
+    +name: string
+    +domain: DomainSlug
+    -tags: string[]
+  }
+
+  class DomainSlug  {
+  }
+
+  class VerticalID  {
+  }
+
+  class LinkProps ~interface~ {
+    -to: string
+    -href: string
+    -className: string
+    +children: React.ReactNode
+  }
+
+  class ToastAPI ~interface~ {
+    +toast: (opts: Recordstring, unknown) = void
+    +success: ToastFn
+    +error: ToastFn
+    +info: ToastFn
+    +warning: ToastFn
+  }
+
+  class ToastFn  {
+  }
+
+  class SonnerToastFn  {
+  }
+
+  class BlockDataSkeletonProps ~interface~ {
+    -rows: number
+    -variant: "list" | "card" | "stat" | "table"
+    -className: string
+  }
+
+  class SharedHeroProps ~interface~ {
+    +title: string
+    -subtitle: string
+    -backgroundImage: string
+    -ctaText: string
+    -ctaLink: string
+    -className: string
+  }
+
+  class SharedSectionProps ~interface~ {
+    -title: string
+    +children: React.ReactNode
+    -className: string
+    -background: "white" | "gray" | "dark"
+  }
+
+  class User ~interface~ {
+    +id: string
+    +name: string
+    +email: string
+    -role: string | unknown
+    -roles: string[]
+    -tenant_id: string
+    -avatar: string
+    -walletAddress: string
+  }
+
+  class AuthContextType ~interface~ {
+    +isAuthenticated: boolean
+    +isLoading: boolean
+    +user: User | null
+    +login: (credentials: AuthCredentials) = Promisevoid
+    +logout: () = Promisevoid
+    +connectWallet: () = Promisevoid
+    +token: string | null
+  }
+
+  class AuthCredentials  {
+  }
+
+  class EthereumProvider  {
+  }
+
+  class KuzzlePresenceNotification ~interface~ {
+    +type: string
+    -users: {
+    count: number
+  }
+  }
+
+  class KuzzlePresenceClient ~interface~ {
+    +realtime: {
+    subscribe: (
+      index: string,
+      collection: string,
+      filters: Recordstring, unknown,
+      callback: (notification: KuzzlePresenceNotification) = void,
+      options: {
+        volatile: { roomName: string }
+        subscribeToSelf: boolean
+        users: string
+      },
+    ) = Promisestring
+    getUsersCount: (index: string, collection: string, roomId: string) = Promisenumber | null | undefined
+    unsubscribe: (roomId: string) = Promiseunknown
+  }
+  }
+
+  class Notification ~interface~ {
+    +id: string
+    +title: string
+    +message: string
+    +type: "info" | "warning" | "error" | "success"
+    +timestamp: string
+    +read: boolean
+  }
+
+  class RawNotification ~interface~ {
+    +id: string
+    -subject: string
+    -body: string
+    -type: Notification["type"]
+    +createdAt: string
+    -status: string
+  }
+
+  class NotificationsResponse ~interface~ {
+    -notifications: RawNotification[]
+  }
+
+  class Metric ~interface~ {
+    +label: string
+    +value: string
+    -delta: {
+    value: string
+    direction: "up" | "down" | "neutral"
+  }
+    -icon: string
+  }
+
+  class SystemStatus ~interface~ {
+    +name: string
+    +status: "healthy" | "degraded" | "down" | "unknown"
+    +uptime: string
+    +lastChecked: string
+  }
+
+  class SystemMetricsResponse ~interface~ {
+    -metrics: {
+    metrics?: Metric[]
+    systems?: SystemStatus[]
+  }
+  }
+
+  class Tenant ~interface~ {
+    +id: string
+    +name: string
+    +tier: "master" | "global" | "regional" | "country" | "city"
+    +status: "active" | "inactive"
+    +nodeCount: number
+  }
+
+  class RawTenant ~interface~ {
+    +id: string
+    -name: string
+    -tier: Tenant["tier"]
+    -status: Tenant["status"]
+    -nodeCount: number
+  }
+
+  class TenantContextResponse ~interface~ {
+    -tenants: RawTenant[]
+  }
+
+  class BlockDataSource ~interface~ {
+    -url: string
+    -params: Recordstring, string
+  }
+
+  class BlockDataResult ~interface~ {
+    +data: T | undefined
+    +isLoading: boolean
+    +error: Error | undefined
+    +mutate: () = void
+  }
+
+  class KuzzleSyncClient ~interface~ {
+    +connect: () = Promisevoid
+    +document: {
+    createOrReplace: (index: string, collection: string, id: string | null | undefined, body: Recordstring, unknown) = Promiseunknown
+    mCreate: (index: string, collection: string, documents: ArrayRecordstring, unknown) = Promiseunknown
+  }
+    +realtime: {
+    publish: (index: string, collection: string, payload: Recordstring, unknown) = Promiseunknown
+  }
+  }
+
+  class KuzzleWebSocketConstructor ~interface~ {
+  }
+
+  class KuzzleConstructor ~interface~ {
+  }
+
+  class SyncableDoc  {
+  }
+
+  class OfflineEvent  {
+  }
+
+  class QueuedEvent ~interface~ {
+    +index: string
+    +collection: string
+    -id: string
+    +body: Recordstring, unknown
+    +enqueuedAt: string
+  }
+
+  %% Relationships
+  Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href"> <|-- LinkProps
+  NotificationsResponse --> RawNotification : notifications
+  TenantContextResponse --> RawTenant : tenants

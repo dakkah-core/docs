@@ -1,0 +1,312 @@
+classDiagram
+  direction TB
+
+  class PaymentServiceConfig ~interface~ {
+    -moyasar: MoyasarConfig
+    -stripe: StripeConfig
+    -defaultCountryCode: string
+    -merchantDisplayName: string
+  }
+
+  class PaymentService  {
+    +config: PaymentServiceConfig
+  }
+
+  class PaymentSession ~interface~ {
+    +id: string
+    +provider: 'moyasar'
+    +amountHalalas: number
+    +currency: 'SAR'
+    +method: PaymentMethod
+    +redirectUrl: string | null
+    +expiresAt: string
+    +status: PaymentStatus
+    +metadata: Recordstring, string
+  }
+
+  class PaymentIntent ~interface~ {
+    +id: string
+    +provider: 'stripe'
+    +clientSecret: string
+    +amount: number
+    +currency: string
+    +status: PaymentStatus
+    +metadata: Recordstring, string
+  }
+
+  class PaymentResult ~interface~ {
+    +success: boolean
+    +transactionId: string | null
+    +provider: PaymentProvider
+    +status: PaymentStatus
+    +errorMessage: string | null
+    +errorCode: string | null
+  }
+
+  class ApplePayConfig ~interface~ {
+    +merchantId: string
+    +countryCode: string
+    +currencyCode: string
+    +supportedNetworks: ReadonlyArray'mada' | 'visa' | 'masterCard' | 'amex'
+    +merchantLabel: string
+  }
+
+  class GooglePayConfig ~interface~ {
+    +environment: 'TEST' | 'PRODUCTION'
+    +merchantName: string
+    +gateway: string
+    +gatewayMerchantId: string
+    +currencyCode: string
+    +countryCode: string
+    +allowedCardNetworks: ReadonlyArray'MADA' | 'VISA' | 'MASTERCARD' | 'AMEX'
+  }
+
+  class MoyasarConfig ~interface~ {
+    +publishableKey: string
+    +apiBaseUrl: string
+    +callbackUrl: string
+    -applePayMerchantId: string
+  }
+
+  class StripeConfig ~interface~ {
+    +publishableKey: string
+    +merchantId: string
+    +bffBaseUrl: string
+  }
+
+  class CreatePaymentRequest ~interface~ {
+    +provider: PaymentProvider
+    +amountHalalas: number
+    +currency: string
+    +method: PaymentMethod
+    +requireBiometric: boolean
+    -metadata: Recordstring, string
+    +idempotencyKey: string
+    +referenceId: string
+  }
+
+  class BiometricResult ~interface~ {
+    +authenticated: boolean
+    +biometryType: 'fingerprint' | 'facial' | 'iris' | 'none'
+    +errorCode: string | null
+  }
+
+  class PaymentProvider  {
+  }
+
+  class PaymentMethod  {
+  }
+
+  class PaymentStatus  {
+  }
+
+  class NativePayConfig  {
+  }
+
+  class BiometricBridge ~interface~ {
+    +hasHardwareAsync: () = Promiseboolean
+    +isEnrolledAsync: () = Promiseboolean
+    +supportedAuthenticationTypesAsync: () = PromiseReadonlyArraynumber
+    +authenticateAsync: (options: {
+    promptMessage: string
+    cancelLabel?: string
+    disableDeviceFallback?: boolean
+    fallbackLabel?: string
+  }) = Promise{
+    success: boolean
+    error?: string
+    warning?: string
+  }
+  }
+
+  class MoyasarContextValue ~interface~ {
+    +config: MoyasarConfig
+    +isReady: boolean
+  }
+
+  class MoyasarProviderProps ~interface~ {
+    +config: MoyasarConfig
+    +children: ReactNode
+  }
+
+  class MoyasarCreatePaymentBody ~interface~ {
+    +amount: number
+    +currency: 'SAR'
+    +description: string
+    +callback_url: string
+    +metadata: Recordstring, string
+    +source: MoyasarSource
+  }
+
+  class MoyasarPaymentResponse ~interface~ {
+    +id: string
+    +status: string
+    +amount: number
+    +currency: string
+    +source: { readonly type: string readonly transaction_url?: string }
+    +metadata: Recordstring, string
+    +created_at: string
+  }
+
+  class CreateMadaSessionParams ~interface~ {
+    +amountHalalas: number
+    +description: string
+    +cardholderName: string
+    +cardNumber: string
+    +cvc: string
+    +expiryMonth: string
+    +expiryYear: string
+    -metadata: Recordstring, string
+    +idempotencyKey: string
+  }
+
+  class CreateStcPaySessionParams ~interface~ {
+    +amountHalalas: number
+    +description: string
+    +mobileNumber: string
+    -metadata: Recordstring, string
+    +idempotencyKey: string
+  }
+
+  class CreateApplePaySessionParams ~interface~ {
+    +amountHalalas: number
+    +description: string
+    +applePayToken: string
+    -metadata: Recordstring, string
+    +idempotencyKey: string
+  }
+
+  class MoyasarSource  {
+  }
+
+  class MoyasarWebhookPayload ~interface~ {
+    +id: string
+    +status: string
+    +amount: number
+    +currency: string
+    +source: {
+    readonly type: string
+    readonly message?: string
+  }
+    -message: string
+  }
+
+  class MoyasarCallbackParams ~interface~ {
+    +id: string
+    +status: string
+    -message: string
+  }
+
+  class ApplePayBridge ~interface~ {
+    +canMakePayments: (params: {
+    networks: ReadonlyArraystring
+  }) = Promiseboolean
+    +requestPayment: (params: {
+    merchantIdentifier: string
+    countryCode: string
+    currencyCode: string
+    supportedNetworks: ReadonlyArraystring
+    total: { label: string amount: string }
+  }) = Promise{
+    token?: string
+    error?: { code: string message: string }
+  }
+  }
+
+  class GooglePayBridge ~interface~ {
+    +isReadyToPay: (params: {
+    allowedCardNetworks: ReadonlyArraystring
+    allowedCardAuthMethods: ReadonlyArraystring
+  }) = Promiseboolean
+    +requestPayment: (params: {
+    merchantName: string
+    gateway: string
+    gatewayMerchantId: string
+    countryCode: string
+    currencyCode: string
+    totalPrice: string
+    totalPriceStatus: 'FINAL' | 'ESTIMATED'
+    allowedCardNetworks: ReadonlyArraystring
+    allowedCardAuthMethods: ReadonlyArraystring
+    environment: 'TEST' | 'PRODUCTION'
+  }) = Promise{
+    token?: string
+    error?: { code: string message: string }
+  }
+  }
+
+  class CreateIntentBffRequest ~interface~ {
+    +amount: number
+    +currency: string
+    +payment_method_types: ReadonlyArraystring
+    +metadata: Recordstring, string
+    +idempotency_key: string
+  }
+
+  class CreateIntentBffResponse ~interface~ {
+    +id: string
+    +client_secret: string
+    +amount: number
+    +currency: string
+    +status: string
+    +metadata: Recordstring, string
+  }
+
+  class FetchIntentBffResponse ~interface~ {
+    +id: string
+    +client_secret: string
+    +amount: number
+    +currency: string
+    +status: string
+    +metadata: Recordstring, string
+  }
+
+  class CreatePaymentIntentParams ~interface~ {
+    +amountHalalas: number
+    -currency: string
+    -paymentMethodTypes: ReadonlyArraystring
+    -metadata: Recordstring, string
+    +idempotencyKey: string
+  }
+
+  class StripeContextValue ~interface~ {
+    +config: StripeConfig
+    +isReady: boolean
+  }
+
+  class StripeProviderProps ~interface~ {
+    +config: StripeConfig
+    +children: ReactNode
+  }
+
+  class StripeSheetBridge ~interface~ {
+    +initialize: (params: {
+    publishableKey: string
+    merchantIdentifier: string
+  }) = Promisevoid
+    +initPaymentSheet: (params: {
+    paymentIntentClientSecret: string
+    merchantDisplayName: string
+    applePay?: { merchantCountryCode: string }
+    googlePay?: { merchantCountryCode: string testEnv?: boolean }
+    defaultBillingDetails?: { address?: { country: string } }
+  }) = Promise{ error?: { code: string message: string } }
+    +presentPaymentSheet: () = Promise{
+    error?: { code: string message: string }
+  }
+  }
+
+  class PresentSheetParams ~interface~ {
+    +clientSecret: string
+    +merchantDisplayName: string
+    -applePay: { merchantCountryCode: string }
+    -googlePay: { merchantCountryCode: string testEnv?: boolean }
+    -billingCountry: string
+  }
+
+  %% Relationships
+  PaymentService --> PaymentServiceConfig : config
+  MoyasarContextValue --> MoyasarConfig : config
+  MoyasarProviderProps --> MoyasarConfig : config
+  StripeContextValue --> StripeConfig : config
+  StripeProviderProps --> StripeConfig : config

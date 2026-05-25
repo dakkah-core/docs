@@ -1,0 +1,56 @@
+classDiagram
+  direction TB
+
+  class HealthcareBlockBase ~interface~ {
+    +id: string
+    +blockType: string
+    -className: string
+  }
+
+  class AppointmentBlockProps ~interface~ {
+    +blockType: 'appointment'
+    -title: string
+    +slots: Array{
+    time: string
+    available: boolean
+    practitioner?: string
+  }
+    -onBook: (time: string) = void
+  }
+
+  class PractitionerCardProps ~interface~ {
+    +blockType: 'practitioner-card'
+    +name: string
+    +specialty: string
+    -image: string
+    -rating: number
+    -availability: string
+    -onBook: () = void
+  }
+
+  class MedicalRecordBlockProps ~interface~ {
+    +blockType: 'medical-record'
+    +patientName: string
+    +records: Array{
+    date: string
+    type: string
+    summary: string
+    doctor: string
+  }
+  }
+
+  class SymptomCheckerBlockProps ~interface~ {
+    +blockType: 'symptom-checker'
+    -title: string
+    +symptoms: string[]
+    -onSubmit: (selected: string[]) = void
+  }
+
+  class HealthcareBlock  {
+  }
+
+  %% Relationships
+  HealthcareBlockBase <|-- AppointmentBlockProps
+  HealthcareBlockBase <|-- PractitionerCardProps
+  HealthcareBlockBase <|-- MedicalRecordBlockProps
+  HealthcareBlockBase <|-- SymptomCheckerBlockProps

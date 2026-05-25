@@ -1,0 +1,275 @@
+---
+title: "@cityos/design-runtime"
+description: "Deep dive into the design-runtime package"
+icon: "palette"
+---
+
+> **Type:** Design System Package | **Framework:** Node.js | **Version:** 0.1.0
+> **Path:** `packages/design-runtime` | **LOC:** 412 lines across 7 files
+
+[Back to Generated Packages](/generated/packages)
+> **Depends on:** [design-tokens](/generated/packages/design-tokens)
+> **Used by:** [hostinger-root-portal](/generated/apps/hostinger-root-portal), [storefront](#), [blocks-b2b](/generated/packages/blocks-b2b), [blocks-booking](/generated/packages/blocks-booking), [blocks-commerce](/generated/packages/blocks-commerce) +5 more
+
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 7 | — |
+| Lines of Code | 412 | — |
+| Test Coverage | 28.6% | 🔴 |
+| Oversized Files | 0 | 🟢 |
+| Components | 5 | — |
+| Hooks | 5 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 10 | — |
+| Internal Deps | 1 | — |
+| Dependents | 10 | 🟡 Medium impact |
+
+## Architecture
+
+### File Structure
+
+```
+BrandingProvider.tsx (168L, 1C, 4T)
+CityOSProvider.tsx (53L, 1C, 1T)
+TenantContext.test.tsx (68L, 1C, 0T)
+TenantContext.tsx (67L, 1C, 2T)
+index.ts (7L, 0C, 0T)
+native/
+  NativeBrandingProvider.tsx (47L, 1C, 3T)
+  index.ts (2L, 0C, 0T)
+```
+
+## Public API Surface
+
+### Components (4)
+
+| Name | Kind | File |
+|---|---|---|
+| BrandingProvider | function | BrandingProvider.tsx |
+| CityOSProvider | function | CityOSProvider.tsx |
+| TenantProvider | function | TenantContext.tsx |
+| NativeBrandingProvider | function | native/NativeBrandingProvider.tsx |
+
+### Hooks (5)
+
+| Name | Kind | File |
+|---|---|---|
+| useBranding | function | BrandingProvider.tsx |
+| useTenant | function | TenantContext.tsx |
+| useTenantPrefix | function | TenantContext.tsx |
+| useLocale | function | TenantContext.tsx |
+| useNativeBranding | function | native/NativeBrandingProvider.tsx |
+
+### Types (8)
+
+| Name | Kind | File |
+|---|---|---|
+| ThemeConfig | interface | BrandingProvider.tsx |
+| Branding | interface | BrandingProvider.tsx |
+| BrandingProviderProps | interface | BrandingProvider.tsx |
+| CityOSProviderProps | interface | CityOSProvider.tsx |
+| TenantConfig | interface | TenantContext.tsx |
+| TenantContextValue | interface | TenantContext.tsx |
+| NativeBrandingContextValue | interface | native/NativeBrandingProvider.tsx |
+| NativeBrandingProviderProps | interface | native/NativeBrandingProvider.tsx |
+
+### Constants (1)
+
+| Name | Kind | File |
+|---|---|---|
+| defaultTenantValue | const | TenantContext.tsx |
+
+## Component Catalog
+
+| Component | File | Kind | Props |
+|---|---|---|---|
+| BrandingProvider | BrandingProvider.tsx | arrow | children: React.ReactNode, brandingProp?: unknown, platform?: 'web' | 'native', bffThemeUrl: string |
+| CityOSProvider | CityOSProvider.tsx | arrow | children: ReactNode, tenant: TenantContextValue, branding: Branding | null, platform?: "web" | "native", bffThemeUrl: string |
+| TenantProbe | TenantContext.test.tsx | function | — |
+| TenantProvider | TenantContext.tsx | function | children: unknown, value: unknown |
+| NativeBrandingProvider | native/NativeBrandingProvider.tsx | arrow | children: React.ReactNode, initialTheme?: ThemeName |
+
+## Type System
+
+### ThemeConfig
+
+**Kind:** interface | **File:** `BrandingProvider.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| primaryColor | `string` | Yes |
+| secondaryColor | `string` | Yes |
+| fontFamily | `string` | Yes |
+
+### Branding
+
+**Kind:** interface | **File:** `BrandingProvider.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | Yes |
+| name | `string` | Yes |
+| handle | `string` | Yes |
+| logo | `{
+    url: string
+    alt?: string
+  }` | Yes |
+| favicon | `{
+    url: string
+  }` | Yes |
+| themeConfig | `ThemeConfig` | Yes |
+| seo | `{
+    title?: string
+    description?: string
+    ogImage?: string | { url: string; width?: number; height?: number }
+  }` | Yes |
+
+### BrandingContextType
+
+**Kind:** interface | **File:** `BrandingProvider.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| branding | `Branding | null` | — |
+| platform | `'web' | 'native'` | — |
+| nativeTokens | `Record<string, string | number> | null` | — |
+
+### BrandingProviderProps
+
+**Kind:** interface | **File:** `BrandingProvider.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| children | `React.ReactNode` | — |
+| branding | `Branding | null` | Yes |
+| platform | `'web' | 'native'` | Yes |
+| bffThemeUrl | `string` | Yes |
+
+### CityOSProviderProps
+
+**Kind:** interface | **File:** `CityOSProvider.tsx`
+> CityOSProvider — unified provider wrapping BrandingProvider + TenantProvider. Apps that currently mount both providers individually can swap to a single `<CityOSProvider tenant={...} branding={...}>…</CityOSProvider>` call. The original providers remain exported for backwards compatibility; new surfaces should prefer this unified entry. Mount order matters: TenantProvider is the outer frame (tenant-scoped locale + direction are read by BrandingProvider for theme hydration). Related: docs/reports
+
+| Property | Type | Optional |
+|---|---|---|
+| children | `ReactNode` | — |
+| tenant | `TenantContextValue` | Yes |
+| branding | `Branding | null` | Yes |
+| platform | `"web" | "native"` | Yes |
+| bffThemeUrl | `string` | Yes |
+
+### TenantConfig
+
+**Kind:** interface | **File:** `TenantContext.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| name | `string` | — |
+| slug | `string` | — |
+| handle | `string` | — |
+| domain | `string` | Yes |
+| residencyZone | `string` | — |
+| defaultLocale | `string` | — |
+| supportedLocales | `string[]` | — |
+| defaultCurrency | `string` | — |
+| timezone | `string` | — |
+| logoUrl | `string` | Yes |
+| faviconUrl | `string` | Yes |
+| primaryColor | `string` | Yes |
+| accentColor | `string` | Yes |
+| fontFamily | `string` | Yes |
+| branding | `Record<string, unknown>` | Yes |
+
+### TenantContextValue
+
+**Kind:** interface | **File:** `TenantContext.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| tenant | `TenantConfig | null` | — |
+| tenantSlug | `string` | — |
+| locale | `string` | — |
+| direction | `"ltr" | "rtl"` | — |
+
+### NativeBrandingContextValue
+
+**Kind:** interface | **File:** `native/NativeBrandingProvider.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| themeName | `ThemeName` | — |
+| setThemeName | `(name: ThemeName) => void` | — |
+| tokens | `typeof nativeDesignTokens` | — |
+| theme | `(typeof nativeThemePresets)[ThemeName]['tokens']` | — |
+
+### NativeBrandingProviderProps
+
+**Kind:** interface | **File:** `native/NativeBrandingProvider.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| children | `React.ReactNode` | — |
+| initialTheme | `ThemeName` | Yes |
+
+### ThemeName
+
+**Kind:** type | **File:** `native/NativeBrandingProvider.tsx`
+
+```ts
+type ThemeName = keyof typeof nativeThemePresets;
+```
+
+## Hooks
+
+| Hook | File | Params | Return |
+|---|---|---|---|
+| useBranding | BrandingProvider.tsx | — | unknown |
+| useTenant | TenantContext.tsx | — | unknown |
+| useTenantPrefix | TenantContext.tsx | — | string |
+| useLocale | TenantContext.tsx | — | unknown |
+| useNativeBranding | native/NativeBrandingProvider.tsx | — | unknown |
+
+## Dependencies
+
+### CityOS Core
+
+| Package | Type | Consumer |
+|---|---|---|
+| @cityos/design-tokens | prod | [design-tokens](/generated/packages/design-tokens) |
+
+## Consumers & Impact
+
+This package is used by:
+
+| Consumer | Type | Impact |
+|---|---|---|
+| [hostinger-root-portal](/generated/apps/hostinger-root-portal) | apps | 🔴 Runtime dependency |
+| [storefront](#) | apps | 🔴 Runtime dependency |
+| [blocks-b2b](/generated/packages/blocks-b2b) | packages | 🟡 Build-time dependency |
+| [blocks-booking](/generated/packages/blocks-booking) | packages | 🟡 Build-time dependency |
+| [blocks-commerce](/generated/packages/blocks-commerce) | packages | 🟡 Build-time dependency |
+| [blocks-core](/generated/packages/blocks-core) | packages | 🟡 Build-time dependency |
+| [blocks-finance](/generated/packages/blocks-finance) | packages | 🟡 Build-time dependency |
+| [blocks-governance](/generated/packages/blocks-governance) | packages | 🟡 Build-time dependency |
+| [design-system](/generated/packages/design-system) | packages | 🟡 Build-time dependency |
+| [universal-ui](#) | packages | 🟡 Build-time dependency |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [design-runtime.mmd](/generated/diagrams/class/design-runtime.mmd) |
+| Dependency Graph | [design-runtime-dependencies.mmd](/generated/diagrams/dependencies/design-runtime-dependencies.mmd) |
+
+## Tests
+
+- `TenantContext.test.tsx` (68 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

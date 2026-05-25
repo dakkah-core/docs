@@ -1,0 +1,170 @@
+---
+title: "Mobile"
+description: "Deep dive into the mobile application"
+icon: "smartphone"
+---
+
+> **Type:** Mobile App (React Native / Expo) | **Framework:** Expo/React Native | **Version:** 0.0.0
+> **Path:** `apps/mobile` | **Architectural Role:** Mobile App
+
+[Back to Generated Apps](/generated/apps)
+> **Dependencies:** [design-tokens](/generated/packages/design-tokens), [design-tokens-mobile](/generated/packages/design-tokens-mobile), [api-client](/generated/packages/api-client), [api-client-react](/generated/packages/api-client-react), [auth](/generated/packages/auth), [mobile-core](#), [sdui-renderer-native](#), [sdui-protocol](#)
+
+## Overview & Purpose
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 8 | — |
+| Lines of Code | 421 | — |
+| Test Coverage | 100.0% | 🟢 |
+| Oversized Files | 0 | 🟢 |
+| Components | 0 | — |
+| Hooks | 0 | — |
+| Types & Interfaces | 4 | — |
+| API Routes | 0 | — |
+| Page Routes | 0 | — |
+| Internal Deps | 8 | — |
+| Dependents | 0 | — |
+
+## Architecture
+
+### File Structure
+
+```
+env.test.ts (8L, 0C, 0T)
+env.ts (24L, 0C, 0T)
+lib/
+  offlineQueue.test.ts (8L, 0C, 0T)
+  offlineQueue.ts (90L, 0C, 2T)
+  lib/config/
+    env.test.ts (16L, 0C, 0T)
+    env.ts (30L, 0C, 0T)
+  lib/offline/
+    retry-strategy.test.ts (8L, 0C, 0T)
+    retry-strategy.ts (237L, 0C, 2T)
+```
+
+## Dependencies
+
+### UI / Framework
+
+| Package | Type |
+|---|---|
+| [@cityos/api-client-react](/generated/packages/api-client-react) | dev |
+
+### Auth / Identity
+
+| Package | Type |
+|---|---|
+| [@cityos/auth](/generated/packages/auth) | dev |
+
+### CityOS Core
+
+| Package | Type |
+|---|---|
+| [@cityos/design-tokens](/generated/packages/design-tokens) | dev |
+| [@cityos/design-tokens-mobile](/generated/packages/design-tokens-mobile) | dev |
+| [@cityos/api-client](/generated/packages/api-client) | dev |
+| [@cityos/mobile-core](#) | dev |
+| [@cityos/sdui-renderer-native](#) | dev |
+
+### Other
+
+| Package | Type |
+|---|---|
+| [@dakkah/sdui-protocol](#) | dev |
+
+## Types & Interfaces
+
+### OfflineRequest
+
+**Kind:** interface | **File:** `lib/offlineQueue.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| url | `string` | — |
+| method | `'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'` | — |
+| headers | `Record<string, string>` | Yes |
+| body | `unknown` | Yes |
+| timestamp | `number` | — |
+
+### OfflineQueue
+
+**Kind:** class | **File:** `lib/offlineQueue.ts`
+> Robust Native Queue Persistence engine intercepting logical drops. Stores transactional states into encrypted local SQLite layers safely draining queues sequentially.
+
+### RetryStrategy
+
+**Kind:** interface | **File:** `lib/offline/retry-strategy.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| maxAttempts | `number` | — |
+| backoff | `BackoffType` | — |
+| baseDelayMs | `number` | — |
+| maxDelayMs | `number` | — |
+| requiresConnectivity | `boolean` | — |
+| nonRetryableErrorCodes | `number[]` | Yes |
+| persistOnExhaustion | `boolean` | — |
+
+### BackoffType
+
+**Kind:** type | **File:** `lib/offline/retry-strategy.ts`
+> G-183: Configurable Mobile Offline Queue Retry Strategy Provides per-mutation-type retry strategies for the mobile app's offline queue. Different mutation types have different retry tolerances: - order.create / booking.create: retry aggressively (critical, must not be lost) - media.upload: retry conservatively (large — only on WiFi) - analytics.event: retry once; discard on failure - message.send: retry with exponential backoff Usage: import { getRetryStrategy, shouldRetry, nextRetryDelay } from
+
+```ts
+type BackoffType = "exponential" | "linear" | "fixed" | "none";
+```
+
+## Public API Surface
+
+| Export | Kind | File |
+|---|---|---|
+| env | const | env.ts |
+| requireEnv | function | env.ts |
+| OfflineRequest | interface | lib/offlineQueue.ts |
+| OfflineQueue | class | lib/offlineQueue.ts |
+| env | const | lib/config/env.ts |
+| getRetryStrategy | function | lib/offline/retry-strategy.ts |
+| shouldRetry | function | lib/offline/retry-strategy.ts |
+| nextRetryDelay | function | lib/offline/retry-strategy.ts |
+| getRegisteredMutationTypes | function | lib/offline/retry-strategy.ts |
+| RetryStrategy | interface | lib/offline/retry-strategy.ts |
+| BackoffType | type | lib/offline/retry-strategy.ts |
+
+## Related Apps
+
+Apps that share dependencies or serve similar roles:
+
+| App | Shared Dependencies | Relationship |
+|---|---|---|
+| [superapp](#) | @cityos/design-tokens, @cityos/design-tokens-mobile, @cityos/api-client +5 more | Same domain |
+| [driver-app](/generated/apps/driver-app) | @cityos/api-client, @cityos/auth, @cityos/design-tokens +4 more | Same domain |
+| [merchant-app-mobile](/generated/apps/merchant-app-mobile) | @cityos/api-client, @cityos/api-client-react, @cityos/auth +4 more | Same domain |
+| [mobile-driver](#) | @cityos/design-tokens, @cityos/design-tokens-mobile, @cityos/api-client +4 more | Same domain |
+| [mobile-merchant](#) | @cityos/design-tokens, @cityos/design-tokens-mobile, @cityos/api-client +4 more | Same domain |
+| [mobile-pos](#) | @cityos/design-tokens, @cityos/design-tokens-mobile, @cityos/api-client +4 more | Same domain |
+| [mobile-government](#) | @cityos/auth, @cityos/design-tokens, @cityos/design-tokens-mobile +3 more | Same domain |
+| [mobile-inspector](#) | @cityos/auth, @cityos/design-tokens, @cityos/design-tokens-mobile +3 more | Same domain |
+| [watch-app](#) | @cityos/design-tokens, @cityos/design-tokens-mobile, @cityos/api-client +2 more | Same domain |
+| [web-platform](#) | @cityos/api-client, @cityos/api-client-react, @cityos/auth +2 more | Same domain |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Component Hierarchy | [mobile-hierarchy.mmd](#) |
+| Dependency Graph | [mobile-dependencies.mmd](/generated/diagrams/dependencies/mobile-dependencies.mmd) |
+
+## Tests
+
+- `env.test.ts` (8 lines)
+- `lib/offlineQueue.test.ts` (8 lines)
+- `lib/config/env.test.ts` (16 lines)
+- `lib/offline/retry-strategy.test.ts` (8 lines)
+
+---
+*Generated by scripts/docs/generators/deep/app-deep-dive.mjs*

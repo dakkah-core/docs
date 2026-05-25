@@ -1,0 +1,244 @@
+---
+title: "@cityos/blocks-booking"
+description: "Deep dive into the blocks-booking package"
+icon: "box"
+---
+
+> **Type:** SDUI Blocks Package | **Framework:** Node.js | **Version:** 1.0.0
+> **Path:** `packages/blocks-booking` | **LOC:** 771 lines across 8 files
+
+[Back to Generated Packages](/generated/packages)
+> **Depends on:** [blocks-core](/generated/packages/blocks-core), [design-runtime](/generated/packages/design-runtime), [design-system](/generated/packages/design-system), [design-tokens](/generated/packages/design-tokens)
+> **Used by:** [storefront](#)
+
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 8 | — |
+| Lines of Code | 771 | — |
+| Test Coverage | 25.0% | 🔴 |
+| Oversized Files | 0 | 🟢 |
+| Components | 3 | — |
+| Hooks | 0 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 12 | — |
+| Internal Deps | 4 | — |
+| Dependents | 1 | 🟢 Low impact |
+
+## Architecture
+
+### File Structure
+
+```
+appointment-slots-block.stories.tsx (36L, 0C, 1T)
+appointment-slots-block.tsx (227L, 1C, 3T)
+booking-calendar-block.stories.tsx (43L, 0C, 1T)
+booking-calendar-block.tsx (273L, 1C, 3T)
+index.test.ts (24L, 0C, 0T)
+index.ts (4L, 0C, 0T)
+service-card-grid-block.stories.tsx (16L, 0C, 1T)
+service-card-grid-block.tsx (148L, 1C, 3T)
+```
+
+## Public API Surface
+
+### Components (13)
+
+| Name | Kind | File |
+|---|---|---|
+| GridView | const | appointment-slots-block.stories.tsx |
+| ListView | const | appointment-slots-block.stories.tsx |
+| TimelineView | const | appointment-slots-block.stories.tsx |
+| HourSlots | const | appointment-slots-block.stories.tsx |
+| AppointmentSlotsBlock | function | appointment-slots-block.tsx |
+| Default | const | booking-calendar-block.stories.tsx |
+| WithPricing | const | booking-calendar-block.stories.tsx |
+| MultiDaySelection | const | booking-calendar-block.stories.tsx |
+| NoPricing | const | booking-calendar-block.stories.tsx |
+| InteractionSelectDate | const | booking-calendar-block.stories.tsx |
+| BookingCalendarBlock | function | booking-calendar-block.tsx |
+| Default | const | service-card-grid-block.stories.tsx |
+| ServiceCardGridBlock | function | service-card-grid-block.tsx |
+
+### Types (3)
+
+| Name | Kind | File |
+|---|---|---|
+| SlotsMessageKey | type | appointment-slots-block.tsx |
+| BookingCalendarMessageKey | type | booking-calendar-block.tsx |
+| ServiceGridMessageKey | type | service-card-grid-block.tsx |
+
+## Component Catalog
+
+| Component | File | Kind | Props |
+|---|---|---|---|
+| AppointmentSlotsBlock | appointment-slots-block.tsx | arrow | providerId: string, date: string, duration?: string, variant?: 'list' | 'grid' | 'timeline', messages: MessageBag<SlotsMessageKey> |
+| BookingCalendarBlock | booking-calendar-block.tsx | arrow | serviceId: string, variant?: 'monthly' | 'weekly' | 'daily', showPricing?: boolean, allowMultiDay?: boolean, messages: MessageBag<BookingCalendarMessageKey> |
+| ServiceCardGridBlock | service-card-grid-block.tsx | arrow | heading: string, services: ServiceItem[], columns?: 2 | 3 | 4, showBookingCta?: boolean, categoryFilter?: boolean, messages: MessageBag<ServiceGridMessageKey> |
+
+## Type System
+
+### Story
+
+**Kind:** type | **File:** `appointment-slots-block.stories.tsx`
+
+```ts
+type Story = StoryObj<typeof meta>;
+```
+
+### AppointmentSlotsBlockProps
+
+**Kind:** interface | **File:** `appointment-slots-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| providerId | `string` | Yes |
+| date | `string` | Yes |
+| duration | `string` | Yes |
+| variant | `'list' | 'grid' | 'timeline'` | Yes |
+| messages | `MessageBag<SlotsMessageKey>` | Yes |
+
+### SlotData
+
+**Kind:** interface | **File:** `appointment-slots-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| time | `string` | — |
+| available | `boolean` | — |
+
+### SlotsMessageKey
+
+**Kind:** type | **File:** `appointment-slots-block.tsx`
+
+```ts
+type SlotsMessageKey = | 'unavailable'
+  | 'slotsAvailable'
+  | 'confirm'
+  | 'selected';
+```
+
+### Story
+
+**Kind:** type | **File:** `booking-calendar-block.stories.tsx`
+
+```ts
+type Story = StoryObj<typeof meta>;
+```
+
+### TimeSlot
+
+**Kind:** interface | **File:** `booking-calendar-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| time | `string` | — |
+| available | `boolean` | — |
+| price | `number` | Yes |
+
+### BookingCalendarBlockProps
+
+**Kind:** interface | **File:** `booking-calendar-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| serviceId | `string` | Yes |
+| variant | `'monthly' | 'weekly' | 'daily'` | Yes |
+| showPricing | `boolean` | Yes |
+| allowMultiDay | `boolean` | Yes |
+| messages | `MessageBag<BookingCalendarMessageKey>` | Yes |
+
+### BookingCalendarMessageKey
+
+**Kind:** type | **File:** `booking-calendar-block.tsx`
+
+```ts
+type BookingCalendarMessageKey = | 'selectDate'
+  | 'selectTime'
+  | 'noSlots'
+  | 'book'
+  | 'bookNow'
+  | 'booked'
+  | 'multiDayHelp';
+```
+
+### Story
+
+**Kind:** type | **File:** `service-card-grid-block.stories.tsx`
+
+```ts
+type Story = StoryObj<typeof meta>;
+```
+
+### ServiceItem
+
+**Kind:** interface | **File:** `service-card-grid-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| name | `string` | — |
+| description | `string` | Yes |
+| price | `number` | Yes |
+| duration | `string` | Yes |
+| image | `string` | Yes |
+| category | `string` | Yes |
+
+### ServiceCardGridBlockProps
+
+**Kind:** interface | **File:** `service-card-grid-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| heading | `string` | Yes |
+| services | `ServiceItem[]` | Yes |
+| columns | `2 | 3 | 4` | Yes |
+| showBookingCta | `boolean` | Yes |
+| categoryFilter | `boolean` | Yes |
+| messages | `MessageBag<ServiceGridMessageKey>` | Yes |
+
+### ServiceGridMessageKey
+
+**Kind:** type | **File:** `service-card-grid-block.tsx`
+
+```ts
+type ServiceGridMessageKey = | 'heading'
+  | 'bookNow'
+  | 'allCategories';
+```
+
+## Dependencies
+
+### CityOS Core
+
+| Package | Type | Consumer |
+|---|---|---|
+| @cityos/blocks-core | prod | [blocks-core](/generated/packages/blocks-core) |
+| @cityos/design-runtime | prod | [design-runtime](/generated/packages/design-runtime) |
+| @cityos/design-system | prod | [design-system](/generated/packages/design-system) |
+| @cityos/design-tokens | prod | [design-tokens](/generated/packages/design-tokens) |
+
+## Consumers & Impact
+
+This package is used by:
+
+| Consumer | Type | Impact |
+|---|---|---|
+| [storefront](#) | apps | 🔴 Runtime dependency |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [blocks-booking.mmd](/generated/diagrams/class/blocks-booking.mmd) |
+| Dependency Graph | [blocks-booking-dependencies.mmd](/generated/diagrams/dependencies/blocks-booking-dependencies.mmd) |
+
+## Tests
+
+- `index.test.ts` (24 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

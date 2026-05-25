@@ -1,0 +1,73 @@
+classDiagram
+  direction TB
+
+  class SurfaceMatchCriteria ~interface~ {
+    -category: SurfaceCategory
+    -audience: SurfaceAudience
+    -requiredModalities: readonly InputModality[]
+    -anyModality: readonly InputModality[]
+    -renderEngine: RenderEngine
+    -connectivity: ConnectivityProfile
+    -activeOnly: boolean
+    -minViewportWidth: number
+    -maxViewportWidth: number
+  }
+
+  class RegistryStats ~interface~ {
+    +total: number
+    +active: number
+    +byCategory: Recordstring, number
+    +byAudience: Recordstring, number
+    +byRenderEngine: Recordstring, number
+  }
+
+  class AttentionBudget ~interface~ {
+    +maxPrimaryBlocks: number
+    +maxSecondaryBlocks: number
+    +maxVisibleActions: number
+    +optimalTextLength: number
+    +allowAutoPlayMedia: boolean
+    +typicalSessionSeconds: number
+  }
+
+  class ViewportConstraints ~interface~ {
+    +minWidth: number
+    +maxWidth: number
+    +supportsLandscape: boolean
+    +supportsPortrait: boolean
+    +densityBucket: 'ldpi' | 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi'
+  }
+
+  class SurfaceDefinition ~interface~ {
+    +id: string
+    +name: string
+    +description: string
+    +category: SurfaceCategory
+    +audience: SurfaceAudience
+    +inputModalities: readonly InputModality[]
+    +renderEngine: RenderEngine
+    +connectivity: ConnectivityProfile
+    +viewport: ViewportConstraints
+    +budget: AttentionBudget
+    +active: boolean
+    -appPath: string
+  }
+
+  class SurfaceCategory  {
+  }
+
+  class InputModality  {
+  }
+
+  class SurfaceAudience  {
+  }
+
+  class RenderEngine  {
+  }
+
+  class ConnectivityProfile  {
+  }
+
+  %% Relationships
+  SurfaceDefinition --> ViewportConstraints : viewport
+  SurfaceDefinition --> AttentionBudget : budget

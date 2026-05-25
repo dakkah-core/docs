@@ -1,0 +1,178 @@
+classDiagram
+  direction TB
+
+  class ResolveCurrencyInput ~interface~ {
+    -currency: string
+    -locale: string
+  }
+
+  class FormatAmountInput ~interface~ {
+    -maximumFractionDigits: number
+    -minimumFractionDigits: number
+  }
+
+  class TenantCurrencyResolver  {
+  }
+
+  class FetchedState ~interface~ {
+    +data: T | undefined
+    +loading: boolean
+    +error: Error | null
+  }
+
+  class BlockDataInput ~interface~ {
+    -initialData: T
+    -fetched: FetchedStateT
+  }
+
+  class BlockDataResult ~interface~ {
+    +data: T | undefined
+    +loading: boolean
+    +error: Error | null
+  }
+
+  class MessageBag  {
+  }
+
+  class BlockI18nResolver  {
+  }
+
+  class BaseBlockProps ~interface~ {
+    -className: string
+    -'data-testid': string
+    -branding: Branding | null
+    -locale: string
+  }
+
+  class BlockCta ~interface~ {
+    +text: string
+    +url: string
+    -style: BlockCtaStyle
+    -target: '_self' | '_blank'
+  }
+
+  class BlockWithCTA ~interface~ {
+    -cta: BlockCta[]
+  }
+
+  class BlockWithHeading ~interface~ {
+    -heading: string
+    -subheading: string
+  }
+
+  class BlockMedia ~interface~ {
+    +url: string
+    -alt: string
+    -width: number
+    -height: number
+  }
+
+  class BlockWithMedia ~interface~ {
+    -image: BlockMedia
+  }
+
+  class AsyncBlockState ~interface~ {
+    -loading: boolean
+    -error: Error | null
+  }
+
+  class BlockWithAsyncData ~interface~ {
+    -initialData: T
+  }
+
+  class BlockFormSubmitContext ~interface~ {
+    +values: TValues
+    -signal: AbortSignal
+  }
+
+  class BlockWithForm ~interface~ {
+    -submitLabel: string
+    -onSubmit: (ctx: BlockFormSubmitContextTValues) = void | Promisevoid
+    -successMessage: string
+  }
+
+  class BlockWithDensity ~interface~ {
+    -variant: 'default' | 'compact'
+  }
+
+  class BlockWithCurrency ~interface~ {
+    -currency: string
+  }
+
+  class BlockCtaStyle  {
+  }
+
+  class Story  {
+  }
+
+  class ContentBlockProps ~interface~ {
+    -content: any
+    -layout: 'single' | 'two-column'
+    -backgroundColor: string
+  }
+
+  class Story  {
+  }
+
+  class Feature ~interface~ {
+    -icon: string
+    +title: string
+    +description: string
+  }
+
+  class FeaturesBlockProps ~interface~ {
+    -title: string
+    +features: Feature[]
+    -columns: 2 | 3 | 4
+  }
+
+  class Story  {
+  }
+
+  class HeroBlockProps ~interface~ {
+    -messages: MessageBagHeroBlockMessageKey
+  }
+
+  class HeroBlockMessageKey  {
+  }
+
+  class Story  {
+  }
+
+  class Stat ~interface~ {
+    +label: string
+    +value: string | number
+    -prefix: string
+    -suffix: string
+    -icon: React.ReactNode
+    -change: {
+    value: number
+    type: 'increase' | 'decrease'
+  }
+  }
+
+  class StatsBlockProps ~interface~ {
+    -heading: string
+    +stats: Stat[]
+    -variant: 'default' | 'card' | 'inline' | 'icon'
+    -columns: 2 | 3 | 4
+    -animated: boolean
+  }
+
+  %% Relationships
+  ResolveCurrencyInput <|-- FormatAmountInput
+  BaseBlockProps <|-- BlockWithCTA
+  BlockWithCTA --> BlockCta : cta
+  BaseBlockProps <|-- BlockWithHeading
+  BaseBlockProps <|-- BlockWithMedia
+  BlockWithMedia --> BlockMedia : image
+  BaseBlockProps <|-- BlockWithAsyncData
+  AsyncBlockState <|-- BlockWithAsyncData
+  BaseBlockProps <|-- BlockWithForm
+  BaseBlockProps <|-- BlockWithDensity
+  BaseBlockProps <|-- BlockWithCurrency
+  FeaturesBlockProps --> Feature : features
+  BlockWithHeading <|-- HeroBlockProps
+  BlockWithMedia <|-- HeroBlockProps
+  BlockWithCTA <|-- HeroBlockProps
+  StatsBlockProps --> Stat : stats

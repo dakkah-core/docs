@@ -1,0 +1,311 @@
+---
+title: "@cityos/cityos-identity"
+description: "Deep dive into the cityos-identity package"
+icon: "package"
+---
+
+> **Type:** CityOS Core Infrastructure | **Framework:** Node.js | **Version:** 0.1.0
+> **Path:** `packages/cityos-identity` | **LOC:** 937 lines across 7 files
+
+[Back to Generated Packages](/generated/packages)
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 7 | — |
+| Lines of Code | 937 | — |
+| Test Coverage | 28.6% | 🔴 |
+| Oversized Files | 0 | 🟢 |
+| Components | 0 | — |
+| Hooks | 0 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 16 | — |
+| Internal Deps | 0 | — |
+| Dependents | 0 | 🟢 Low impact |
+
+## Architecture
+
+### File Structure
+
+```
+credential-verifier.ts (178L, 0C, 4T)
+did-resolver.ts (194L, 0C, 7T)
+env.ts (4L, 0C, 0T)
+index.test.ts (200L, 0C, 0T)
+index.ts (28L, 0C, 0T)
+key-management.ts (171L, 0C, 3T)
+trust-registry.ts (162L, 0C, 2T)
+```
+
+## Public API Surface
+
+### Functions (19)
+
+| Name | Kind | File |
+|---|---|---|
+| verifyCredential | function | credential-verifier.ts |
+| verifyPresentation | function | credential-verifier.ts |
+| resolveDid | function | did-resolver.ts |
+| clearDidCache | function | did-resolver.ts |
+| generateApiKey | function | index.ts |
+| hashApiKey | function | index.ts |
+| verifyApiKey | function | index.ts |
+| generateEd25519KeyPair | function | key-management.ts |
+| generateP256KeyPair | function | key-management.ts |
+| signWithKey | function | key-management.ts |
+| verifyWithKey | function | key-management.ts |
+| buildStorageDescriptor | function | key-management.ts |
+| jwkThumbprint | function | key-management.ts |
+| registerIssuer | function | trust-registry.ts |
+| revokeIssuer | function | trust-registry.ts |
+| lookupIssuer | function | trust-registry.ts |
+| isTrustedIssuer | function | trust-registry.ts |
+| listTrustedIssuers | function | trust-registry.ts |
+| getTrustRegistryStats | function | trust-registry.ts |
+
+### Types (14)
+
+| Name | Kind | File |
+|---|---|---|
+| VerifiableCredential | interface | credential-verifier.ts |
+| VerifiablePresentation | interface | credential-verifier.ts |
+| VerificationResult | interface | credential-verifier.ts |
+| VerificationOptions | interface | credential-verifier.ts |
+| DidDocument | interface | did-resolver.ts |
+| VerificationMethod | interface | did-resolver.ts |
+| ServiceEndpoint | interface | did-resolver.ts |
+| DidResolutionResult | interface | did-resolver.ts |
+| ResolveOptions | interface | did-resolver.ts |
+| KeyPair | interface | key-management.ts |
+| KeyStorageDescriptor | interface | key-management.ts |
+| KeyPurpose | type | key-management.ts |
+| TrustedIssuer | interface | trust-registry.ts |
+| TrustRegistryLookupResult | interface | trust-registry.ts |
+
+### Constants (1)
+
+| Name | Kind | File |
+|---|---|---|
+| cityosIdentityEnv | const | env.ts |
+
+## Type System
+
+### VerifiableCredential
+
+**Kind:** interface | **File:** `credential-verifier.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| '@context' | `string[]` | — |
+| id | `string` | Yes |
+| type | `string[]` | — |
+| issuer | `string | { id: string; [key: string]: unknown }` | — |
+| issuanceDate | `string` | — |
+| expirationDate | `string` | Yes |
+| credentialSubject | `Record<string, unknown>` | — |
+| proof | `Record<string, unknown>` | Yes |
+| credentialStatus | `{
+    id: string;
+    type: string;
+  }` | Yes |
+
+### VerifiablePresentation
+
+**Kind:** interface | **File:** `credential-verifier.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| '@context' | `string[]` | — |
+| type | `string[]` | — |
+| holder | `string` | Yes |
+| verifiableCredential | `VerifiableCredential[]` | — |
+| proof | `Record<string, unknown>` | Yes |
+
+### VerificationResult
+
+**Kind:** interface | **File:** `credential-verifier.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| verified | `boolean` | — |
+| credential | `VerifiableCredential` | Yes |
+| credential_id | `string` | Yes |
+| holder | `string` | Yes |
+| issuers_verified | `string[]` | — |
+| errors | `string[]` | — |
+| warnings | `string[]` | — |
+| verified_at | `string` | — |
+
+### VerificationOptions
+
+**Kind:** interface | **File:** `credential-verifier.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| waltIdVerifierUrl | `string` | Yes |
+| apiKey | `string` | Yes |
+| checkExpiry | `boolean` | Yes |
+| checkRevocation | `boolean` | Yes |
+| requireTrustedIssuers | `boolean` | Yes |
+| trustedIssuers | `string[]` | Yes |
+
+### DidDocument
+
+**Kind:** interface | **File:** `did-resolver.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| '@context' | `string | string[]` | — |
+| id | `string` | — |
+| verificationMethod | `VerificationMethod[]` | Yes |
+| authentication | `(string | VerificationMethod)[]` | Yes |
+| assertionMethod | `(string | VerificationMethod)[]` | Yes |
+| keyAgreement | `(string | VerificationMethod)[]` | Yes |
+| service | `ServiceEndpoint[]` | Yes |
+
+### VerificationMethod
+
+**Kind:** interface | **File:** `did-resolver.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| type | `string` | — |
+| controller | `string` | — |
+| publicKeyJwk | `Record<string, unknown>` | Yes |
+| publicKeyMultibase | `string` | Yes |
+
+### ServiceEndpoint
+
+**Kind:** interface | **File:** `did-resolver.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| type | `string` | — |
+| serviceEndpoint | `string | string[]` | — |
+
+### DidResolutionResult
+
+**Kind:** interface | **File:** `did-resolver.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| didDocument | `DidDocument | null` | — |
+| didResolutionMetadata | `{
+    contentType?: string;
+    error?: string;
+    retrieved_at?: string;
+  }` | — |
+
+### ResolveOptions
+
+**Kind:** interface | **File:** `did-resolver.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| waltIdVerifierUrl | `string` | Yes |
+| universalResolverUrl | `string` | Yes |
+| apiKey | `string` | Yes |
+| cacheTtlMs | `number` | Yes |
+
+### CacheEntry
+
+**Kind:** interface | **File:** `did-resolver.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| result | `DidResolutionResult` | — |
+| expiresAt | `number` | — |
+
+### DidMethod
+
+**Kind:** type | **File:** `did-resolver.ts`
+
+```ts
+type DidMethod = 'key' | 'web' | 'ion' | 'ebsi' | 'peer' | 'stub';
+```
+
+### KeyPair
+
+**Kind:** interface | **File:** `key-management.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| method | `'Ed25519' | 'P-256' | 'secp256k1'` | — |
+| privateKeyJwk | `JsonWebKey` | — |
+| publicKeyJwk | `JsonWebKey` | — |
+| publicKeyMultibase | `string` | Yes |
+| created_at | `string` | — |
+| purpose | `KeyPurpose[]` | — |
+
+### KeyStorageDescriptor
+
+**Kind:** interface | **File:** `key-management.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| algorithm | `string` | — |
+| public_key_jwk | `JsonWebKey` | — |
+| did | `string` | — |
+| fragment | `string` | — |
+| purpose | `KeyPurpose[]` | — |
+| created_at | `string` | — |
+
+### KeyPurpose
+
+**Kind:** type | **File:** `key-management.ts`
+
+```ts
+type KeyPurpose = | 'authentication'
+  | 'assertionMethod'
+  | 'keyAgreement'
+  | 'capabilityDelegation'
+  | 'capabilityInvocation';
+```
+
+### TrustedIssuer
+
+**Kind:** interface | **File:** `trust-registry.ts`
+> Dakkah CityOS — Trust Registry Maintains a registry of trusted DID issuers and their permitted credential types.
+
+| Property | Type | Optional |
+|---|---|---|
+| did | `string` | — |
+| name | `string` | — |
+| organizationId | `string` | Yes |
+| credentialTypes | `string[]` | — |
+| zones | `string[]` | — |
+| validFrom | `string` | — |
+| validUntil | `string` | Yes |
+| revoked | `boolean` | Yes |
+| metadata | `Record<string, unknown>` | Yes |
+
+### TrustRegistryLookupResult
+
+**Kind:** interface | **File:** `trust-registry.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| trusted | `boolean` | — |
+| issuer | `TrustedIssuer` | Yes |
+| reason | `string` | Yes |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [cityos-identity.mmd](/generated/diagrams/class/cityos-identity.mmd) |
+| Dependency Graph | [cityos-identity-dependencies.mmd](#) |
+
+## Tests
+
+- `index.test.ts` (200 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

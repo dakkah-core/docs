@@ -1,0 +1,140 @@
+classDiagram
+  direction TB
+
+  class VerifiableCredential ~interface~ {
+    +'@context': string[]
+    -id: string
+    +type: string[]
+    +issuer: string | { id: string [key: string]: unknown }
+    +issuanceDate: string
+    -expirationDate: string
+    +credentialSubject: Recordstring, unknown
+    -proof: Recordstring, unknown
+    -credentialStatus: {
+    id: string
+    type: string
+  }
+  }
+
+  class VerifiablePresentation ~interface~ {
+    +'@context': string[]
+    +type: string[]
+    -holder: string
+    +verifiableCredential: VerifiableCredential[]
+    -proof: Recordstring, unknown
+  }
+
+  class VerificationResult ~interface~ {
+    +verified: boolean
+    -credential: VerifiableCredential
+    -credential_id: string
+    -holder: string
+    +issuers_verified: string[]
+    +errors: string[]
+    +warnings: string[]
+    +verified_at: string
+  }
+
+  class VerificationOptions ~interface~ {
+    -waltIdVerifierUrl: string
+    -apiKey: string
+    -checkExpiry: boolean
+    -checkRevocation: boolean
+    -requireTrustedIssuers: boolean
+    -trustedIssuers: string[]
+  }
+
+  class DidDocument ~interface~ {
+    +'@context': string | string[]
+    +id: string
+    -verificationMethod: VerificationMethod[]
+    -authentication: (string | VerificationMethod)[]
+    -assertionMethod: (string | VerificationMethod)[]
+    -keyAgreement: (string | VerificationMethod)[]
+    -service: ServiceEndpoint[]
+  }
+
+  class VerificationMethod ~interface~ {
+    +id: string
+    +type: string
+    +controller: string
+    -publicKeyJwk: Recordstring, unknown
+    -publicKeyMultibase: string
+  }
+
+  class ServiceEndpoint ~interface~ {
+    +id: string
+    +type: string
+    +serviceEndpoint: string | string[]
+  }
+
+  class DidResolutionResult ~interface~ {
+    +didDocument: DidDocument | null
+    +didResolutionMetadata: {
+    contentType?: string
+    error?: string
+    retrieved_at?: string
+  }
+  }
+
+  class ResolveOptions ~interface~ {
+    -waltIdVerifierUrl: string
+    -universalResolverUrl: string
+    -apiKey: string
+    -cacheTtlMs: number
+  }
+
+  class CacheEntry ~interface~ {
+    +result: DidResolutionResult
+    +expiresAt: number
+  }
+
+  class DidMethod  {
+  }
+
+  class KeyPair ~interface~ {
+    +id: string
+    +method: 'Ed25519' | 'P-256' | 'secp256k1'
+    +privateKeyJwk: JsonWebKey
+    +publicKeyJwk: JsonWebKey
+    -publicKeyMultibase: string
+    +created_at: string
+    +purpose: KeyPurpose[]
+  }
+
+  class KeyStorageDescriptor ~interface~ {
+    +id: string
+    +algorithm: string
+    +public_key_jwk: JsonWebKey
+    +did: string
+    +fragment: string
+    +purpose: KeyPurpose[]
+    +created_at: string
+  }
+
+  class KeyPurpose  {
+  }
+
+  class TrustedIssuer ~interface~ {
+    +did: string
+    +name: string
+    -organizationId: string
+    +credentialTypes: string[]
+    +zones: string[]
+    +validFrom: string
+    -validUntil: string
+    -revoked: boolean
+    -metadata: Recordstring, unknown
+  }
+
+  class TrustRegistryLookupResult ~interface~ {
+    +trusted: boolean
+    -issuer: TrustedIssuer
+    -reason: string
+  }
+
+  %% Relationships
+  VerifiablePresentation --> VerifiableCredential : verifiableCredential
+  VerificationResult --> VerifiableCredential : credential
+  CacheEntry --> DidResolutionResult : result
+  TrustRegistryLookupResult --> TrustedIssuer : issuer

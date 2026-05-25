@@ -1,0 +1,441 @@
+---
+title: "@cityos/api-client"
+description: "Deep dive into the api-client package"
+icon: "code"
+---
+
+> **Type:** API Client Package | **Framework:** Node.js | **Version:** 0.0.0
+> **Path:** `packages/api-client` | **LOC:** 1,653 lines across 5 files
+
+[Back to Generated Packages](/generated/packages)
+> **Depends on:** [sdui-protocol](#), [auth](/generated/packages/auth)
+> **Used by:** [driver-app](/generated/apps/driver-app), [merchant-app](/generated/apps/merchant-app), [merchant-app-mobile](/generated/apps/merchant-app-mobile), [mobile](/generated/apps/mobile), [mobile-driver](#) +12 more
+
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 5 | — |
+| Lines of Code | 1,653 | — |
+| Test Coverage | 20.0% | 🔴 |
+| Oversized Files | 1 | 🟡 |
+| Components | 0 | — |
+| Hooks | 0 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 117 | — |
+| Internal Deps | 2 | — |
+| Dependents | 17 | 🔴 High impact |
+
+### ⚠️ Oversized Files
+
+| File | Lines |
+|---|---|
+| packages/api-client/src/bff.ts | 1256 |
+
+## Architecture
+
+### File Structure
+
+```
+api-client.test.ts (96L, 0C, 0T)
+bff.ts (1256L, 0C, 113T)
+client.ts (145L, 0C, 3T)
+index.ts (122L, 0C, 0T)
+sdui.ts (34L, 0C, 1T)
+```
+
+## Public API Surface
+
+### Components (2)
+
+| Name | Kind | File |
+|---|---|---|
+| BFF_PORT | const | bff.ts |
+| BFF_PORTS | const | bff.ts |
+
+### Functions (1)
+
+| Name | Kind | File |
+|---|---|---|
+| createBffClients | function | bff.ts |
+
+### Types (83)
+
+| Name | Kind | File |
+|---|---|---|
+| BffResponse | interface | bff.ts |
+| PaginatedResponse | interface | bff.ts |
+| PaginationParams | interface | bff.ts |
+| CommerceProduct | interface | bff.ts |
+| CommerceOrder | interface | bff.ts |
+| TransportRide | interface | bff.ts |
+| TransportRoute | interface | bff.ts |
+| HealthcareAppointment | interface | bff.ts |
+| GovernanceService | interface | bff.ts |
+| GovernanceRequest | interface | bff.ts |
+| EventListing | interface | bff.ts |
+| EventBooking | interface | bff.ts |
+| PlatformNotification | interface | bff.ts |
+| PlatformUserProfile | interface | bff.ts |
+| IotDevice | interface | bff.ts |
+| SocialPost | interface | bff.ts |
+| AgricultureCrop | interface | bff.ts |
+| AgricultureSensor | interface | bff.ts |
+| AgricultureActivity | interface | bff.ts |
+| AgricultureMarketItem | interface | bff.ts |
+| ... | | | (63 more) |
+
+### Classes (34)
+
+| Name | Kind | File |
+|---|---|---|
+| BffClient | class | bff.ts |
+| CommerceClient | class | bff.ts |
+| TransportClient | class | bff.ts |
+| HealthcareClient | class | bff.ts |
+| GovernanceClient | class | bff.ts |
+| EventsClient | class | bff.ts |
+| PlatformClient | class | bff.ts |
+| IotClient | class | bff.ts |
+| SocialClient | class | bff.ts |
+| AgricultureClient | class | bff.ts |
+| AiClient | class | bff.ts |
+| CommunityClient | class | bff.ts |
+| CultureTourismClient | class | bff.ts |
+| EducationClient | class | bff.ts |
+| EnvironmentClient | class | bff.ts |
+| FacilitiesClient | class | bff.ts |
+| FinanceClient | class | bff.ts |
+| FleetClient | class | bff.ts |
+| HealthClient | class | bff.ts |
+| JobsClient | class | bff.ts |
+| ... | | | (14 more) |
+
+## Type System
+
+### BffResponse
+
+**Kind:** interface | **File:** `bff.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| success | `boolean` | — |
+| data | `T` | — |
+
+### PaginatedResponse
+
+**Kind:** interface | **File:** `bff.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| data | `T[]` | — |
+| total | `number` | — |
+| page | `number` | — |
+| pageSize | `number` | — |
+| hasMore | `boolean` | — |
+
+### PaginationParams
+
+**Kind:** interface | **File:** `bff.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| page | `number` | Yes |
+| pageSize | `number` | Yes |
+| sort | `string` | Yes |
+| order | `"asc" | "desc"` | Yes |
+
+### CommerceProduct
+
+**Kind:** interface | **File:** `bff.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| name | `string` | — |
+| description | `string` | Yes |
+| price | `number` | — |
+| currency | `string` | — |
+| images | `string[]` | — |
+| category | `string` | — |
+| available | `boolean` | — |
+
+### CommerceOrder
+
+**Kind:** interface | **File:** `bff.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| status | `"pending" | "confirmed" | "preparing" | "ready" | "delivered" | "cancelled"` | — |
+| items | `Array<{ productId: string; quantity: number; unitPrice: number }>` | — |
+| total | `number` | — |
+| currency | `string` | — |
+| createdAt | `string` | — |
+
+### TransportRide
+
+**Kind:** interface | **File:** `bff.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| status | `"requested" | "accepted" | "arriving" | "in_progress" | "completed" | "cancelled"` | — |
+| pickupLat | `number` | — |
+| pickupLng | `number` | — |
+| dropoffLat | `number` | — |
+| dropoffLng | `number` | — |
+| estimatedFare | `number` | — |
+| currency | `string` | — |
+| driverId | `string` | Yes |
+| eta | `number` | Yes |
+
+### TransportRoute
+
+**Kind:** interface | **File:** `bff.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| name | `string` | — |
+| type | `"bus" | "metro" | "tram" | "ferry"` | — |
+| stops | `Array<{ id: string; name: string; lat: number; lng: number }>` | — |
+
+### HealthcareAppointment
+
+**Kind:** interface | **File:** `bff.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| providerId | `string` | — |
+| providerName | `string` | — |
+| specialty | `string` | — |
+| dateTime | `string` | — |
+| status | `"scheduled" | "confirmed" | "in_progress" | "completed" | "cancelled"` | — |
+| location | `string` | Yes |
+
+### GovernanceService
+
+**Kind:** interface | **File:** `bff.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| name | `string` | — |
+| category | `string` | — |
+| description | `string` | — |
+| requiredDocuments | `string[]` | — |
+| estimatedDays | `number` | — |
+
+### GovernanceRequest
+
+**Kind:** interface | **File:** `bff.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| serviceId | `string` | — |
+| status | `"submitted" | "under_review" | "approved" | "rejected" | "completed"` | — |
+| submittedAt | `string` | — |
+| referenceNumber | `string` | — |
+
+### EventListing
+
+**Kind:** interface | **File:** `bff.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| title | `string` | — |
+| description | `string` | — |
+| venue | `string` | — |
+| startDate | `string` | — |
+| endDate | `string` | — |
+| category | `string` | — |
+| price | `number` | Yes |
+| currency | `string` | Yes |
+| imageUrl | `string` | Yes |
+| capacity | `number` | Yes |
+| attendees | `number` | Yes |
+
+### EventBooking
+
+**Kind:** interface | **File:** `bff.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| eventId | `string` | — |
+| status | `"confirmed" | "pending" | "cancelled"` | — |
+| tickets | `number` | — |
+| totalPrice | `number` | — |
+| currency | `string` | — |
+
+### PlatformNotification
+
+**Kind:** interface | **File:** `bff.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| type | `"info" | "warning" | "success" | "error"` | — |
+| title | `string` | — |
+| body | `string` | — |
+| read | `boolean` | — |
+| createdAt | `string` | — |
+| action | `{ type: string; target: string }` | Yes |
+
+### PlatformUserProfile
+
+**Kind:** interface | **File:** `bff.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| name | `string` | — |
+| email | `string` | — |
+| phone | `string` | Yes |
+| avatar | `string` | Yes |
+| preferredLanguage | `string` | — |
+| tenantId | `string` | — |
+
+### IotDevice
+
+**Kind:** interface | **File:** `bff.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| name | `string` | — |
+| type | `string` | — |
+| status | `"online" | "offline" | "error"` | — |
+| lastSeen | `string` | — |
+| metrics | `Record<string, number>` | — |
+
+### SocialPost
+
+**Kind:** interface | **File:** `bff.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| authorId | `string` | — |
+| authorName | `string` | — |
+| content | `string` | — |
+| mediaUrls | `string[]` | — |
+| likes | `number` | — |
+| comments | `number` | — |
+| createdAt | `string` | — |
+
+### AgricultureCrop
+
+**Kind:** interface | **File:** `bff.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| name | `string` | — |
+| type | `string` | — |
+| region | `string` | — |
+| status | `string` | — |
+| hectares | `number` | — |
+| yield | `number` | — |
+| harvestDate | `string` | — |
+
+### AgricultureSensor
+
+**Kind:** interface | **File:** `bff.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| cropId | `string` | — |
+| type | `string` | — |
+| value | `number` | — |
+| unit | `string` | — |
+| status | `string` | — |
+| lastReading | `string` | — |
+
+### AgricultureActivity
+
+**Kind:** interface | **File:** `bff.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| cropId | `string` | — |
+| type | `string` | — |
+| description | `string` | — |
+| date | `string` | — |
+| status | `string` | — |
+
+### AgricultureMarketItem
+
+**Kind:** interface | **File:** `bff.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| crop | `string` | — |
+| pricePerKg | `number` | — |
+| currency | `string` | — |
+| trend | `string` | — |
+| volume | `number` | — |
+
+*... and 97 more types*
+
+## Dependencies
+
+### Auth / Identity
+
+| Package | Type | Consumer |
+|---|---|---|
+| @cityos/auth | prod | [auth](/generated/packages/auth) |
+
+### Other
+
+| Package | Type | Consumer |
+|---|---|---|
+| @dakkah/sdui-protocol | prod | [sdui-protocol](#) |
+
+## Consumers & Impact
+
+This package is used by:
+
+| Consumer | Type | Impact |
+|---|---|---|
+| [driver-app](/generated/apps/driver-app) | apps | 🔴 Runtime dependency |
+| [merchant-app](/generated/apps/merchant-app) | apps | 🔴 Runtime dependency |
+| [merchant-app-mobile](/generated/apps/merchant-app-mobile) | apps | 🔴 Runtime dependency |
+| [mobile](/generated/apps/mobile) | apps | 🔴 Runtime dependency |
+| [mobile-driver](#) | apps | 🔴 Runtime dependency |
+| [mobile-merchant](#) | apps | 🔴 Runtime dependency |
+| [mobile-pos](#) | apps | 🔴 Runtime dependency |
+| [superapp](#) | apps | 🔴 Runtime dependency |
+| [watch-app](#) | apps | 🔴 Runtime dependency |
+| [web-platform](#) | apps | 🔴 Runtime dependency |
+| [mobile-core](#) | packages | 🟡 Build-time dependency |
+| [mobile-payments](#) | packages | 🟡 Build-time dependency |
+| [sdui-renderer-car](#) | packages | 🟡 Build-time dependency |
+| [sdui-renderer-kiosk](#) | packages | 🟡 Build-time dependency |
+| [sdui-renderer-tv](#) | packages | 🟡 Build-time dependency |
+| [sdui-renderer-watch](#) | packages | 🟡 Build-time dependency |
+| [sdui-renderer-web](#) | packages | 🟡 Build-time dependency |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [api-client.mmd](/generated/diagrams/class/api-client.mmd) |
+| Dependency Graph | [api-client-dependencies.mmd](/generated/diagrams/dependencies/api-client-dependencies.mmd) |
+
+## Tests
+
+- `api-client.test.ts` (96 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

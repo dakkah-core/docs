@@ -1,0 +1,302 @@
+{
+  "tab": "Generated Reference",
+  "groups": [
+    {
+      "group": "Apps",
+      "icon": "layers",
+      "pages": [
+        {
+          "group": "Web Portals",
+          "pages": [
+            "generated/apps/business-dashboard",
+            "generated/apps/city-dashboard",
+            "generated/apps/dev-portal",
+            "generated/apps/hostinger-root-portal"
+          ]
+        },
+        {
+          "group": "Mobile",
+          "pages": [
+            "generated/apps/driver-app",
+            "generated/apps/merchant-app",
+            "generated/apps/merchant-app-mobile",
+            "generated/apps/mobile"
+          ]
+        },
+        {
+          "group": "Backend Services",
+          "pages": [
+            "generated/apps/bff-gateway",
+            "generated/apps/erp-bridge",
+            "generated/apps/erpnext",
+            "generated/apps/fleetbase",
+            "generated/apps/fleetops",
+            "generated/apps/iot-edge",
+            "generated/apps/keycloak",
+            "generated/apps/kuzzle-admin-console",
+            "generated/apps/kuzzle-iot-backend",
+            "generated/apps/medusa-backend",
+            "generated/apps/minio"
+          ]
+        },
+        {
+          "group": "Specialized",
+          "pages": [
+            "generated/apps/ai-assistant",
+            "generated/apps/car-app",
+            "generated/apps/control-plane",
+            "generated/apps/kiosk",
+            "generated/apps/kiosk-runtime",
+            "generated/apps/meilisearch"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Packages",
+      "icon": "package",
+      "pages": [
+        {
+          "group": "Core Infrastructure",
+          "pages": [
+            "generated/packages/bff-core",
+            "generated/packages/blocks-core",
+            "generated/packages/cityos-contracts",
+            "generated/packages/cityos-core",
+            "generated/packages/cityos-events",
+            "generated/packages/cityos-identity",
+            "generated/packages/cityos-outbox",
+            "generated/packages/cityos-search",
+            "generated/packages/cityos-storage",
+            "generated/packages/cityos-workflows-sdk",
+            "generated/packages/contracts",
+            "generated/packages/core"
+          ]
+        },
+        {
+          "group": "Design System",
+          "pages": [
+            "generated/packages/design-governance",
+            "generated/packages/design-runtime",
+            "generated/packages/design-system",
+            "generated/packages/design-tokens",
+            "generated/packages/design-tokens-mobile"
+          ]
+        },
+        {
+          "group": "SDUI & Blocks",
+          "pages": [
+            "generated/packages/blocks-agriculture",
+            "generated/packages/blocks-b2b",
+            "generated/packages/blocks-booking",
+            "generated/packages/blocks-commerce",
+            "generated/packages/blocks-core",
+            "generated/packages/blocks-education",
+            "generated/packages/blocks-finance",
+            "generated/packages/blocks-governance",
+            "generated/packages/blocks-healthcare",
+            "generated/packages/blocks-logistics"
+          ]
+        },
+        {
+          "group": "API & Contracts",
+          "pages": [
+            "generated/packages/api-client",
+            "generated/packages/api-client-react",
+            "generated/packages/auth",
+            "generated/packages/bff-core",
+            "generated/packages/cityos-contracts",
+            "generated/packages/contracts"
+          ]
+        },
+        {
+          "group": "Integrations",
+          "pages": [
+            "generated/packages/adapters",
+            "generated/packages/adapters-social",
+            "generated/packages/ai-assistant",
+            "generated/packages/cityos-compliance",
+            "generated/packages/cityos-event-catalog",
+            "generated/packages/cityos-studio",
+            "generated/packages/cityos-surface-registry",
+            "generated/packages/domain-shared",
+            "generated/packages/domains",
+            "generated/packages/i18n",
+            "generated/packages/lodash-set-safe"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Diagrams",
+      "icon": "git-branch",
+      "pages": [
+        {
+          "group": "Class Diagrams",
+          "pages": [
+            "generated/diagrams/class/adapters-social.mmd",
+            "generated/diagrams/class/ai-assistant.mmd",
+            "generated/diagrams/class/api-client-react.mmd",
+            "generated/diagrams/class/api-client.mmd",
+            "generated/diagrams/class/auth.mmd",
+            "generated/diagrams/class/bff-core.mmd",
+            "generated/diagrams/class/blocks-agriculture.mmd",
+            "generated/diagrams/class/blocks-b2b.mmd",
+            "generated/diagrams/class/blocks-booking.mmd",
+            "generated/diagrams/class/blocks-commerce.mmd",
+            "generated/diagrams/class/blocks-core.mmd",
+            "generated/diagrams/class/blocks-education.mmd",
+            "generated/diagrams/class/blocks-finance.mmd",
+            "generated/diagrams/class/blocks-governance.mmd",
+            "generated/diagrams/class/blocks-healthcare.mmd",
+            "generated/diagrams/class/blocks-logistics.mmd",
+            "generated/diagrams/class/cityos-compliance.mmd",
+            "generated/diagrams/class/cityos-contracts.mmd",
+            "generated/diagrams/class/cityos-core.mmd",
+            "generated/diagrams/class/cityos-event-catalog.mmd",
+            "generated/diagrams/class/cityos-events.mmd",
+            "generated/diagrams/class/cityos-identity.mmd",
+            "generated/diagrams/class/cityos-outbox.mmd",
+            "generated/diagrams/class/cityos-search.mmd",
+            "generated/diagrams/class/cityos-storage.mmd",
+            "generated/diagrams/class/cityos-surface-registry.mmd",
+            "generated/diagrams/class/cityos-workflows-sdk.mmd",
+            "generated/diagrams/class/contracts.mmd",
+            "generated/diagrams/class/core.mmd",
+            "generated/diagrams/class/design-governance.mmd",
+            "generated/diagrams/class/design-runtime.mmd",
+            "generated/diagrams/class/design-system.mmd",
+            "generated/diagrams/class/design-tokens-mobile.mmd",
+            "generated/diagrams/class/design-tokens.mmd",
+            "generated/diagrams/class/domain-shared.mmd",
+            "generated/diagrams/class/i18n.mmd",
+            "generated/diagrams/class/merchant-experience.mmd",
+            "generated/diagrams/class/mobile-core.mmd",
+            "generated/diagrams/class/mobile-offline.mmd",
+            "generated/diagrams/class/mobile-payments.mmd",
+            "generated/diagrams/class/mobile-telemetry.mmd",
+            "generated/diagrams/class/module-medusa.mmd",
+            "generated/diagrams/class/module-payload.mmd",
+            "generated/diagrams/class/sdui-protocol.mmd",
+            "generated/diagrams/class/sdui-renderer-car.mmd",
+            "generated/diagrams/class/sdui-renderer-headless.mmd",
+            "generated/diagrams/class/sdui-renderer-kiosk.mmd",
+            "generated/diagrams/class/sdui-renderer-native.mmd",
+            "generated/diagrams/class/sdui-renderer-tv.mmd",
+            "generated/diagrams/class/sdui-renderer-watch.mmd",
+            "generated/diagrams/class/sdui-renderer-web.mmd",
+            "generated/diagrams/class/surface-contracts.mmd",
+            "generated/diagrams/class/token-bridge.mmd",
+            "generated/diagrams/class/ui-icons.mmd",
+            "generated/diagrams/class/universal-ui.mmd"
+          ]
+        },
+        {
+          "group": "Dependency Graphs",
+          "pages": [
+            "generated/diagrams/dependencies/ai-assistant-dependencies.mmd",
+            "generated/diagrams/dependencies/api-client-dependencies.mmd",
+            "generated/diagrams/dependencies/api-client-react-dependencies.mmd",
+            "generated/diagrams/dependencies/auth-dependencies.mmd",
+            "generated/diagrams/dependencies/blocks-b2b-dependencies.mmd",
+            "generated/diagrams/dependencies/blocks-booking-dependencies.mmd",
+            "generated/diagrams/dependencies/blocks-commerce-dependencies.mmd",
+            "generated/diagrams/dependencies/blocks-core-dependencies.mmd",
+            "generated/diagrams/dependencies/blocks-finance-dependencies.mmd",
+            "generated/diagrams/dependencies/blocks-governance-dependencies.mmd",
+            "generated/diagrams/dependencies/business-dashboard-dependencies.mmd",
+            "generated/diagrams/dependencies/car-app-dependencies.mmd",
+            "generated/diagrams/dependencies/city-dashboard-dependencies.mmd",
+            "generated/diagrams/dependencies/cityos-core-dependencies.mmd",
+            "generated/diagrams/dependencies/cityos-events-dependencies.mmd",
+            "generated/diagrams/dependencies/cityos-outbox-dependencies.mmd",
+            "generated/diagrams/dependencies/control-plane-dependencies.mmd",
+            "generated/diagrams/dependencies/design-governance-dependencies.mmd",
+            "generated/diagrams/dependencies/design-runtime-dependencies.mmd",
+            "generated/diagrams/dependencies/design-system-dependencies.mmd",
+            "generated/diagrams/dependencies/design-tokens-dependencies.mmd",
+            "generated/diagrams/dependencies/design-tokens-mobile-dependencies.mmd",
+            "generated/diagrams/dependencies/dev-portal-dependencies.mmd",
+            "generated/diagrams/dependencies/domain-shared-dependencies.mmd",
+            "generated/diagrams/dependencies/driver-app-dependencies.mmd",
+            "generated/diagrams/dependencies/fleetbase-dependencies.mmd",
+            "generated/diagrams/dependencies/fleetops-dependencies.mmd",
+            "generated/diagrams/dependencies/global-service-graph.mmd",
+            "generated/diagrams/dependencies/hostinger-root-portal-dependencies.mmd",
+            "generated/diagrams/dependencies/i18n-dependencies.mmd",
+            "generated/diagrams/dependencies/kiosk-dependencies.mmd",
+            "generated/diagrams/dependencies/kuzzle-iot-backend-dependencies.mmd",
+            "generated/diagrams/dependencies/lodash-set-safe-dependencies.mmd",
+            "generated/diagrams/dependencies/merchant-app-dependencies.mmd",
+            "generated/diagrams/dependencies/merchant-app-mobile-dependencies.mmd",
+            "generated/diagrams/dependencies/merchant-experience-dependencies.mmd",
+            "generated/diagrams/dependencies/mobile-core-dependencies.mmd",
+            "generated/diagrams/dependencies/mobile-dependencies.mmd",
+            "generated/diagrams/dependencies/mobile-driver-dependencies.mmd",
+            "generated/diagrams/dependencies/mobile-government-dependencies.mmd",
+            "generated/diagrams/dependencies/mobile-inspector-dependencies.mmd",
+            "generated/diagrams/dependencies/mobile-merchant-dependencies.mmd",
+            "generated/diagrams/dependencies/mobile-offline-dependencies.mmd",
+            "generated/diagrams/dependencies/mobile-payments-dependencies.mmd",
+            "generated/diagrams/dependencies/mobile-pos-dependencies.mmd",
+            "generated/diagrams/dependencies/mobile-telemetry-dependencies.mmd",
+            "generated/diagrams/dependencies/module-payload-dependencies.mmd",
+            "generated/diagrams/dependencies/sdui-protocol-dependencies.mmd",
+            "generated/diagrams/dependencies/sdui-renderer-car-dependencies.mmd",
+            "generated/diagrams/dependencies/sdui-renderer-headless-dependencies.mmd",
+            "generated/diagrams/dependencies/sdui-renderer-kiosk-dependencies.mmd",
+            "generated/diagrams/dependencies/sdui-renderer-native-dependencies.mmd",
+            "generated/diagrams/dependencies/sdui-renderer-tv-dependencies.mmd",
+            "generated/diagrams/dependencies/sdui-renderer-watch-dependencies.mmd",
+            "generated/diagrams/dependencies/sdui-renderer-web-dependencies.mmd",
+            "generated/diagrams/dependencies/smart-city-portal-dependencies.mmd",
+            "generated/diagrams/dependencies/smart-signage-dependencies.mmd",
+            "generated/diagrams/dependencies/storefront-dependencies.mmd",
+            "generated/diagrams/dependencies/storybook-dependencies.mmd",
+            "generated/diagrams/dependencies/superapp-dependencies.mmd",
+            "generated/diagrams/dependencies/token-bridge-dependencies.mmd",
+            "generated/diagrams/dependencies/tv-app-dependencies.mmd",
+            "generated/diagrams/dependencies/ui-icons-dependencies.mmd",
+            "generated/diagrams/dependencies/universal-ui-dependencies.mmd",
+            "generated/diagrams/dependencies/watch-app-dependencies.mmd",
+            "generated/diagrams/dependencies/web-platform-dependencies.mmd"
+          ]
+        },
+        {
+          "group": "Component Hierarchies",
+          "pages": [
+            "generated/diagrams/components/ai-assistant-hierarchy.mmd",
+            "generated/diagrams/components/business-dashboard-hierarchy.mmd",
+            "generated/diagrams/components/car-app-hierarchy.mmd",
+            "generated/diagrams/components/city-dashboard-hierarchy.mmd",
+            "generated/diagrams/components/control-plane-hierarchy.mmd",
+            "generated/diagrams/components/dev-portal-hierarchy.mmd",
+            "generated/diagrams/components/driver-app-hierarchy.mmd",
+            "generated/diagrams/components/fleetops-hierarchy.mmd",
+            "generated/diagrams/components/hostinger-root-portal-hierarchy.mmd",
+            "generated/diagrams/components/kiosk-hierarchy.mmd",
+            "generated/diagrams/components/medusa-backend-hierarchy.mmd",
+            "generated/diagrams/components/merchant-app-hierarchy.mmd",
+            "generated/diagrams/components/payload-cms-hierarchy.mmd",
+            "generated/diagrams/components/smart-city-portal-hierarchy.mmd",
+            "generated/diagrams/components/smart-signage-hierarchy.mmd",
+            "generated/diagrams/components/storefront-hierarchy.mmd",
+            "generated/diagrams/components/storybook-hierarchy.mmd",
+            "generated/diagrams/components/superapp-hierarchy.mmd",
+            "generated/diagrams/components/tv-app-hierarchy.mmd",
+            "generated/diagrams/components/web-platform-hierarchy.mmd"
+          ]
+        },
+        {
+          "group": "ER Diagrams",
+          "pages": [
+            "generated/diagrams/er/cityos-workflows-sdk.mmd",
+            "generated/diagrams/er/mobile-payments.mmd",
+            "generated/diagrams/er/sdui-renderer-web.mmd",
+            "generated/diagrams/er/universal-ui.mmd"
+          ]
+        }
+      ]
+    }
+  ]
+}

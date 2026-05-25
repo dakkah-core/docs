@@ -1,0 +1,104 @@
+classDiagram
+  direction TB
+
+  class Story  {
+  }
+
+  class LocalizedPolicyBody ~interface~ {
+    +locale: string
+    +html: string
+  }
+
+  class PolicyViewerBlockProps ~interface~ {
+    +title: string
+    +bodies: LocalizedPolicyBody[]
+    -defaultLocale: string
+    -jurisdiction: string
+    -version: string
+    -effectiveDate: string
+    -loading: boolean
+    -error: Error | null
+    -className: string
+    -messages: MessageBagPolicyViewerMessageKey
+  }
+
+  class PolicyViewerMessageKey  {
+  }
+
+  class Story  {
+  }
+
+  class ServiceFieldOption ~interface~ {
+    +value: string
+    +label: string
+  }
+
+  class ServiceField ~interface~ {
+    +id: string
+    +type: ServiceFieldType
+    +label: string
+    -placeholder: string
+    -required: boolean
+    -help: string
+    -options: ServiceFieldOption[]
+    -maxLength: number
+  }
+
+  class ServiceRequestBlockProps ~interface~ {
+    +serviceId: string
+    +heading: string
+    -description: string
+    +fields: ServiceField[]
+    -submitLabel: string
+    -onSubmit: (values: Recordstring, string) = void | Promisevoid
+    -successMessage: string
+    -className: string
+    -messages: MessageBagServiceRequestMessageKey
+  }
+
+  class ServiceRequestMessageKey  {
+  }
+
+  class ServiceFieldType  {
+  }
+
+  class VotingStory  {
+  }
+
+  class VotingOption ~interface~ {
+    +id: string
+    +label: string
+    -description: string
+  }
+
+  class VotingProposal ~interface~ {
+    +id: string
+    +title: string
+    -description: string
+    -opensAt: string
+    -closesAt: string
+    +options: VotingOption[]
+  }
+
+  class VotingBoothBlockProps ~interface~ {
+    -proposal: VotingProposal
+    -eligible: boolean
+    -ineligibleReason: string
+    -alreadyVoted: boolean
+    -receiptReference: string
+    -loading: boolean
+    -error: Error | null
+    -onCastVote: (input: { proposalId: string optionId: string }) = void | Promisevoid
+    -className: string
+    -messages: MessageBagVotingBoothMessageKey
+  }
+
+  class VotingBoothMessageKey  {
+  }
+
+  %% Relationships
+  PolicyViewerBlockProps --> LocalizedPolicyBody : bodies
+  ServiceField --> ServiceFieldOption : options
+  ServiceRequestBlockProps --> ServiceField : fields
+  VotingProposal --> VotingOption : options
+  VotingBoothBlockProps --> VotingProposal : proposal

@@ -1,0 +1,21 @@
+graph LR
+  api-client[api-client]
+  api-client --> sdui-protocol[sdui-protocol]
+  api-client --> auth[auth]
+  driver-app[driver-app] --> api-client
+  merchant-app[merchant-app] --> api-client
+  merchant-app-mobile[merchant-app-mobile] --> api-client
+  mobile[mobile] --> api-client
+  mobile-driver[mobile-driver] --> api-client
+  mobile-merchant[mobile-merchant] --> api-client
+  mobile-pos[mobile-pos] --> api-client
+  superapp[superapp] --> api-client
+  watch-app[watch-app] --> api-client
+  web-platform[web-platform] --> api-client
+  mobile-core[mobile-core] --> api-client
+  mobile-payments[mobile-payments] --> api-client
+  sdui-renderer-car[sdui-renderer-car] --> api-client
+  sdui-renderer-kiosk[sdui-renderer-kiosk] --> api-client
+  sdui-renderer-tv[sdui-renderer-tv] --> api-client
+  sdui-renderer-watch[sdui-renderer-watch] --> api-client
+  sdui-renderer-web[sdui-renderer-web] --> api-client

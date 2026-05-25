@@ -1,0 +1,303 @@
+---
+title: "@cityos/cityos-event-catalog"
+description: "Deep dive into the cityos-event-catalog package"
+icon: "package"
+---
+
+> **Type:** CityOS Core Infrastructure | **Framework:** Vitest | **Version:** 0.1.0
+> **Path:** `packages/cityos-event-catalog` | **LOC:** 2,012 lines across 31 files
+
+[Back to Generated Packages](/generated/packages)
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 31 | — |
+| Lines of Code | 2,012 | — |
+| Test Coverage | 25.8% | 🔴 |
+| Oversized Files | 0 | 🟢 |
+| Components | 0 | — |
+| Hooks | 0 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 7 | — |
+| Internal Deps | 0 | — |
+| Dependents | 0 | 🟢 Low impact |
+
+## Architecture
+
+### File Structure
+
+```
+catalog.test.ts (31L, 0C, 0T)
+catalog.ts (232L, 0C, 2T)
+domain-groups.test.ts (51L, 0C, 0T)
+index-contract.test.ts (20L, 0C, 0T)
+index.ts (74L, 0C, 0T)
+types.test.ts (41L, 0C, 0T)
+types.ts (153L, 0C, 3T)
+versioning.test.ts (33L, 0C, 0T)
+versioning.ts (102L, 0C, 2T)
+domains/
+  ai.ts (31L, 0C, 0T)
+  booking.ts (68L, 0C, 0T)
+  citizen.ts (40L, 0C, 0T)
+  commerce-ext-group.ts (85L, 0C, 0T)
+  commerce.ts (136L, 0C, 0T)
+  content.ts (37L, 0C, 0T)
+  digital-group.ts (55L, 0C, 0T)
+  fleet.ts (68L, 0C, 0T)
+  food-group.ts (35L, 0C, 0T)
+  governance.ts (38L, 0C, 0T)
+  government-group.ts (75L, 0C, 0T)
+  healthcare-group.ts (75L, 0C, 0T)
+  identity.ts (49L, 0C, 0T)
+  industry-group.ts (75L, 0C, 0T)
+  integration.ts (44L, 0C, 0T)
+  iot.ts (40L, 0C, 0T)
+  property-group.ts (62L, 0C, 0T)
+  services-group.ts (65L, 0C, 0T)
+  social-group.ts (85L, 0C, 0T)
+  subscription.ts (48L, 0C, 0T)
+  tenant.ts (29L, 0C, 0T)
+  transport-group.ts (35L, 0C, 0T)
+```
+
+## Public API Surface
+
+### Components (74)
+
+| Name | Kind | File |
+|---|---|---|
+| ALL_EVENTS | const | catalog.ts |
+| GenericPayloadSchema | const | types.ts |
+| IdSchema | const | types.ts |
+| LifecycleSchema | const | types.ts |
+| EntityChangeSchema | const | types.ts |
+| AI_EVENTS | const | domains/ai.ts |
+| BOOKING_EVENTS | const | domains/booking.ts |
+| CITIZEN_EVENTS | const | domains/citizen.ts |
+| AUCTIONS_EVENTS | const | domains/commerce-ext-group.ts |
+| CLASSIFIEDS_EVENTS | const | domains/commerce-ext-group.ts |
+| WHOLESALE_EVENTS | const | domains/commerce-ext-group.ts |
+| TRADE_IN_EVENTS | const | domains/commerce-ext-group.ts |
+| FREELANCE_EVENTS | const | domains/commerce-ext-group.ts |
+| WHITE_LABEL_EVENTS | const | domains/commerce-ext-group.ts |
+| PRINT_ON_DEMAND_EVENTS | const | domains/commerce-ext-group.ts |
+| CROWDFUNDING_EVENTS | const | domains/commerce-ext-group.ts |
+| COMMERCE_EVENTS | const | domains/commerce.ts |
+| CONTENT_EVENTS | const | domains/content.ts |
+| EDUCATION_EVENTS | const | domains/digital-group.ts |
+| DIGITAL_PRODUCTS_EVENTS | const | domains/digital-group.ts |
+| ... | | | (54 more) |
+
+### Functions (15)
+
+| Name | Kind | File |
+|---|---|---|
+| getEvent | function | catalog.ts |
+| queryEvents | function | catalog.ts |
+| getEventsByDomain | function | catalog.ts |
+| getEventPrefixes | function | catalog.ts |
+| findDuplicates | function | catalog.ts |
+| getCatalogStats | function | catalog.ts |
+| defineEvent | function | types.ts |
+| parseSemVer | function | versioning.ts |
+| formatSemVer | function | versioning.ts |
+| compareSemVer | function | versioning.ts |
+| isCompatible | function | versioning.ts |
+| migrationKind | function | versioning.ts |
+| bumpMajor | function | versioning.ts |
+| bumpMinor | function | versioning.ts |
+| bumpPatch | function | versioning.ts |
+
+### Types (7)
+
+| Name | Kind | File |
+|---|---|---|
+| CatalogQuery | interface | catalog.ts |
+| CatalogStats | interface | catalog.ts |
+| EventDefinition | interface | types.ts |
+| EventPriority | type | types.ts |
+| EventDomain | type | types.ts |
+| SemVer | interface | versioning.ts |
+| MigrationKind | type | versioning.ts |
+
+## Type System
+
+### CatalogQuery
+
+**Kind:** interface | **File:** `catalog.ts`
+> Query options for filtering the catalog.
+
+| Property | Type | Optional |
+|---|---|---|
+| domain | `EventDomain` | Yes |
+| priority | `EventPriority` | Yes |
+| deprecated | `boolean` | Yes |
+| namePrefix | `string` | Yes |
+
+### CatalogStats
+
+**Kind:** interface | **File:** `catalog.ts`
+> Summary statistics for the catalog.
+
+| Property | Type | Optional |
+|---|---|---|
+| total | `number` | — |
+| byDomain | `Record<string, number>` | — |
+| byPriority | `Record<string, number>` | — |
+| deprecated | `number` | — |
+
+### EventDefinition
+
+**Kind:** interface | **File:** `types.ts`
+> Formal definition of a domain event in the CityOS platform.
+
+| Property | Type | Optional |
+|---|---|---|
+| name | `string` | — |
+| version | `string` | — |
+| schema | `z.ZodType<Record<string, unknown>>` | — |
+| domain | `EventDomain` | — |
+| priority | `EventPriority` | — |
+| idempotent | `boolean` | — |
+| description | `string` | — |
+| deprecated | `boolean` | — |
+| replacedBy | `string` | Yes |
+
+### EventPriority
+
+**Kind:** type | **File:** `types.ts`
+> Priority levels for event processing. - critical: must be processed immediately (payment failures, security) - high: near-realtime processing required (order state changes) - normal: standard processing (CRUD operations) - low: batch-friendly, no urgency (analytics, sync)
+
+```ts
+type EventPriority = 'critical' | 'high' | 'normal' | 'low';
+```
+
+### EventDomain
+
+**Kind:** type | **File:** `types.ts`
+> Domain groupings for the event catalog.
+
+```ts
+type EventDomain = | 'commerce'
+  | 'booking'
+  | 'subscription'
+  | 'fleet'
+  | 'identity'
+  | 'governance'
+  | 'tenant'
+  | 'iot'
+  | 'content'
+  | 'citizen'
+  | 'ai'
+  | 'integration'
+  // Healthcare group (5)
+  | 'healthcare'
+  | 'pharmacy'
+  | 'eldercare'
+  | 'childcare'
+  | 'fitness'
+  // Property group (5)
+  | 'real-estate'
+  | 'rental'
+  | 'construction'
+  | 'facilities'
+  | 'parking-zones'
+  // Food group (3)
+  | 'restaurants'
+  | 'grocery'
+  | 'hospitality'
+  // Transport group (3)
+  | 'transportation'
+  | 'ride-hailing'
+  | 'automotive'
+  // Services group (6)
+  | 'legal'
+  | 'insurance'
+  | 'repair'
+  | 'home-services'
+  | 'pet-services'
+  | 'beauty-grooming'
+  // Digital group (5)
+  | 'education'
+  | 'digital-products'
+  | 'saas-platform'
+  | 'creator-economy'
+  | 'ai-ml'
+  // Commerce extension group (8)
+  | 'auctions'
+  | 'classifieds'
+  | 'wholesale'
+  | 'trade-in'
+  | 'freelance'
+  | 'white-label'
+  | 'print-on-demand'
+  | 'crowdfunding'
+  // Government group (7)
+  | 'public-safety'
+  | 'citizen-services'
+  | 'environment'
+  | 'utilities'
+  | 'waste-management'
+  | 'infrastructure'
+  | 'economic-health'
+  // Social group (8)
+  | 'social-engagement'
+  | 'social-media'
+  | 'community'
+  | 'events-culture'
+  | 'culture-tourism'
+  | 'sports-recreation'
+  | 'advertising'
+  | 'communication'
+  // Industry group (7)
+  | 'agriculture'
+  | 'manufacturing'
+  | 'industrial'
+  | 'franchise-management'
+  | 'coworking'
+  | 'jobs-economy'
+  | 'finance';
+```
+
+### SemVer
+
+**Kind:** interface | **File:** `versioning.ts`
+> Semver-based event versioning utilities. Every event in the catalog carries a semver version string. These helpers let consumers compare versions, check compatibility, and decide whether a schema migration is needed.
+
+| Property | Type | Optional |
+|---|---|---|
+| major | `number` | — |
+| minor | `number` | — |
+| patch | `number` | — |
+
+### MigrationKind
+
+**Kind:** type | **File:** `versioning.ts`
+> Determine the kind of migration needed when moving from `from` to `to`. - "none"    — versions are identical - "patch"   — only bug-fix / meta changes - "minor"   — additive, backward-compatible fields - "major"   — breaking change, requires schema migration
+
+```ts
+type MigrationKind = 'none' | 'patch' | 'minor' | 'major';
+```
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [cityos-event-catalog.mmd](/generated/diagrams/class/cityos-event-catalog.mmd) |
+| Dependency Graph | [cityos-event-catalog-dependencies.mmd](#) |
+
+## Tests
+
+- `catalog.test.ts` (31 lines)
+- `domain-groups.test.ts` (51 lines)
+- `index-contract.test.ts` (20 lines)
+- `types.test.ts` (41 lines)
+- `versioning.test.ts` (33 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

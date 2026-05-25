@@ -1,0 +1,91 @@
+graph TD
+  direction TB
+
+  web-platform[web-platform]
+
+  subgraph Layouts[
+    Layouts
+  end
+  RootLayout[RootLayout]
+  web-platform --> RootLayout
+
+  subgraph Pages[
+    Pages
+  end
+  AboutPage[AboutPage]
+  RootLayout --> AboutPage
+  AgricultureDetailPage[AgricultureDetailPage]
+  RootLayout --> AgricultureDetailPage
+  AuthCallbackPage[AuthCallbackPage]
+  RootLayout --> AuthCallbackPage
+  CallbackPage[CallbackPage]
+  RootLayout --> CallbackPage
+  CampaignDetailPage[CampaignDetailPage]
+  RootLayout --> CampaignDetailPage
+  CarAppPage[CarAppPage]
+  RootLayout --> CarAppPage
+  ContactPage[ContactPage]
+  RootLayout --> ContactPage
+  CourseDetailPage[CourseDetailPage]
+  RootLayout --> CourseDetailPage
+  EventDetailPage[EventDetailPage]
+  RootLayout --> EventDetailPage
+  FacilityDetailPage[FacilityDetailPage]
+  RootLayout --> FacilityDetailPage
+
+  subgraph Components[
+    Shared Components
+  end
+  Error[Error]
+  RootLayout --> Error
+  GlobalError[GlobalError]
+  RootLayout --> GlobalError
+  Loading[Loading]
+  RootLayout --> Loading
+  NotFound[NotFound]
+  RootLayout --> NotFound
+  Home[Home]
+  RootLayout --> Home
+  Providers[Providers]
+  RootLayout --> Providers
+  TestComponent[TestComponent]
+  RootLayout --> TestComponent
+  KuzzleProvider[KuzzleProvider]
+  RootLayout --> KuzzleProvider
+  AuthClientProvider[AuthClientProvider]
+  RootLayout --> AuthClientProvider
+  ArtifactRenderer[ArtifactRenderer]
+  RootLayout --> ArtifactRenderer
+  ArtifactItem[ArtifactItem]
+  RootLayout --> ArtifactItem
+  SelectionChips[SelectionChips]
+  RootLayout --> SelectionChips
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef layout fill:#fff3e0,stroke:#e65100,stroke-width:1px
+  classDef page fill:#e8f5e9,stroke:#1b5e20,stroke-width:1px
+  classDef component fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class web-platform app
+  class RootLayout layout
+  class AboutPage page
+  class AgricultureDetailPage page
+  class AuthCallbackPage page
+  class CallbackPage page
+  class CampaignDetailPage page
+  class CarAppPage page
+  class ContactPage page
+  class CourseDetailPage page
+  class EventDetailPage page
+  class FacilityDetailPage page
+  class Error component
+  class GlobalError component
+  class Loading component
+  class NotFound component
+  class Home component
+  class Providers component
+  class TestComponent component
+  class KuzzleProvider component
+  class AuthClientProvider component
+  class ArtifactRenderer component
+  class ArtifactItem component
+  class SelectionChips component

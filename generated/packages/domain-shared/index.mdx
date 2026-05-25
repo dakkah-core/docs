@@ -1,0 +1,542 @@
+---
+title: "@cityos/domain-shared"
+description: "Deep dive into the domain-shared package"
+icon: "package"
+---
+
+> **Type:** Domain Package | **Framework:** Vitest | **Version:** 1.0.0
+> **Path:** `packages/domain-shared` | **LOC:** 2,660 lines across 37 files
+
+[Back to Generated Packages](/generated/packages)
+> **Depends on:** [cityos-core](/generated/packages/cityos-core)
+
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 37 | — |
+| Lines of Code | 2,660 | — |
+| Test Coverage | 24.3% | 🔴 |
+| Oversized Files | 1 | 🟡 |
+| Components | 15 | — |
+| Hooks | 9 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 49 | — |
+| Internal Deps | 1 | — |
+| Dependents | 0 | 🟢 Low impact |
+
+### ⚠️ Oversized Files
+
+| File | Lines |
+|---|---|
+| packages/domain-shared/src/verticals.ts | 525 |
+
+## Architecture
+
+### File Structure
+
+```
+BlockStylesContext.tsx (25L, 1C, 1T)
+block-utils.tsx (90L, 2C, 4T)
+compat-i18n.test.ts (18L, 0C, 0T)
+components-contract.test.tsx (33L, 0C, 0T)
+domain-env.test.ts (52L, 0C, 0T)
+index-contract.test.ts (22L, 0C, 0T)
+index.ts (50L, 0C, 0T)
+invariants.ts (20L, 0C, 0T)
+localization.ts (15L, 0C, 1T)
+money.test.ts (24L, 0C, 0T)
+money.ts (37L, 0C, 2T)
+offline-queue.test.ts (45L, 0C, 0T)
+package-contract.test.ts (26L, 0C, 0T)
+search.ts (60L, 0C, 8T)
+utilities.test.ts (28L, 0C, 0T)
+verticals.ts (525L, 0C, 3T)
+compat/
+  i18n.ts (57L, 0C, 0T)
+  link.tsx (25L, 1C, 1T)
+  toast.ts (58L, 0C, 3T)
+components/
+  BlockDataSkeleton.tsx (167L, 8C, 1T)
+  SharedHero.tsx (56L, 1C, 1T)
+  SharedSection.tsx (34L, 1C, 1T)
+hooks/
+  use-auth.tsx (229L, 1C, 4T)
+  use-kuzzle-presence.ts (110L, 0C, 2T)
+  use-notifications.tsx (84L, 0C, 3T)
+  use-payload-api.ts (26L, 0C, 0T)
+  use-system-metrics.tsx (66L, 0C, 3T)
+  use-tenant.tsx (66L, 0C, 3T)
+  useBlockData.ts (135L, 0C, 2T)
+lib/
+  createCityOSCollection.ts (4L, 0C, 0T)
+  tenant-context.ts (115L, 0C, 0T)
+  utils.ts (7L, 0C, 0T)
+utils/
+  domainEnv.ts (88L, 0C, 0T)
+  haversine.ts (15L, 0C, 0T)
+  kuzzlePublish.ts (167L, 0C, 5T)
+... and 2 more files
+```
+
+## Public API Surface
+
+### Components (14)
+
+| Name | Kind | File |
+|---|---|---|
+| BlockStylesProvider | function | BlockStylesContext.tsx |
+| RenderRichText | function | block-utils.tsx |
+| RenderRTNode | function | block-utils.tsx |
+| CityOSInvariants | const | invariants.ts |
+| HalalaSchema | const | money.ts |
+| SARSchema | const | money.ts |
+| VERTICALS | const | verticals.ts |
+| Link | function | compat/link.tsx |
+| BlockDataError | function | components/BlockDataSkeleton.tsx |
+| BlockDataEmpty | function | components/BlockDataSkeleton.tsx |
+| BlockDataSkeleton | function | components/BlockDataSkeleton.tsx |
+| SharedHero | function | components/SharedHero.tsx |
+| SharedSection | function | components/SharedSection.tsx |
+| AuthProvider | function | hooks/use-auth.tsx |
+
+### Hooks (9)
+
+| Name | Kind | File |
+|---|---|---|
+| useBlockStyles | function | BlockStylesContext.tsx |
+| useToast | function | compat/toast.ts |
+| useAuth | function | hooks/use-auth.tsx |
+| useKuzzlePresence | function | hooks/use-kuzzle-presence.ts |
+| useNotifications | function | hooks/use-notifications.tsx |
+| usePayloadAPI | function | hooks/use-payload-api.ts |
+| useSystemMetrics | function | hooks/use-system-metrics.tsx |
+| useTenantContext | function | hooks/use-tenant.tsx |
+| useBlockData | function | hooks/useBlockData.ts |
+
+### Functions (27)
+
+| Name | Kind | File |
+|---|---|---|
+| resolveIcon | function | block-utils.tsx |
+| getMediaUrl | function | block-utils.tsx |
+| getLocaleNativeName | function | localization.ts |
+| isValidLocale | function | localization.ts |
+| toHalala | function | money.ts |
+| fromSARtoHalala | function | money.ts |
+| fromHalalatoSAR | function | money.ts |
+| getVerticalsByDomain | function | verticals.ts |
+| resolveDomain | function | verticals.ts |
+| t | function | compat/i18n.ts |
+| formatCurrency | function | compat/i18n.ts |
+| formatDate | function | compat/i18n.ts |
+| formatTime | function | compat/i18n.ts |
+| fetcher | function | hooks/use-payload-api.ts |
+| extractTenantId | function | lib/tenant-context.ts |
+| withTenantContext | function | lib/tenant-context.ts |
+| applyTenantHeader | function | lib/tenant-context.ts |
+| cn | function | lib/utils.ts |
+| haversineDistance | function | utils/haversine.ts |
+| getKuzzleClient | function | utils/kuzzlePublish.ts |
+| ... | | | (7 more) |
+
+### Types (20)
+
+| Name | Kind | File |
+|---|---|---|
+| Locale | type | localization.ts |
+| Halala | type | money.ts |
+| SAR | type | money.ts |
+| SearchResult | type | search.ts |
+| SearchMeta | type | search.ts |
+| SearchAnalyticsRow | type | search.ts |
+| SearchFacetOption | type | search.ts |
+| SearchFacet | type | search.ts |
+| SearchGridResult | type | search.ts |
+| SearchTopic | type | search.ts |
+| SearchBlock | type | search.ts |
+| VerticalDefinition | interface | verticals.ts |
+| DomainSlug | type | verticals.ts |
+| VerticalID | type | verticals.ts |
+| LinkProps | interface | compat/link.tsx |
+| User | interface | hooks/use-auth.tsx |
+| AuthContextType | interface | hooks/use-auth.tsx |
+| BlockDataSource | interface | hooks/useBlockData.ts |
+| BlockDataResult | interface | hooks/useBlockData.ts |
+| QueuedEvent | interface | utils/offlineQueue.ts |
+
+### Constants (2)
+
+| Name | Kind | File |
+|---|---|---|
+| formatPrice | const | compat/i18n.ts |
+| domainEnv | const | utils/domainEnv.ts |
+
+## Component Catalog
+
+| Component | File | Kind | Props |
+|---|---|---|---|
+| BlockStylesProvider | BlockStylesContext.tsx | function | styles: unknown, children: unknown |
+| RenderRichText | block-utils.tsx | function | content: unknown |
+| RenderRTNode | block-utils.tsx | function | node: unknown |
+| Link | compat/link.tsx | arrow | to: string, href: string, children: React.ReactNode, props: unknown |
+| PulseBar | components/BlockDataSkeleton.tsx | function | width: unknown, height?: unknown |
+| ListSkeleton | components/BlockDataSkeleton.tsx | function | rows: unknown |
+| CardSkeleton | components/BlockDataSkeleton.tsx | function | rows: unknown |
+| StatSkeleton | components/BlockDataSkeleton.tsx | function | rows: unknown |
+| TableSkeleton | components/BlockDataSkeleton.tsx | function | rows: unknown |
+| BlockDataError | components/BlockDataSkeleton.tsx | function | error: unknown, onRetry: unknown |
+| BlockDataEmpty | components/BlockDataSkeleton.tsx | function | message: unknown |
+| BlockDataSkeleton | components/BlockDataSkeleton.tsx | function | rows?: number, variant?: "list" | "card" | "stat" | "table", className: string |
+| SharedHero | components/SharedHero.tsx | arrow | title: string, subtitle: string, backgroundImage: string, ctaText: string, ctaLink: string, className: string |
+| SharedSection | components/SharedSection.tsx | arrow | title: string, children: React.ReactNode, className: string, background?: "white" | "gray" | "dark" |
+| AuthProvider | hooks/use-auth.tsx | function | children: unknown |
+
+## Type System
+
+### BlockStyles
+
+**Kind:** type | **File:** `BlockStylesContext.tsx`
+
+```ts
+type BlockStyles = Record<string, string>;
+```
+
+### RichTextNode
+
+**Kind:** type | **File:** `block-utils.tsx`
+
+```ts
+type RichTextNode = {
+  type?: string;
+  text?: string;
+  format?: number;
+  tag?: keyof JSX.IntrinsicElements;
+  listType?: string;
+  children?: RichTextNode[];
+};
+```
+
+### RichTextContent
+
+**Kind:** type | **File:** `block-utils.tsx`
+
+```ts
+type RichTextContent = {
+  root?: {
+    children?: RichTextNode[];
+  };
+};
+```
+
+### MediaLike
+
+**Kind:** type | **File:** `block-utils.tsx`
+
+```ts
+type MediaLike = {
+  url?: string;
+};
+```
+
+### LucideIconComponent
+
+**Kind:** type | **File:** `block-utils.tsx`
+
+```ts
+type LucideIconComponent = React.ComponentType<{
+  size?: number;
+  className?: string;
+}>;
+```
+
+### Locale
+
+**Kind:** type | **File:** `localization.ts`
+
+```ts
+type Locale = "ar" | "en" | "fr";
+```
+
+### Halala
+
+**Kind:** type | **File:** `money.ts`
+
+```ts
+type Halala = z.infer<typeof HalalaSchema>;
+```
+
+### SAR
+
+**Kind:** type | **File:** `money.ts`
+
+```ts
+type SAR = z.infer<typeof SARSchema>;
+```
+
+### SearchResult
+
+**Kind:** type | **File:** `search.ts`
+
+```ts
+type SearchResult = {
+  entity_type: string;
+  entity_id: string;
+  score: number;
+  metadata?: {
+    title?: string;
+  };
+};
+```
+
+### SearchMeta
+
+**Kind:** type | **File:** `search.ts`
+
+```ts
+type SearchMeta = {
+  total?: number;
+  latency_ms?: number;
+};
+```
+
+### SearchAnalyticsRow
+
+**Kind:** type | **File:** `search.ts`
+
+```ts
+type SearchAnalyticsRow = {
+  query: string;
+  count: number;
+};
+```
+
+### SearchFacetOption
+
+**Kind:** type | **File:** `search.ts`
+
+```ts
+type SearchFacetOption = {
+  value: string;
+  count: number;
+};
+```
+
+### SearchFacet
+
+**Kind:** type | **File:** `search.ts`
+
+```ts
+type SearchFacet = {
+  label: string;
+  options: SearchFacetOption[];
+};
+```
+
+### SearchGridResult
+
+**Kind:** type | **File:** `search.ts`
+
+```ts
+type SearchGridResult = {
+  title: string;
+  type: string;
+  score: number;
+  meta: string;
+};
+```
+
+### SearchTopic
+
+**Kind:** type | **File:** `search.ts`
+
+```ts
+type SearchTopic = {
+  term: string;
+  count: number;
+};
+```
+
+### SearchBlock
+
+**Kind:** type | **File:** `search.ts`
+
+```ts
+type SearchBlock = {
+  heading?: string;
+  description?: string;
+  placeholder?: string;
+  limit?: number;
+  indexes?: string[];
+  defaultIndexes?: string[];
+  suggestions?: string[];
+  storage_key?: string;
+  demo?: string[];
+  results?: SearchGridResult[];
+  topics?: SearchTopic[];
+  facets?: SearchFacet[];
+  initialPage?: number;
+  totalPages?: number;
+  lang?: string;
+  message?: string;
+  [key: string]: unknown;
+};
+```
+
+### VerticalDefinition
+
+**Kind:** interface | **File:** `verticals.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `VerticalID` | — |
+| name | `string` | — |
+| domain | `DomainSlug` | — |
+| tags | `string[]` | Yes |
+
+### DomainSlug
+
+**Kind:** type | **File:** `verticals.ts`
+> Core Verticals Registry Maps 170+ specific vertical/industry names to their parent domain slug. Used for dynamic routing, filtering, and component registry Lookups.
+
+```ts
+type DomainSlug = | 'advertising'
+  | 'agriculture'
+  | 'ai-ml'
+  | 'analytics'
+  | 'auctions'
+  | 'automotive'
+  | 'beauty-grooming'
+  | 'citizen-services'
+  | 'classifieds'
+  | 'commerce'
+  | 'communication'
+  | 'community'
+  | 'construction'
+  | 'core-cms'
+  | 'creator-economy'
+  | 'culture-tourism'
+  | 'data-visualization'
+  | 'digital-products'
+  | 'education'
+  | 'environment'
+  | 'events-culture'
+  | 'facilities'
+  | 'finance'
+  | 'fitness'
+  | 'fleet-logistics'
+  | 'franchise-management'
+  | 'gis-maps'
+  | 'governance'
+  | 'grocery'
+  | 'health-human-services'
+  | 'healthcare'
+  | 'hospitality'
+  | 'i18n'
+  | 'identity-auth'
+  | 'industrial'
+  | 'insurance'
+  | 'iot-telemetry'
+  | 'jobs-economy'
+  | 'legal'
+  | 'media-assets'
+  | 'multi-tenancy'
+  | 'notifications'
+  | 'parking-zones'
+  | 'personas'
+  | 'pet-services'
+  | 'poi'
+  | 'print-on-demand'
+  | 'public-safety'
+  | 'real-estate'
+  | 'registry'
+  | 'rental-items'
+  | 'restaurants'
+  | 'saas-platform'
+  | 'search'
+  | 'shared'
+  | 'social-engagement'
+  | 'social-media'
+  | 'sports-recreation'
+  | 'system-observability'
+  | 'trade-in'
+  | 'transportation'
+  | 'utilities'
+  | 'white-label'
+  | 'workflow'
+  | '_shared';
+```
+
+### VerticalID
+
+**Kind:** type | **File:** `verticals.ts`
+
+```ts
+type VerticalID = string;
+```
+
+### LinkProps
+
+**Kind:** interface | **File:** `compat/link.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| to | `string` | Yes |
+| href | `string` | Yes |
+| className | `string` | Yes |
+| children | `React.ReactNode` | — |
+
+*... and 29 more types*
+
+## Hooks
+
+| Hook | File | Params | Return |
+|---|---|---|---|
+| useBlockStyles | BlockStylesContext.tsx | block: unknown | BlockStyles |
+| useToast | compat/toast.ts | — | ToastAPI |
+| useAuth | hooks/use-auth.tsx | — | unknown |
+| useKuzzlePresence | hooks/use-kuzzle-presence.ts | kuzzle: KuzzlePresenceClient | null, index: string, collection: string, roomName: string | unknown |
+| useNotifications | hooks/use-notifications.tsx | — | unknown |
+| usePayloadAPI | hooks/use-payload-api.ts | endpoint: string | unknown |
+| useSystemMetrics | hooks/use-system-metrics.tsx | — | unknown |
+| useTenantContext | hooks/use-tenant.tsx | — | unknown |
+| useBlockData | hooks/useBlockData.ts | blockType: string, options: {
+    blockId?: string;
+    domain?: string;
+    dataSource?: BlockDataSource;
+    fallback?: T;
+    enabled?: boolean;
+    refreshInterval?: number;
+  } | BlockDataResult<T> |
+
+## Dependencies
+
+### CityOS Core
+
+| Package | Type | Consumer |
+|---|---|---|
+| @cityos/core | prod | [cityos-core](/generated/packages/cityos-core) |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [domain-shared.mmd](/generated/diagrams/class/domain-shared.mmd) |
+| Dependency Graph | [domain-shared-dependencies.mmd](/generated/diagrams/dependencies/domain-shared-dependencies.mmd) |
+
+## Tests
+
+- `compat-i18n.test.ts` (18 lines)
+- `components-contract.test.tsx` (33 lines)
+- `domain-env.test.ts` (52 lines)
+- `index-contract.test.ts` (22 lines)
+- `money.test.ts` (24 lines)
+- `offline-queue.test.ts` (45 lines)
+- `package-contract.test.ts` (26 lines)
+- `utilities.test.ts` (28 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

@@ -1,0 +1,57 @@
+classDiagram
+  direction TB
+
+  class ChatMessage ~interface~ {
+    +id: string
+    +role: 'user' | 'assistant'
+    +content: string
+    -blockCard: BlockCardData | null
+    +timestamp: number
+  }
+
+  class BlockCardData ~interface~ {
+    +type: string
+    +title: string
+    +data: Recordstring, unknown
+    +actions: Array{ label: string href: string variant: 'primary' | 'secondary' }
+  }
+
+  class StreamChunk ~interface~ {
+    -text: string
+    -done: boolean
+    -error: string
+    -intent: string
+    -blockCard: BlockCardData | null
+  }
+
+  class AiAssistantWidgetProps ~interface~ {
+    -bffBaseUrl: string
+    -surface: string
+    -authToken: string
+    -cityContext: string
+  }
+
+  class CitySnapshot ~interface~ {
+    +aqi: number | null
+    +activeEmergencies: number
+    +trafficCongestion: string
+    +connectedDevices: number
+  }
+
+  class AggregationBucket ~interface~ {
+    +key: string
+    +doc_count: number
+  }
+
+  class AggregationResult ~interface~ {
+    -by_severity: {
+    buckets?: AggregationBucket[]
+  }
+  }
+
+  class NotificationSourceResult ~interface~ {
+    -_source: Recordstring, unknown
+  }
+
+  class SourceNotification  {
+  }

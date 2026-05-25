@@ -1,0 +1,319 @@
+classDiagram
+  direction TB
+
+  class ClassificationContext ~interface~ {
+    +userRole: string
+    +dataClassification: DataClassificationLevel
+    +operation: string
+    -resourceId: string
+  }
+
+  class ClassificationResult ~interface~ {
+    +allowed: boolean
+    -reason: string
+    +userMaxLevel: DataClassificationLevel
+    +dataLevel: DataClassificationLevel
+  }
+
+  class DataClassificationLevel  {
+  }
+
+  class GovernanceValidationContext ~interface~ {
+    +workflow: WorkflowContext
+    +workflowType: string
+    -dataClassification: string
+    -residencyZone: string
+    +userRole: string
+  }
+
+  class GovernanceValidationResult ~interface~ {
+    +allowed: boolean
+    -reason: string
+    +appliedPolicies: string[]
+    -residencyCheck: { passed: boolean zone?: string restriction?: string }
+    -classificationCheck: { passed: boolean level?: string }
+  }
+
+  class PersonaWorkflowConstraints ~interface~ {
+    -allowedWorkflows: string[]
+    -allowedTools: string[]
+    -readOnly: boolean
+    -geoScope: string
+    -maxDataClassification: string
+  }
+
+  class PersonaContext ~interface~ {
+    -personaId: string
+    -axes: {
+    audience?: string
+    economic?: string
+    ecosystem?: string
+    government?: string
+    interaction?: string
+    aiMode?: string
+  }
+    -constraints: PersonaWorkflowConstraints
+  }
+
+  class PersonaWorkflowResult ~interface~ {
+    +allowed: boolean
+    -reason: string
+    -constraint: string
+  }
+
+  class POIWorkflowDefinition ~interface~ {
+    +workflowId: string
+    +name: string
+    +domainPack: 'poi'
+    +taskQueue: string
+    +category: string
+    +timeouts: { startToClose: string scheduleToClose: string heartbeat: string }
+    +retryPolicy: { maxRetries: number initialInterval: string backoffCoefficient: number maxInterval: string }
+    +signals: Array{ name: string schema: Recordstring, string }
+    +queries: Array{ name: string schema: Recordstring, string }
+    +requiredCapabilities: string[]
+    +crossSystemDependencies: string[]
+    +tags: string[]
+    ... 5 more
+  }
+
+  class POITaskQueueDefinition ~interface~ {
+    +name: string
+    +domainPack: 'poi'
+    +sourceSystem: string
+    +description: string
+  }
+
+  class POIEventBridgeMapping ~interface~ {
+    +eventType: string
+    +workflowId: string
+    +taskQueue: string
+    +triggerType: 'event' | 'cms-webhook'
+    +description: string
+  }
+
+  class POIScheduleTrigger ~interface~ {
+    +cron: string
+    +workflowId: string
+    +taskQueue: string
+    +description: string
+  }
+
+  class POISignalDefinition ~interface~ {
+    +name: string
+    +schema: Recordstring, string
+    +usedBy: string[]
+  }
+
+  class POIQueryDefinition ~interface~ {
+    +name: string
+    +schema: Recordstring, string
+    +usedBy: string[]
+  }
+
+  class WorkflowDefinition ~interface~ {
+    +workflowId: string
+    +name: string
+    +domainPack: string
+    +taskQueue: string
+    +isActive: boolean
+    -contractVersion: string
+    -retryPolicy: {
+    maxRetries?: number
+    initialInterval?: string
+    backoffCoefficient?: number
+    maxInterval?: string
+  }
+    -timeouts: {
+    startToClose?: string
+    scheduleToClose?: string
+    heartbeat?: string
+  }
+    -requiredCapabilities: string[]
+    -requiredPolicies: string[]
+    -signals: unknown
+    -queries: unknown
+    ... 7 more
+  }
+
+  class WorkflowResolution ~interface~ {
+    +workflowName: string
+    +taskQueue: string
+    -definition: WorkflowDefinition
+    +resolved: boolean
+  }
+
+  class ResidencyRule ~interface~ {
+    +zone: ResidencyZone
+    +restrictions: string[]
+    +allowedDestinations: ResidencyZone[]
+    +piiTransferAllowed: boolean
+    +paymentDataTransferAllowed: boolean
+    +dataRetentionDays: number
+    +regulations: string[]
+  }
+
+  class ResidencyCheckResult ~interface~ {
+    +allowed: boolean
+    -reason: string
+    +sourceZone: ResidencyZone
+    -destinationZone: ResidencyZone
+    +appliedRules: string[]
+    +regulations: string[]
+  }
+
+  class ResidencyZone  {
+  }
+
+  class SagaStep ~interface~ {
+    +name: string
+    +system: string
+    +action: string
+    +payload: unknown
+    +status: SagaStepStatus
+    -startedAt: string
+    -completedAt: string
+    -error: string
+    -result: unknown
+    -compensationAction: string
+  }
+
+  class SagaDefinition ~interface~ {
+    +id: string
+    +name: string
+    +status: SagaStatus
+    +context: Recordstring, unknown
+    +steps: SagaStep[]
+    -startedAt: string
+    -completedAt: string
+  }
+
+  class CrossSystemOrchestrator ~interface~ {
+  }
+
+  class SystemAdapter ~interface~ {
+    +name: string
+  }
+
+  class SagaStepStatus  {
+  }
+
+  class SagaStatus  {
+  }
+
+  class CMSAdapter  {
+    +name: unknown
+    +payload: Payload
+  }
+
+  class TemporalAdapter  {
+    +name: unknown
+  }
+
+  class MedusaAdapter  {
+    +name: unknown
+  }
+
+  class SyncRecord ~interface~ {
+    +id: string
+    +workflowType: string
+    +status: 'matched' | 'remote_only' | 'local_only' | 'drift'
+    +source: 'temporal' | 'local'
+    +discoveredAt: string
+    -action: 'import' | 'ignore' | 'archive' | 'dismiss'
+    -actionAt: string
+  }
+
+  class SyncConfig ~interface~ {
+    +autoSyncEnabled: boolean
+    +autoSyncIntervalMinutes: number
+    -lastSyncAt: string
+  }
+
+  class SyncHistoryEntry ~interface~ {
+    +id: string
+    +startedAt: string
+    +completedAt: string
+    +matched: number
+    +remoteOnly: number
+    +localOnly: number
+    +drift: number
+    +imported: number
+  }
+
+  class SyncCounts ~interface~ {
+    +executions: number
+    +taskQueues: number
+    +schedules: number
+  }
+
+  class SyncError ~interface~ {
+    +source: string
+    +message: string
+    +timestamp: string
+  }
+
+  class SyncStatus ~interface~ {
+    +lastSyncAt: string | null
+    +status: "idle" | "running" | "error"
+    +counts: SyncCounts
+    +errors: SyncError[]
+    +durationMs: number | null
+  }
+
+  class SyncResult ~interface~ {
+    +success: boolean
+    +count: number
+    +errors: SyncError[]
+  }
+
+  class FullSyncResult ~interface~ {
+    +success: boolean
+    +counts: SyncCounts
+    +errors: SyncError[]
+    +durationMs: number
+  }
+
+  class TaskQueueHealthStatus  {
+  }
+
+  class WorkflowContext ~interface~ {
+    +correlationId: string
+    +tenantId: string
+    -userId: string
+    -causationId: string
+    -locale: string
+    -nodeId: string
+    -channel: string
+    -metadata: Recordstring, unknown
+  }
+
+  class WorkflowAccessContext ~interface~ {
+    +workflow: WorkflowContext
+    +userRole: string
+    +userRoleLevel: number
+  }
+
+  class WorkflowAccessResult ~interface~ {
+    +allowed: boolean
+    -reason: string
+    -requiredRole: string
+    -requiredLevel: number
+  }
+
+  class WorkflowOperation  {
+  }
+
+  %% Relationships
+  PersonaContext --> PersonaWorkflowConstraints : constraints
+  WorkflowResolution --> WorkflowDefinition : definition
+  SagaDefinition --> SagaStep : steps
+  SystemAdapter <|.. CMSAdapter
+  SystemAdapter <|.. TemporalAdapter
+  SystemAdapter <|.. MedusaAdapter
+  SyncStatus --> SyncCounts : counts
+  SyncStatus --> SyncError : errors
+  SyncResult --> SyncError : errors
+  FullSyncResult --> SyncCounts : counts
+  FullSyncResult --> SyncError : errors
+  WorkflowAccessContext --> WorkflowContext : workflow

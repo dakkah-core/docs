@@ -1,0 +1,237 @@
+---
+title: "@cityos/cityos-search"
+description: "Deep dive into the cityos-search package"
+icon: "package"
+---
+
+> **Type:** CityOS Core Infrastructure | **Framework:** Vitest | **Version:** 0.1.0
+> **Path:** `packages/cityos-search` | **LOC:** 845 lines across 8 files
+
+[Back to Generated Packages](/generated/packages)
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 8 | — |
+| Lines of Code | 845 | — |
+| Test Coverage | 12.5% | 🔴 |
+| Oversized Files | 0 | 🟢 |
+| Components | 0 | — |
+| Hooks | 0 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 11 | — |
+| Internal Deps | 0 | — |
+| Dependents | 0 | 🟢 Low impact |
+
+## Architecture
+
+### File Structure
+
+```
+client.ts (102L, 0C, 0T)
+index.ts (6L, 0C, 0T)
+indexer.ts (151L, 0C, 2T)
+kuzzle-adaptor.ts (129L, 0C, 1T)
+search-service.ts (160L, 0C, 1T)
+surface-scopes.ts (153L, 0C, 1T)
+types.ts (72L, 0C, 6T)
+__tests__/
+  surface-scopes.test.ts (72L, 0C, 0T)
+```
+
+## Public API Surface
+
+### Components (1)
+
+| Name | Kind | File |
+|---|---|---|
+| DEFAULT_INDEX_SETTINGS | const | indexer.ts |
+
+### Functions (11)
+
+| Name | Kind | File |
+|---|---|---|
+| getSearchService | function | client.ts |
+| getIndexerService | function | client.ts |
+| ensureIndexes | function | client.ts |
+| getMeilisearchConfig | function | client.ts |
+| createIndexerService | function | indexer.ts |
+| createKuzzleSearchService | function | kuzzle-adaptor.ts |
+| createSearchService | function | search-service.ts |
+| isPublicIndex | function | surface-scopes.ts |
+| getSurfaceSearchConfig | function | surface-scopes.ts |
+| resolveIndexesForDomains | function | surface-scopes.ts |
+| filterAllowedIndexes | function | surface-scopes.ts |
+
+### Types (11)
+
+| Name | Kind | File |
+|---|---|---|
+| IndexerService | interface | indexer.ts |
+| IndexSettings | interface | indexer.ts |
+| KuzzleSearchConfig | interface | kuzzle-adaptor.ts |
+| SearchService | interface | search-service.ts |
+| SurfaceSearchConfig | interface | surface-scopes.ts |
+| SearchConfig | interface | types.ts |
+| SearchQuery | interface | types.ts |
+| SearchHit | interface | types.ts |
+| SearchResult | interface | types.ts |
+| IndexDocument | interface | types.ts |
+| SearchIndex | type | types.ts |
+
+## Type System
+
+### IndexerService
+
+**Kind:** interface | **File:** `indexer.ts`
+
+### IndexSettings
+
+**Kind:** interface | **File:** `indexer.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| searchableAttributes | `string[]` | Yes |
+| filterableAttributes | `string[]` | Yes |
+| sortableAttributes | `string[]` | Yes |
+| displayedAttributes | `string[]` | Yes |
+| rankingRules | `string[]` | Yes |
+
+### KuzzleSearchConfig
+
+**Kind:** interface | **File:** `kuzzle-adaptor.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| host | `string` | — |
+| port | `number` | — |
+
+### SearchService
+
+**Kind:** interface | **File:** `search-service.ts`
+
+### SurfaceSearchConfig
+
+**Kind:** interface | **File:** `surface-scopes.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| allowedIndexes | `SearchIndex[]` | — |
+| defaultIndexes | `SearchIndex[]` | — |
+| boostFields | `Record<string, number>` | Yes |
+| requiresAuth | `boolean` | — |
+| requiredRoles | `string[]` | Yes |
+
+### SearchConfig
+
+**Kind:** interface | **File:** `types.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| host | `string` | — |
+| apiKey | `string` | — |
+
+### SearchQuery
+
+**Kind:** interface | **File:** `types.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| query | `string` | — |
+| indices | `SearchIndex[]` | Yes |
+| filters | `Record<string, string | number | boolean>` | Yes |
+| sort | `string[]` | Yes |
+| limit | `number` | Yes |
+| offset | `number` | Yes |
+| facets | `string[]` | Yes |
+| tenantId | `string` | Yes |
+| nodeId | `string` | Yes |
+| locale | `string` | Yes |
+| geo | `{ lat: number; lng: number; radiusKm?: number }` | Yes |
+
+### SearchHit
+
+**Kind:** interface | **File:** `types.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| index | `SearchIndex` | — |
+| score | `number` | — |
+| title | `string` | — |
+| description | `string` | Yes |
+| imageUrl | `string` | Yes |
+| url | `string` | Yes |
+| type | `string` | — |
+| highlights | `Record<string, string>` | Yes |
+| geo | `{ lat: number; lng: number }` | Yes |
+| metadata | `Record<string, unknown>` | Yes |
+
+### SearchResult
+
+**Kind:** interface | **File:** `types.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| hits | `SearchHit[]` | — |
+| totalHits | `number` | — |
+| processingTimeMs | `number` | — |
+| facets | `Record<string, Record<string, number>>` | Yes |
+| query | `string` | — |
+
+### IndexDocument
+
+**Kind:** interface | **File:** `types.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| title | `string` | — |
+| description | `string` | Yes |
+| content | `string` | Yes |
+| type | `string` | — |
+| tenantId | `string` | — |
+| nodeId | `string` | Yes |
+| locale | `string` | Yes |
+| imageUrl | `string` | Yes |
+| url | `string` | Yes |
+| geo | `{ lat: number; lng: number }` | Yes |
+| tags | `string[]` | Yes |
+| category | `string` | Yes |
+| rating | `number` | Yes |
+| popularity | `number` | Yes |
+| updatedAt | `string` | — |
+| metadata | `Record<string, unknown>` | Yes |
+
+### SearchIndex
+
+**Kind:** type | **File:** `types.ts`
+
+```ts
+type SearchIndex = | 'pois'
+  | 'products'
+  | 'services'
+  | 'events'
+  | 'businesses'
+  | 'documents'
+  | 'users'
+  | 'citizen-services'
+  | 'orders';
+```
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [cityos-search.mmd](/generated/diagrams/class/cityos-search.mmd) |
+| Dependency Graph | [cityos-search-dependencies.mmd](#) |
+
+## Tests
+
+- `__tests__/surface-scopes.test.ts` (72 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

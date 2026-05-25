@@ -1,0 +1,97 @@
+graph TD
+  direction TB
+
+  dev-portal[dev-portal]
+
+  subgraph Layouts[
+    Layouts
+  end
+  RootLayout[RootLayout]
+  dev-portal --> RootLayout
+  DeveloperLayoutClient[DeveloperLayoutClient]
+  dev-portal --> DeveloperLayoutClient
+  DeveloperLayout[DeveloperLayout]
+  dev-portal --> DeveloperLayout
+  DevPortalLayout[DevPortalLayout]
+  dev-portal --> DevPortalLayout
+
+  subgraph Pages[
+    Pages
+  end
+  ApiDocsPage[ApiDocsPage]
+  RootLayout --> ApiDocsPage
+  ApiExplorerPage[ApiExplorerPage]
+  RootLayout --> ApiExplorerPage
+  ApiKeysPage[ApiKeysPage]
+  RootLayout --> ApiKeysPage
+  UsagePage[UsagePage]
+  RootLayout --> UsagePage
+  WebhooksPage[WebhooksPage]
+  RootLayout --> WebhooksPage
+  ApiReferencePage[ApiReferencePage]
+  RootLayout --> ApiReferencePage
+  AuthCallbackPage[AuthCallbackPage]
+  RootLayout --> AuthCallbackPage
+  LoginPage[LoginPage]
+  RootLayout --> LoginPage
+  PlaygroundPage[PlaygroundPage]
+  RootLayout --> PlaygroundPage
+
+  subgraph Components[
+    Shared Components
+  end
+  Error[Error]
+  RootLayout --> Error
+  Loading[Loading]
+  RootLayout --> Loading
+  NotFound[NotFound]
+  RootLayout --> NotFound
+  DevPortalHome[DevPortalHome]
+  RootLayout --> DevPortalHome
+  Providers[Providers]
+  RootLayout --> Providers
+  AuthGuard[AuthGuard]
+  RootLayout --> AuthGuard
+  MethodBadge[MethodBadge]
+  ApiDocsPage --> MethodBadge
+  CopyButton[CopyButton]
+  ApiDocsPage --> CopyButton
+  EndpointDetail[EndpointDetail]
+  ApiDocsPage --> EndpointDetail
+  CodeSampleTabs[CodeSampleTabs]
+  ApiDocsPage --> CodeSampleTabs
+  HeaderEditor[HeaderEditor]
+  ApiExplorerPage --> HeaderEditor
+  ResponseViewer[ResponseViewer]
+  ApiExplorerPage --> ResponseViewer
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef layout fill:#fff3e0,stroke:#e65100,stroke-width:1px
+  classDef page fill:#e8f5e9,stroke:#1b5e20,stroke-width:1px
+  classDef component fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class dev-portal app
+  class RootLayout layout
+  class DeveloperLayoutClient layout
+  class DeveloperLayout layout
+  class DevPortalLayout layout
+  class ApiDocsPage page
+  class ApiExplorerPage page
+  class ApiKeysPage page
+  class UsagePage page
+  class WebhooksPage page
+  class ApiReferencePage page
+  class AuthCallbackPage page
+  class LoginPage page
+  class PlaygroundPage page
+  class Error component
+  class Loading component
+  class NotFound component
+  class DevPortalHome component
+  class Providers component
+  class AuthGuard component
+  class MethodBadge component
+  class CopyButton component
+  class EndpointDetail component
+  class CodeSampleTabs component
+  class HeaderEditor component
+  class ResponseViewer component

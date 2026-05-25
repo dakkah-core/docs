@@ -1,0 +1,389 @@
+---
+title: "@cityos/core"
+description: "Deep dive into the core package"
+icon: "package"
+---
+
+> **Type:** Utility Package | **Framework:** Unknown | **Version:** 0.0.0
+> **Path:** `packages/core` | **LOC:** 1,815 lines across 11 files
+
+[Back to Generated Packages](/generated/packages)
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 11 | — |
+| Lines of Code | 1,815 | — |
+| Test Coverage | 18.2% | 🔴 |
+| Oversized Files | 0 | 🟢 |
+| Components | 0 | — |
+| Hooks | 0 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 49 | — |
+| Internal Deps | 0 | — |
+| Dependents | 0 | 🟢 Low impact |
+
+## Architecture
+
+### File Structure
+
+```
+env.ts (39L, 0C, 0T)
+integrations/
+  node-red-flow-registry.ts (178L, 0C, 2T)
+  tryton-sync.ts (201L, 0C, 3T)
+  waltid-schemas.ts (236L, 0C, 2T)
+types/
+  iot-bridge.ts (149L, 0C, 11T)
+  kuzzle-decoder.ts (207L, 0C, 18T)
+utils/
+  rls-policy-generator.test.ts (50L, 0C, 0T)
+  rls-policy-generator.ts (231L, 0C, 3T)
+  scaffold-consolidation.ts (190L, 0C, 3T)
+  sdk-peer-dep-matrix.ts (160L, 0C, 3T)
+  seed-idempotency.ts (174L, 0C, 4T)
+```
+
+## Public API Surface
+
+### Components (7)
+
+| Name | Kind | File |
+|---|---|---|
+| NODE_RED_FLOWS | const | integrations/node-red-flow-registry.ts |
+| CREDENTIAL_SCHEMAS | const | integrations/waltid-schemas.ts |
+| IOT_REQUIRED_COLLECTIONS | const | types/iot-bridge.ts |
+| TENANT_SCOPED_TABLES | const | utils/rls-policy-generator.ts |
+| SCAFFOLD_TEMPLATES | const | utils/scaffold-consolidation.ts |
+| AVAILABLE_TEMPLATES | const | utils/scaffold-consolidation.ts |
+| PEER_DEP_MATRIX | const | utils/sdk-peer-dep-matrix.ts |
+
+### Functions (25)
+
+| Name | Kind | File |
+|---|---|---|
+| checkFlowHealth | function | integrations/node-red-flow-registry.ts |
+| checkAllCriticalFlows | function | integrations/node-red-flow-registry.ts |
+| generateFlowDocumentation | function | integrations/node-red-flow-registry.ts |
+| withRetry | function | integrations/tryton-sync.ts |
+| trytonCall | function | integrations/tryton-sync.ts |
+| syncOrderToTryton | function | integrations/tryton-sync.ts |
+| syncPartyToTryton | function | integrations/tryton-sync.ts |
+| registerCredentialSchema | function | integrations/waltid-schemas.ts |
+| registerAllCredentialSchemas | function | integrations/waltid-schemas.ts |
+| isDocumentNotification | function | types/kuzzle-decoder.ts |
+| isIoTNotification | function | types/kuzzle-decoder.ts |
+| decodeKuzzleMessage | function | types/kuzzle-decoder.ts |
+| extractSource | function | types/kuzzle-decoder.ts |
+| generateTableRlsPolicy | function | utils/rls-policy-generator.ts |
+| deriveRlsSpecsFromCollections | function | utils/rls-policy-generator.ts |
+| generateRlsMigrationSql | function | utils/rls-policy-generator.ts |
+| generateRlsMigrationSqlFromCollections | function | utils/rls-policy-generator.ts |
+| applyRlsPolicies | function | utils/rls-policy-generator.ts |
+| processTemplate | function | utils/scaffold-consolidation.ts |
+| generateScaffold | function | utils/scaffold-consolidation.ts |
+| ... | | | (5 more) |
+
+### Types (48)
+
+| Name | Kind | File |
+|---|---|---|
+| NodeRedFlowManifest | interface | integrations/node-red-flow-registry.ts |
+| FlowHealthStatus | interface | integrations/node-red-flow-registry.ts |
+| RetryConfig | interface | integrations/tryton-sync.ts |
+| TrytonCallOpts | interface | integrations/tryton-sync.ts |
+| TrytonCallResult | interface | integrations/tryton-sync.ts |
+| VCSchema | interface | integrations/waltid-schemas.ts |
+| SchemaRegistrationResult | interface | integrations/waltid-schemas.ts |
+| IoTDeviceIdentity | interface | types/iot-bridge.ts |
+| SensorReading | interface | types/iot-bridge.ts |
+| IoTTelemetryEvent | interface | types/iot-bridge.ts |
+| AirQualityTelemetry | interface | types/iot-bridge.ts |
+| ParkingTelemetry | interface | types/iot-bridge.ts |
+| OccupancyTelemetry | interface | types/iot-bridge.ts |
+| TrafficFlowTelemetry | interface | types/iot-bridge.ts |
+| KuzzleDocument | interface | types/iot-bridge.ts |
+| KuzzleRealtimeNotification | interface | types/iot-bridge.ts |
+| MQTTBridgeMessage | interface | types/iot-bridge.ts |
+| IoTCollection | type | types/iot-bridge.ts |
+| KuzzleError | interface | types/kuzzle-decoder.ts |
+| KuzzleResponseBase | interface | types/kuzzle-decoder.ts |
+| ... | | | (28 more) |
+
+### Constants (1)
+
+| Name | Kind | File |
+|---|---|---|
+| coreEnv | const | env.ts |
+
+## Type System
+
+### NodeRedFlowManifest
+
+**Kind:** interface | **File:** `integrations/node-red-flow-registry.ts`
+> G-599: Node-RED flow versioning + documentation. Implements version control and documentation for Node-RED IoT flows: 1. A manifest file describing each flow's purpose, version, and dependencies 2. A health-check utility that validates flows are deployed and responding 3. A Git-backed export service (writes flows to the repo on change) Gap G-599: Node-RED flows were stored only in the Node-RED internal store — no version history, no Git tracking, and no documented dependencies. A Node-RED crash 
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| name | `string` | — |
+| version | `string` | — |
+| description | `string` | — |
+| triggers | `string[]` | — |
+| outputs | `string[]` | — |
+| dependencies | `string[]` | — |
+| critical | `boolean` | — |
+
+### FlowHealthStatus
+
+**Kind:** interface | **File:** `integrations/node-red-flow-registry.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| flowId | `string` | — |
+| name | `string` | — |
+| healthy | `boolean` | — |
+| deployed | `boolean` | — |
+| version | `string` | Yes |
+| error | `string` | Yes |
+
+### RetryConfig
+
+**Kind:** interface | **File:** `integrations/tryton-sync.ts`
+> G-597: Tryton sync retry with exponential backoff. Wraps all Tryton outbound sync calls with retry logic to handle transient Tryton server failures gracefully. Uses exponential backoff with jitter and emits an alert event after max retries are exhausted. Gap G-597: Tryton sync calls failed silently on network errors — a single Tryton restart caused data drift between CityOS and ERP with no alerting or retry mechanism.
+
+| Property | Type | Optional |
+|---|---|---|
+| maxAttempts | `number` | — |
+| baseDelayMs | `number` | — |
+| maxDelayMs | `number` | — |
+| jitterFactor | `number` | — |
+| onRetry | `(attempt: number, error: Error, delayMs: number) => void` | Yes |
+| onExhausted | `(attempts: number, lastError: Error) => void` | Yes |
+
+### TrytonCallOpts
+
+**Kind:** interface | **File:** `integrations/tryton-sync.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| model | `string` | — |
+| method | `string` | — |
+| args | `unknown[]` | — |
+| retryConfig | `Partial<RetryConfig>` | Yes |
+
+### TrytonCallResult
+
+**Kind:** interface | **File:** `integrations/tryton-sync.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| result | `T` | — |
+| attempts | `number` | — |
+
+### VCSchema
+
+**Kind:** interface | **File:** `integrations/waltid-schemas.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| name | `string` | — |
+| version | `string` | — |
+| context | `string[]` | — |
+| credentialSubjectSchema | `Record<string, unknown>` | — |
+
+### SchemaRegistrationResult
+
+**Kind:** interface | **File:** `integrations/waltid-schemas.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| schemaId | `string` | — |
+| name | `string` | — |
+| registered | `boolean` | — |
+| alreadyExisted | `boolean` | — |
+| error | `string` | Yes |
+
+### IoTDeviceIdentity
+
+**Kind:** interface | **File:** `types/iot-bridge.ts`
+> G-107: IoT event bridge type definitions. Provides strict TypeScript types for: - Kuzzle IoT realtime document payloads - MQTT/Node-RED bridge messages - Sensor telemetry events emitted by the physical layer These types are shared between: - apps/medusa-backend (subscriber context) - packages/core (shared between apps) - Kuzzle bridge workers
+
+| Property | Type | Optional |
+|---|---|---|
+| deviceId | `string` | — |
+| sensorType | `string` | — |
+| location | `{
+    lat: number;
+    lng: number;
+    /** Altitude in metres above sea level, optional */
+    altMetres?: number;
+  }` | Yes |
+| zoneId | `string` | Yes |
+| tenantId | `string` | Yes |
+
+### SensorReading
+
+**Kind:** interface | **File:** `types/iot-bridge.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| value | `TValue` | — |
+| unit | `string` | Yes |
+| confidence | `number` | Yes |
+| rawValue | `number` | Yes |
+
+### IoTTelemetryEvent
+
+**Kind:** interface | **File:** `types/iot-bridge.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| messageId | `string` | Yes |
+| measuredAt | `string` | — |
+| receivedAt | `string` | Yes |
+| device | `IoTDeviceIdentity` | — |
+| readings | `Record<string, SensorReading>` | — |
+| meta | `Record<string, unknown>` | Yes |
+
+### AirQualityTelemetry
+
+**Kind:** interface | **File:** `types/iot-bridge.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| readings | `{
+    pm25:    SensorReading<number>;  // PM2.5 μg/m³
+    pm10:    SensorReading<number>;  // PM10 μg/m³
+    co2:     SensorReading<number>;  // CO₂ ppm
+    tvoc:    SensorReading<number>;  // TVOC ppb
+    humidity?: SensorReading<number>; // %RH
+    temp?:   SensorReading<number>;  // °C
+  }` | — |
+
+### ParkingTelemetry
+
+**Kind:** interface | **File:** `types/iot-bridge.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| readings | `{
+    occupied: SensorReading<boolean>;
+    vehicleClass?: SensorReading<"car" | "truck" | "motorbike" | "unknown">;
+  }` | — |
+
+### OccupancyTelemetry
+
+**Kind:** interface | **File:** `types/iot-bridge.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| readings | `{
+    count: SensorReading<number>;
+    capacity?: SensorReading<number>;
+    /** Percentage occupancy [0, 100] — derived from count / capacity */
+    occupancyPct?: SensorReading<number>;
+  }` | — |
+
+### TrafficFlowTelemetry
+
+**Kind:** interface | **File:** `types/iot-bridge.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| readings | `{
+    vehiclesPerMinute: SensorReading<number>;
+    avgSpeedKmh:       SensorReading<number>;
+    queueLengthMetres?: SensorReading<number>;
+  }` | — |
+
+### KuzzleDocument
+
+**Kind:** interface | **File:** `types/iot-bridge.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| _id | `string` | — |
+| _source | `TBody` | — |
+| _index | `string` | — |
+| _collection | `string` | — |
+| _version | `number` | — |
+
+### KuzzleRealtimeNotification
+
+**Kind:** interface | **File:** `types/iot-bridge.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| type | `"document" | "user" | "server"` | — |
+| action | `"create" | "update" | "delete" | "replace" | "publish"` | — |
+| collection | `string` | — |
+| index | `string` | — |
+| requestId | `string` | — |
+| timestamp | `number` | — |
+| result | `KuzzleDocument<TBody>` | Yes |
+
+### MQTTBridgeMessage
+
+**Kind:** interface | **File:** `types/iot-bridge.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| topic | `string` | — |
+| qos | `0 | 1 | 2` | — |
+| retain | `boolean` | — |
+| payload | `IoTTelemetryEvent` | — |
+
+### IoTCollection
+
+**Kind:** type | **File:** `types/iot-bridge.ts`
+
+```ts
+type IoTCollection = (typeof IOT_REQUIRED_COLLECTIONS)[number];
+```
+
+### KuzzleError
+
+**Kind:** interface | **File:** `types/kuzzle-decoder.ts`
+> G-595: Kuzzle decoder types. Strict TypeScript type definitions for Kuzzle realtime subscription payloads and the Kuzzle HTTP/WS protocol responses. These types enable type-safe decoding of raw Kuzzle notifications in the IoT bridge, analytics pipeline, and realtime dashboard. Gap G-595: Kuzzle payloads were typed as `unknown` or `any` across the codebase — every consumer duplicated ad-hoc type-casting logic.
+
+| Property | Type | Optional |
+|---|---|---|
+| message | `string` | — |
+| status | `number` | — |
+| stack | `string` | Yes |
+
+### KuzzleResponseBase
+
+**Kind:** interface | **File:** `types/kuzzle-decoder.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| requestId | `string` | — |
+| status | `number` | — |
+| error | `KuzzleError | null` | — |
+| controller | `string` | — |
+| action | `string` | — |
+| collection | `string` | Yes |
+| index | `string` | Yes |
+| volatile | `Record<string, unknown>` | Yes |
+
+*... and 29 more types*
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [core.mmd](/generated/diagrams/class/core.mmd) |
+| Dependency Graph | [core-dependencies.mmd](#) |
+
+## Tests
+
+- `utils/rls-policy-generator.test.ts` (50 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

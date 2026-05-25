@@ -1,0 +1,13 @@
+graph LR
+  mobile-merchant[mobile-merchant]
+  mobile-merchant --> design-tokens[design-tokens]
+  mobile-merchant --> design-tokens-mobile[design-tokens-mobile]
+  mobile-merchant --> api-client[api-client]
+  mobile-merchant --> auth[auth]
+  mobile-merchant --> mobile-core[mobile-core]
+  mobile-merchant --> sdui-renderer-native[sdui-renderer-native]
+  mobile-merchant --> sdui-protocol[sdui-protocol]
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef dep fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class mobile-merchant app

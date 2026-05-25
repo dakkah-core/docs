@@ -1,0 +1,24 @@
+classDiagram
+  direction TB
+
+  class FlatNode ~interface~ {
+    +id: string
+    +type: string
+    +depth: number
+    +parentId: string | undefined
+    +props: Recordstring, unknown
+  }
+
+  class ValidationResult ~interface~ {
+    +valid: boolean
+    +errors: string[]
+  }
+
+  class HeadlessRendererOptions ~interface~ {
+    -stripModifiers: boolean
+  }
+
+  class HeadlessRenderer  {
+    +payload: SdPayload
+    +shouldStripModifiers: boolean
+  }

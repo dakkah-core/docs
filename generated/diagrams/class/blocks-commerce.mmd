@@ -1,0 +1,74 @@
+classDiagram
+  direction TB
+
+  class Story  {
+  }
+
+  class CartDrawerBlockProps ~interface~ {
+    -heading: string
+    -emptyMessage: string
+    -checkoutText: string
+    -position: 'left' | 'right'
+    -messages: MessageBagCartMessageKey
+  }
+
+  class CartMessageKey  {
+  }
+
+  class Story  {
+  }
+
+  class CheckoutFlowBlockProps ~interface~ {
+    -steps: Array{ label: string type: string }
+    -showOrderSummary: boolean
+    -currency: string
+    -locale: string
+    -messages: MessageBagCheckoutMessageKey
+  }
+
+  class CheckoutMessageKey  {
+  }
+
+  class CommerceProductCardData ~interface~ {
+    +id: string
+    -title: string
+    -description: string
+  }
+
+  class Story  {
+  }
+
+  class ProductDetailBlockProps ~interface~ {
+    -productId: string
+    -showReviews: boolean
+    -showRelated: boolean
+    -variant: 'default' | 'compact' | 'full'
+    -currency: string
+    -locale: string
+    -messages: MessageBagProductDetailMessageKey
+  }
+
+  class ProductDetailMessageKey  {
+  }
+
+  class Story  {
+  }
+
+  class ProductsBlockProps ~interface~ {
+    -title: string
+    -description: string
+    -productSelection: 'latest' | 'featured' | 'specific'
+    -products: string[]
+    -productData: CommerceProductCardData[]
+    -limit: number
+    -category: string
+    -vendor: string
+    -isLoading: boolean
+    -messages: MessageBagProductsMessageKey
+  }
+
+  class ProductsMessageKey  {
+  }
+
+  %% Relationships
+  ProductsBlockProps --> CommerceProductCardData : productData

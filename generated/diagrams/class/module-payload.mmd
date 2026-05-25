@@ -1,0 +1,76 @@
+classDiagram
+  direction TB
+
+  class DomainBlockEntry  {
+  }
+
+  class BlockCategory  {
+  }
+
+  class LocalBeforeChangeHook  {
+  }
+
+  class LocalAfterChangeHook  {
+  }
+
+  class CityOSCustomMetadata ~interface~ {
+    -cityos: {
+    tenantOwnership?: "manual" | "wrapper"
+    rls?: {
+      enabled?: boolean
+      tenantColumn?: string
+    }
+  }
+  }
+
+  class CollectionBuilderOptions ~interface~ {
+    +slug: string
+    +labels: { singular: string plural: string }
+    +fields: Field[]
+    -adminGroup: string
+    -timestamps: boolean
+    -enableAuditLog: boolean
+    -enableWebhookDispatch: boolean
+    -enableFeatureGate: string
+    -enableComplianceCheck: boolean
+    -accessPreset: "public-read" | "authenticated" | "admin-only" | "auditor"
+    -access: CollectionConfig["access"]
+    -hooks: CollectionConfig["hooks"]
+    ... 2 more
+  }
+
+  class CollectionHookFactories ~interface~ {
+    -createAuditLogHook: AfterChangeHookFactory
+    -createWebhookDispatchHook: AfterChangeHookFactory
+    -createComplianceCheckHook: BeforeChangeHookFactory
+  }
+
+  class CollectionHooks  {
+  }
+
+  class BeforeChangeHooks  {
+  }
+
+  class AfterChangeHooks  {
+  }
+
+  class BeforeChangeHookFactory  {
+  }
+
+  class AfterChangeHookFactory  {
+  }
+
+  class TenantOwnership  {
+  }
+
+  class CityOSBuilderCustom  {
+  }
+
+  class BuildCollectionOptions  {
+  }
+
+  class VersioningConfig  {
+  }
+
+  class CollectionWithVersions  {
+  }

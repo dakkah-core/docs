@@ -1,0 +1,55 @@
+classDiagram
+  direction TB
+
+  class AgricultureBlockBase ~interface~ {
+    +id: string
+    +blockType: string
+    -className: string
+  }
+
+  class CropMonitorBlockProps ~interface~ {
+    +blockType: 'crop-monitor'
+    +fieldName: string
+    +cropType: string
+    +health: 'excellent' | 'good' | 'fair' | 'poor'
+    +moisture: number
+    +temperature: number
+    +lastUpdated: string
+  }
+
+  class WeatherStationBlockProps ~interface~ {
+    +blockType: 'weather-station'
+    +location: string
+    +current: {
+    temp: number
+    humidity: number
+    windSpeed: number
+    condition: string
+  }
+    +forecast: Array{
+    day: string
+    high: number
+    low: number
+    condition: string
+  }
+  }
+
+  class FieldMapBlockProps ~interface~ {
+    +blockType: 'field-map'
+    +fields: Array{
+    id: string
+    name: string
+    area: string
+    crop: string
+    status: 'active' | 'fallow' | 'harvested'
+  }
+    -onFieldSelect: (id: string) = void
+  }
+
+  class AgricultureBlock  {
+  }
+
+  %% Relationships
+  AgricultureBlockBase <|-- CropMonitorBlockProps
+  AgricultureBlockBase <|-- WeatherStationBlockProps
+  AgricultureBlockBase <|-- FieldMapBlockProps

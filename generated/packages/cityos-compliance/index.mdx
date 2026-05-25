@@ -1,0 +1,341 @@
+---
+title: "@cityos/cityos-compliance"
+description: "Deep dive into the cityos-compliance package"
+icon: "package"
+---
+
+> **Type:** CityOS Core Infrastructure | **Framework:** Node.js | **Version:** 0.1.0
+> **Path:** `packages/cityos-compliance` | **LOC:** 1,051 lines across 8 files
+
+[Back to Generated Packages](/generated/packages)
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 8 | — |
+| Lines of Code | 1,051 | — |
+| Test Coverage | 25.0% | 🔴 |
+| Oversized Files | 0 | 🟢 |
+| Components | 0 | — |
+| Hooks | 0 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 20 | — |
+| Internal Deps | 0 | — |
+| Dependents | 0 | 🟢 Low impact |
+
+## Architecture
+
+### File Structure
+
+```
+engine.ts (110L, 0C, 1T)
+index.test.ts (83L, 0C, 0T)
+index.ts (228L, 0C, 4T)
+reports.ts (201L, 0C, 0T)
+types.ts (110L, 0C, 12T)
+validators/
+  data-residency.ts (99L, 0C, 1T)
+  gdpr.ts (97L, 0C, 1T)
+  nca.ts (123L, 0C, 1T)
+```
+
+## Public API Surface
+
+### Components (3)
+
+| Name | Kind | File |
+|---|---|---|
+| RESIDENCY_RULES | const | index.ts |
+| CLASSIFICATION_HIERARCHY | const | index.ts |
+| DEFAULT_FEATURE_GATES | const | index.ts |
+
+### Functions (13)
+
+| Name | Kind | File |
+|---|---|---|
+| getComplianceEngine | function | engine.ts |
+| runComplianceCheck | function | engine.ts |
+| enforceResidency | function | index.ts |
+| getResidencyZoneForTenant | function | index.ts |
+| canAccessClassification | function | index.ts |
+| getMinimumClassification | function | index.ts |
+| isFeatureEnabled | function | index.ts |
+| checkTenantCompliance | function | index.ts |
+| checkNodeCompliance | function | index.ts |
+| checkDataCompliance | function | index.ts |
+| buildComplianceReport | function | reports.ts |
+| renderReportAsHtml | function | reports.ts |
+| renderReportAsCsv | function | reports.ts |
+
+### Types (16)
+
+| Name | Kind | File |
+|---|---|---|
+| ResidencyZone | type | index.ts |
+| DataClassification | type | index.ts |
+| FeatureGate | type | index.ts |
+| ComplianceViolation | type | index.ts |
+| ComplianceViolation | interface | types.ts |
+| PolicyDefinition | interface | types.ts |
+| ComplianceCheckContext | interface | types.ts |
+| ComplianceCheckResult | interface | types.ts |
+| ComplianceReport | interface | types.ts |
+| IComplianceValidator | interface | types.ts |
+| ResidencyZone | type | types.ts |
+| DataClassification | type | types.ts |
+| ComplianceSeverity | type | types.ts |
+| PolicyFramework | type | types.ts |
+| ReportFormat | type | types.ts |
+| ReportPeriod | type | types.ts |
+
+### Classes (4)
+
+| Name | Kind | File |
+|---|---|---|
+| ComplianceEngine | class | engine.ts |
+| DataResidencyValidator | class | validators/data-residency.ts |
+| GdprValidator | class | validators/gdpr.ts |
+| NcaValidator | class | validators/nca.ts |
+
+## Type System
+
+### ComplianceEngine
+
+**Kind:** class | **File:** `engine.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| validators | `Map<PolicyFramework, IComplianceValidator>` | — |
+
+### ResidencyZone
+
+**Kind:** type | **File:** `index.ts`
+> Compliance Module - Data Residency, Classification, Feature Gating, and Compliance Checks
+
+```ts
+type ResidencyZone = 'GCC' | 'EU' | 'MENA' | 'APAC' | 'AMERICAS' | 'GLOBAL';
+```
+
+### DataClassification
+
+**Kind:** type | **File:** `index.ts`
+
+```ts
+type DataClassification = 'PUBLIC' | 'INTERNAL' | 'CONFIDENTIAL' | 'RESTRICTED';
+```
+
+### FeatureGate
+
+**Kind:** type | **File:** `index.ts`
+
+```ts
+type FeatureGate = {
+  feature: string;
+  enabled: boolean;
+  roleScope?: string[];
+  description?: string;
+};
+```
+
+### ComplianceViolation
+
+**Kind:** type | **File:** `index.ts`
+
+```ts
+type ComplianceViolation = {
+  rule: string;
+  severity: 'info' | 'warning' | 'critical';
+  message: string;
+  field?: string;
+};
+```
+
+### ComplianceViolation
+
+**Kind:** interface | **File:** `types.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| rule | `string` | — |
+| severity | `ComplianceSeverity` | — |
+| message | `string` | — |
+| field | `string` | Yes |
+| detail | `string` | Yes |
+
+### PolicyDefinition
+
+**Kind:** interface | **File:** `types.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| name | `string` | — |
+| framework | `PolicyFramework` | — |
+| description | `string` | — |
+| applies_to | `DataClassification[]` | — |
+| zones | `ResidencyZone[]` | — |
+| required_controls | `string[]` | — |
+
+### ComplianceCheckContext
+
+**Kind:** interface | **File:** `types.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| tenantId | `string` | — |
+| userId | `string` | Yes |
+| roles | `string[]` | — |
+| zone | `ResidencyZone` | — |
+| classification | `DataClassification` | — |
+| frameworks | `PolicyFramework[]` | — |
+| resourceType | `string` | Yes |
+| resourceId | `string` | Yes |
+| metadata | `Record<string, unknown>` | Yes |
+
+### ComplianceCheckResult
+
+**Kind:** interface | **File:** `types.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| passed | `boolean` | — |
+| score | `number` | — |
+| violations | `ComplianceViolation[]` | — |
+| warnings | `ComplianceViolation[]` | — |
+| frameworks_checked | `PolicyFramework[]` | — |
+| checked_at | `string` | — |
+| context | `Pick<ComplianceCheckContext, 'tenantId' | 'zone' | 'classification'>` | — |
+
+### ComplianceReport
+
+**Kind:** interface | **File:** `types.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| tenant_id | `string` | — |
+| generated_at | `string` | — |
+| period | `ReportPeriod` | — |
+| frameworks | `PolicyFramework[]` | — |
+| summary | `{
+    total_checks: number;
+    passed: number;
+    failed: number;
+    score: number;
+    critical_violations: number;
+    warnings: number;
+  }` | — |
+| violations | `ComplianceViolation[]` | — |
+| recommendations | `string[]` | — |
+
+### IComplianceValidator
+
+**Kind:** interface | **File:** `types.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| framework | `PolicyFramework` | — |
+
+### ResidencyZone
+
+**Kind:** type | **File:** `types.ts`
+> Dakkah CityOS — Compliance Package Types Centralised type definitions for compliance, classification, residency, and policy.
+
+```ts
+type ResidencyZone = | 'GCC'
+  | 'EU'
+  | 'MENA'
+  | 'APAC'
+  | 'AMERICAS'
+  | 'GLOBAL';
+```
+
+### DataClassification
+
+**Kind:** type | **File:** `types.ts`
+
+```ts
+type DataClassification = | 'PUBLIC'
+  | 'INTERNAL'
+  | 'CONFIDENTIAL'
+  | 'RESTRICTED';
+```
+
+### ComplianceSeverity
+
+**Kind:** type | **File:** `types.ts`
+
+```ts
+type ComplianceSeverity = 'info' | 'warning' | 'critical';
+```
+
+### PolicyFramework
+
+**Kind:** type | **File:** `types.ts`
+
+```ts
+type PolicyFramework = | 'GDPR'
+  | 'NCA'           // Saudi National Cybersecurity Authority
+  | 'SAMA'          // Saudi Arabian Monetary Authority
+  | 'NGA'           // National Governance Authority
+  | 'DATA_RESIDENCY'
+  | 'ISO27001'
+  | 'SOC2';
+```
+
+### ReportFormat
+
+**Kind:** type | **File:** `types.ts`
+
+```ts
+type ReportFormat = 'json' | 'pdf_html' | 'csv';
+```
+
+### ReportPeriod
+
+**Kind:** type | **File:** `types.ts`
+
+```ts
+type ReportPeriod = 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'annual';
+```
+
+### DataResidencyValidator
+
+**Kind:** class | **File:** `validators/data-residency.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| framework | `unknown` | — |
+
+### GdprValidator
+
+**Kind:** class | **File:** `validators/gdpr.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| framework | `unknown` | — |
+
+### NcaValidator
+
+**Kind:** class | **File:** `validators/nca.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| framework | `unknown` | — |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [cityos-compliance.mmd](/generated/diagrams/class/cityos-compliance.mmd) |
+| Dependency Graph | [cityos-compliance-dependencies.mmd](#) |
+
+## Tests
+
+- `index.test.ts` (83 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

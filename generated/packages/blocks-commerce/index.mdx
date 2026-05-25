@@ -1,0 +1,284 @@
+---
+title: "@cityos/blocks-commerce"
+description: "Deep dive into the blocks-commerce package"
+icon: "box"
+---
+
+> **Type:** SDUI Blocks Package | **Framework:** Node.js | **Version:** 1.0.0
+> **Path:** `packages/blocks-commerce` | **LOC:** 863 lines across 11 files
+
+[Back to Generated Packages](/generated/packages)
+> **Depends on:** [blocks-core](/generated/packages/blocks-core), [design-runtime](/generated/packages/design-runtime), [design-system](/generated/packages/design-system), [design-tokens](/generated/packages/design-tokens)
+> **Used by:** [storefront](#)
+
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 11 | — |
+| Lines of Code | 863 | — |
+| Test Coverage | 18.2% | 🔴 |
+| Oversized Files | 0 | 🟢 |
+| Components | 5 | — |
+| Hooks | 0 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 13 | — |
+| Internal Deps | 4 | — |
+| Dependents | 1 | 🟢 Low impact |
+
+## Architecture
+
+### File Structure
+
+```
+cart-drawer-block.stories.tsx (51L, 0C, 1T)
+cart-drawer-block.tsx (135L, 1C, 2T)
+checkout-flow-block.stories.tsx (58L, 0C, 1T)
+checkout-flow-block.tsx (142L, 1C, 2T)
+index.test.ts (24L, 0C, 0T)
+index.ts (5L, 0C, 0T)
+product-card.tsx (19L, 1C, 1T)
+product-detail-block.stories.tsx (51L, 0C, 1T)
+product-detail-block.tsx (240L, 1C, 2T)
+products-block.stories.tsx (56L, 0C, 1T)
+products-block.tsx (82L, 1C, 2T)
+```
+
+## Public API Surface
+
+### Components (20)
+
+| Name | Kind | File |
+|---|---|---|
+| Default | const | cart-drawer-block.stories.tsx |
+| LeftPosition | const | cart-drawer-block.stories.tsx |
+| ArabicRTL | const | cart-drawer-block.stories.tsx |
+| OpenByDefault | const | cart-drawer-block.stories.tsx |
+| CartDrawerBlock | function | cart-drawer-block.tsx |
+| Default | const | checkout-flow-block.stories.tsx |
+| NoOrderSummary | const | checkout-flow-block.stories.tsx |
+| ThreeSteps | const | checkout-flow-block.stories.tsx |
+| StepPayment | const | checkout-flow-block.stories.tsx |
+| CheckoutFlowBlock | function | checkout-flow-block.tsx |
+| ProductCard | function | product-card.tsx |
+| Default | const | product-detail-block.stories.tsx |
+| OutOfStock | const | product-detail-block.stories.tsx |
+| WithReviews | const | product-detail-block.stories.tsx |
+| Compact | const | product-detail-block.stories.tsx |
+| Full | const | product-detail-block.stories.tsx |
+| ProductDetailBlock | function | product-detail-block.tsx |
+| Default | const | products-block.stories.tsx |
+| Loading | const | products-block.stories.tsx |
+| ProductsBlock | function | products-block.tsx |
+
+### Types (5)
+
+| Name | Kind | File |
+|---|---|---|
+| CartMessageKey | type | cart-drawer-block.tsx |
+| CheckoutMessageKey | type | checkout-flow-block.tsx |
+| CommerceProductCardData | interface | product-card.tsx |
+| ProductDetailMessageKey | type | product-detail-block.tsx |
+| ProductsMessageKey | type | products-block.tsx |
+
+## Component Catalog
+
+| Component | File | Kind | Props |
+|---|---|---|---|
+| CartDrawerBlock | cart-drawer-block.tsx | arrow | heading: string, emptyMessage: string, checkoutText: string, position?: 'left' | 'right', messages: MessageBag<CartMessageKey> |
+| CheckoutFlowBlock | checkout-flow-block.tsx | arrow | steps?: Array<{ label: string; type: string }>, showOrderSummary?: boolean, currency?: string, locale?: string, messages: MessageBag<CheckoutMessageKey> |
+| ProductCard | product-card.tsx | arrow | product: unknown |
+| ProductDetailBlock | product-detail-block.tsx | arrow | productId: string, showReviews?: boolean, showRelated?: boolean, variant?: 'default' | 'compact' | 'full', currency?: string, locale?: string, messages: MessageBag<ProductDetailMessageKey> |
+| ProductsBlock | products-block.tsx | arrow | title: string, description: string, productSelection?: 'latest' | 'featured' | 'specific', productData?: CommerceProductCardData[], limit?: number, category: string, vendor: string, isLoading?: boolean, messages: MessageBag<ProductsMessageKey> |
+
+## Type System
+
+### Story
+
+**Kind:** type | **File:** `cart-drawer-block.stories.tsx`
+
+```ts
+type Story = StoryObj<typeof CartDrawerBlock>;
+```
+
+### CartDrawerBlockProps
+
+**Kind:** interface | **File:** `cart-drawer-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| heading | `string` | Yes |
+| emptyMessage | `string` | Yes |
+| checkoutText | `string` | Yes |
+| position | `'left' | 'right'` | Yes |
+| messages | `MessageBag<CartMessageKey>` | Yes |
+
+### CartMessageKey
+
+**Kind:** type | **File:** `cart-drawer-block.tsx`
+
+```ts
+type CartMessageKey = | 'heading'
+  | 'empty'
+  | 'checkout'
+  | 'remove'
+  | 'subtotal'
+  | 'qty'
+  | 'cart';
+```
+
+### Story
+
+**Kind:** type | **File:** `checkout-flow-block.stories.tsx`
+
+```ts
+type Story = StoryObj<typeof CheckoutFlowBlock>;
+```
+
+### CheckoutFlowBlockProps
+
+**Kind:** interface | **File:** `checkout-flow-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| steps | `Array<{ label: string; type: string }>` | Yes |
+| showOrderSummary | `boolean` | Yes |
+| currency | `string` | Yes |
+| locale | `string` | Yes |
+| messages | `MessageBag<CheckoutMessageKey>` | Yes |
+
+### CheckoutMessageKey
+
+**Kind:** type | **File:** `checkout-flow-block.tsx`
+
+```ts
+type CheckoutMessageKey = | 'next'
+  | 'back'
+  | 'continue'
+  | 'placeOrder'
+  | 'orderSummary'
+  | 'subtotal'
+  | 'shipping'
+  | 'tax'
+  | 'total';
+```
+
+### CommerceProductCardData
+
+**Kind:** interface | **File:** `product-card.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| title | `string` | Yes |
+| description | `string` | Yes |
+
+### Story
+
+**Kind:** type | **File:** `product-detail-block.stories.tsx`
+
+```ts
+type Story = StoryObj<typeof ProductDetailBlock>;
+```
+
+### ProductDetailBlockProps
+
+**Kind:** interface | **File:** `product-detail-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| productId | `string` | Yes |
+| showReviews | `boolean` | Yes |
+| showRelated | `boolean` | Yes |
+| variant | `'default' | 'compact' | 'full'` | Yes |
+| currency | `string` | Yes |
+| locale | `string` | Yes |
+| messages | `MessageBag<ProductDetailMessageKey>` | Yes |
+
+### ProductDetailMessageKey
+
+**Kind:** type | **File:** `product-detail-block.tsx`
+
+```ts
+type ProductDetailMessageKey = | 'outOfStock'
+  | 'addToCart'
+  | 'quantity'
+  | 'brand'
+  | 'title'
+  | 'variant'
+  | 'wishlist'
+  | 'tabDescription'
+  | 'tabSpecs'
+  | 'tabReviews'
+  | 'relatedProducts'
+  | 'reviewsCount';
+```
+
+### Story
+
+**Kind:** type | **File:** `products-block.stories.tsx`
+
+```ts
+type Story = StoryObj<typeof meta>;
+```
+
+### ProductsBlockProps
+
+**Kind:** interface | **File:** `products-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| title | `string` | Yes |
+| description | `string` | Yes |
+| productSelection | `'latest' | 'featured' | 'specific'` | Yes |
+| products | `string[]` | Yes |
+| productData | `CommerceProductCardData[]` | Yes |
+| limit | `number` | Yes |
+| category | `string` | Yes |
+| vendor | `string` | Yes |
+| isLoading | `boolean` | Yes |
+| messages | `MessageBag<ProductsMessageKey>` | Yes |
+
+### ProductsMessageKey
+
+**Kind:** type | **File:** `products-block.tsx`
+
+```ts
+type ProductsMessageKey = 'addToCart' | 'loadError' | 'empty';
+```
+
+## Dependencies
+
+### CityOS Core
+
+| Package | Type | Consumer |
+|---|---|---|
+| @cityos/blocks-core | prod | [blocks-core](/generated/packages/blocks-core) |
+| @cityos/design-runtime | prod | [design-runtime](/generated/packages/design-runtime) |
+| @cityos/design-system | prod | [design-system](/generated/packages/design-system) |
+| @cityos/design-tokens | prod | [design-tokens](/generated/packages/design-tokens) |
+
+## Consumers & Impact
+
+This package is used by:
+
+| Consumer | Type | Impact |
+|---|---|---|
+| [storefront](#) | apps | 🔴 Runtime dependency |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [blocks-commerce.mmd](/generated/diagrams/class/blocks-commerce.mmd) |
+| Dependency Graph | [blocks-commerce-dependencies.mmd](/generated/diagrams/dependencies/blocks-commerce-dependencies.mmd) |
+
+## Tests
+
+- `index.test.ts` (24 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

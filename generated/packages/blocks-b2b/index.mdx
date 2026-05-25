@@ -1,0 +1,231 @@
+---
+title: "@cityos/blocks-b2b"
+description: "Deep dive into the blocks-b2b package"
+icon: "box"
+---
+
+> **Type:** SDUI Blocks Package | **Framework:** Node.js | **Version:** 1.0.0
+> **Path:** `packages/blocks-b2b` | **LOC:** 712 lines across 9 files
+
+[Back to Generated Packages](/generated/packages)
+> **Depends on:** [blocks-core](/generated/packages/blocks-core), [design-runtime](/generated/packages/design-runtime), [design-system](/generated/packages/design-system), [design-tokens](/generated/packages/design-tokens)
+> **Used by:** [storefront](#)
+
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 9 | — |
+| Lines of Code | 712 | — |
+| Test Coverage | 33.3% | 🟡 |
+| Oversized Files | 0 | 🟢 |
+| Components | 3 | — |
+| Hooks | 0 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 9 | — |
+| Internal Deps | 4 | — |
+| Dependents | 1 | 🟢 Low impact |
+
+## Architecture
+
+### File Structure
+
+```
+b2b-approval-workflow-block.stories.tsx (26L, 0C, 1T)
+b2b-approval-workflow-block.tsx (191L, 1C, 2T)
+b2b-quote-form-block.stories.tsx (20L, 0C, 1T)
+b2b-quote-form-block.tsx (194L, 1C, 2T)
+company-dashboard-block.stories.tsx (26L, 0C, 1T)
+company-dashboard-block.tsx (205L, 1C, 2T)
+index.test.ts (24L, 0C, 0T)
+index.ts (4L, 0C, 0T)
+__tests__/
+  a11y.test.tsx (22L, 0C, 0T)
+```
+
+## Public API Surface
+
+### Components (11)
+
+| Name | Kind | File |
+|---|---|---|
+| Default | const | b2b-approval-workflow-block.stories.tsx |
+| RequestsOnly | const | b2b-approval-workflow-block.stories.tsx |
+| Visual | const | b2b-approval-workflow-block.stories.tsx |
+| B2bApprovalWorkflowBlock | function | b2b-approval-workflow-block.tsx |
+| Detailed | const | b2b-quote-form-block.stories.tsx |
+| Compact | const | b2b-quote-form-block.stories.tsx |
+| B2bQuoteFormBlock | function | b2b-quote-form-block.tsx |
+| Default | const | company-dashboard-block.stories.tsx |
+| SpendAndBudgetOnly | const | company-dashboard-block.stories.tsx |
+| YearlyView | const | company-dashboard-block.stories.tsx |
+| CompanyDashboardBlock | function | company-dashboard-block.tsx |
+
+### Types (3)
+
+| Name | Kind | File |
+|---|---|---|
+| B2bApprovalMessageKey | type | b2b-approval-workflow-block.tsx |
+| B2bQuoteMessageKey | type | b2b-quote-form-block.tsx |
+| CompanyDashboardMessageKey | type | company-dashboard-block.tsx |
+
+## Component Catalog
+
+| Component | File | Kind | Props |
+|---|---|---|---|
+| B2bApprovalWorkflowBlock | b2b-approval-workflow-block.tsx | arrow | heading: string, showRules?: boolean, variant?: 'list' | 'visual', currency?: string, locale?: string, messages: MessageBag<B2bApprovalMessageKey> |
+| B2bQuoteFormBlock | b2b-quote-form-block.tsx | arrow | heading: string, showProductSearch?: boolean, variant?: 'compact' | 'detailed', messages: MessageBag<B2bQuoteMessageKey> |
+| CompanyDashboardBlock | company-dashboard-block.tsx | arrow | showSpend?: boolean, showOrders?: boolean, showTeam?: boolean, showBudget?: boolean, defaultPeriod?: unknown, messages: MessageBag<CompanyDashboardMessageKey> |
+
+## Type System
+
+### Story
+
+**Kind:** type | **File:** `b2b-approval-workflow-block.stories.tsx`
+
+```ts
+type Story = StoryObj<typeof meta>;
+```
+
+### B2bApprovalWorkflowBlockProps
+
+**Kind:** interface | **File:** `b2b-approval-workflow-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| heading | `string` | Yes |
+| showRules | `boolean` | Yes |
+| variant | `'list' | 'visual'` | Yes |
+| currency | `string` | Yes |
+| locale | `string` | Yes |
+| messages | `MessageBag<B2bApprovalMessageKey>` | Yes |
+
+### B2bApprovalMessageKey
+
+**Kind:** type | **File:** `b2b-approval-workflow-block.tsx`
+
+```ts
+type B2bApprovalMessageKey = | 'heading'
+  | 'activeRequests'
+  | 'workflowRules'
+  | 'inReview'
+  | 'autoApproved'
+  | 'autoApprove'
+  | 'approve'
+  | 'reject'
+  | 'pending';
+```
+
+### Story
+
+**Kind:** type | **File:** `b2b-quote-form-block.stories.tsx`
+
+```ts
+type Story = StoryObj<typeof meta>;
+```
+
+### B2bQuoteFormBlockProps
+
+**Kind:** interface | **File:** `b2b-quote-form-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| heading | `string` | Yes |
+| showProductSearch | `boolean` | Yes |
+| variant | `'compact' | 'detailed'` | Yes |
+| messages | `MessageBag<B2bQuoteMessageKey>` | Yes |
+
+### B2bQuoteMessageKey
+
+**Kind:** type | **File:** `b2b-quote-form-block.tsx`
+
+```ts
+type B2bQuoteMessageKey = | 'heading'
+  | 'intro'
+  | 'companyName'
+  | 'contactEmail'
+  | 'phone'
+  | 'expectedDelivery'
+  | 'lineItems'
+  | 'addItem'
+  | 'notes'
+  | 'notesPlaceholder'
+  | 'itemPlaceholder'
+  | 'itemPlaceholderSearch'
+  | 'submitQuote';
+```
+
+### Story
+
+**Kind:** type | **File:** `company-dashboard-block.stories.tsx`
+
+```ts
+type Story = StoryObj<typeof meta>;
+```
+
+### CompanyDashboardBlockProps
+
+**Kind:** interface | **File:** `company-dashboard-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| showSpend | `boolean` | Yes |
+| showOrders | `boolean` | Yes |
+| showTeam | `boolean` | Yes |
+| showBudget | `boolean` | Yes |
+| period | `'monthly' | 'quarterly' | 'yearly'` | Yes |
+| messages | `MessageBag<CompanyDashboardMessageKey>` | Yes |
+
+### CompanyDashboardMessageKey
+
+**Kind:** type | **File:** `company-dashboard-block.tsx`
+
+```ts
+type CompanyDashboardMessageKey = | 'heading'
+  | 'totalSpend'
+  | 'totalOrders'
+  | 'pendingApproval'
+  | 'budgetUtilization'
+  | 'teamMembers'
+  | 'recentActivity'
+  | 'spending'
+  | 'users'
+  | 'pendingApprovals';
+```
+
+## Dependencies
+
+### CityOS Core
+
+| Package | Type | Consumer |
+|---|---|---|
+| @cityos/blocks-core | prod | [blocks-core](/generated/packages/blocks-core) |
+| @cityos/design-runtime | prod | [design-runtime](/generated/packages/design-runtime) |
+| @cityos/design-system | prod | [design-system](/generated/packages/design-system) |
+| @cityos/design-tokens | prod | [design-tokens](/generated/packages/design-tokens) |
+
+## Consumers & Impact
+
+This package is used by:
+
+| Consumer | Type | Impact |
+|---|---|---|
+| [storefront](#) | apps | 🔴 Runtime dependency |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [blocks-b2b.mmd](/generated/diagrams/class/blocks-b2b.mmd) |
+| Dependency Graph | [blocks-b2b-dependencies.mmd](/generated/diagrams/dependencies/blocks-b2b-dependencies.mmd) |
+
+## Tests
+
+- `index.test.ts` (24 lines)
+- `__tests__/a11y.test.tsx` (22 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

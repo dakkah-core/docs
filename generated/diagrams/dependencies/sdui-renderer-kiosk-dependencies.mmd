@@ -1,0 +1,7 @@
+graph LR
+  sdui-renderer-kiosk[sdui-renderer-kiosk]
+  sdui-renderer-kiosk --> api-client[api-client]
+  sdui-renderer-kiosk --> design-tokens[design-tokens]
+  sdui-renderer-kiosk --> sdui-renderer-web[sdui-renderer-web]
+  sdui-renderer-kiosk --> sdui-protocol[sdui-protocol]
+  kiosk[kiosk] --> sdui-renderer-kiosk

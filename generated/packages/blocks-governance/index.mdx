@@ -1,0 +1,315 @@
+---
+title: "@cityos/blocks-governance"
+description: "Deep dive into the blocks-governance package"
+icon: "box"
+---
+
+> **Type:** SDUI Blocks Package | **Framework:** Node.js | **Version:** 1.0.0
+> **Path:** `packages/blocks-governance` | **LOC:** 954 lines across 10 files
+
+[Back to Generated Packages](/generated/packages)
+> **Depends on:** [blocks-core](/generated/packages/blocks-core), [design-runtime](/generated/packages/design-runtime), [design-system](/generated/packages/design-system), [design-tokens](/generated/packages/design-tokens)
+> **Used by:** [storefront](#)
+
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 10 | — |
+| Lines of Code | 954 | — |
+| Test Coverage | 30.0% | 🟡 |
+| Oversized Files | 0 | 🟢 |
+| Components | 3 | — |
+| Hooks | 0 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 15 | — |
+| Internal Deps | 4 | — |
+| Dependents | 1 | 🟢 Low impact |
+
+## Architecture
+
+### File Structure
+
+```
+env.ts (4L, 0C, 0T)
+index.test.ts (24L, 0C, 0T)
+index.ts (7L, 0C, 0T)
+policy-viewer-block.stories.tsx (68L, 0C, 1T)
+policy-viewer-block.tsx (190L, 1C, 3T)
+service-request-block.stories.tsx (62L, 0C, 1T)
+service-request-block.tsx (252L, 1C, 5T)
+voting-booth-block.stories.tsx (42L, 0C, 1T)
+voting-booth-block.tsx (245L, 1C, 4T)
+__tests__/
+  a11y.test.tsx (60L, 0C, 0T)
+```
+
+## Public API Surface
+
+### Components (16)
+
+| Name | Kind | File |
+|---|---|---|
+| Default | const | policy-viewer-block.stories.tsx |
+| PrivacyPolicy | const | policy-viewer-block.stories.tsx |
+| Bilingual | const | policy-viewer-block.stories.tsx |
+| Loading | const | policy-viewer-block.stories.tsx |
+| Interaction | const | policy-viewer-block.stories.tsx |
+| PolicyViewerBlock | function | policy-viewer-block.tsx |
+| Default | const | service-request-block.stories.tsx |
+| MunicipalServices | const | service-request-block.stories.tsx |
+| HealthcareRequest | const | service-request-block.stories.tsx |
+| Interaction | const | service-request-block.stories.tsx |
+| ServiceRequestBlock | function | service-request-block.tsx |
+| Default | const | voting-booth-block.stories.tsx |
+| Ineligible | const | voting-booth-block.stories.tsx |
+| AlreadyVoted | const | voting-booth-block.stories.tsx |
+| VotingClosed | const | voting-booth-block.stories.tsx |
+| VotingBoothBlock | function | voting-booth-block.tsx |
+
+### Types (12)
+
+| Name | Kind | File |
+|---|---|---|
+| LocalizedPolicyBody | interface | policy-viewer-block.tsx |
+| PolicyViewerBlockProps | interface | policy-viewer-block.tsx |
+| PolicyViewerMessageKey | type | policy-viewer-block.tsx |
+| ServiceFieldOption | interface | service-request-block.tsx |
+| ServiceField | interface | service-request-block.tsx |
+| ServiceRequestBlockProps | interface | service-request-block.tsx |
+| ServiceRequestMessageKey | type | service-request-block.tsx |
+| ServiceFieldType | type | service-request-block.tsx |
+| VotingOption | interface | voting-booth-block.tsx |
+| VotingProposal | interface | voting-booth-block.tsx |
+| VotingBoothBlockProps | interface | voting-booth-block.tsx |
+| VotingBoothMessageKey | type | voting-booth-block.tsx |
+
+### Constants (1)
+
+| Name | Kind | File |
+|---|---|---|
+| blocksGovernanceEnv | const | env.ts |
+
+## Component Catalog
+
+| Component | File | Kind | Props |
+|---|---|---|---|
+| PolicyViewerBlock | policy-viewer-block.tsx | arrow | title: string, bodies: LocalizedPolicyBody[], defaultLocale: string, jurisdiction: string, version: string, effectiveDate: string, loading?: boolean, error?: Error | null, className?: string, messages: MessageBag<PolicyViewerMessageKey> |
+| ServiceRequestBlock | service-request-block.tsx | arrow | serviceId: string, heading: string, description: string, fields: ServiceField[], submitLabel: string, onSubmit: (values: Record<string, string>) => void | Promise<void>, successMessage: string, className?: string, messages: MessageBag<ServiceRequestMessageKey> |
+| VotingBoothBlock | voting-booth-block.tsx | arrow | proposal?: VotingProposal, eligible?: boolean, ineligibleReason: string, alreadyVoted?: boolean, receiptReference: string, loading?: boolean, error?: Error | null, onCastVote: (input: { proposalId: string; optionId: string }) => void | Promise<void>, className?: string, messages: MessageBag<VotingBoothMessageKey> |
+
+## Type System
+
+### Story
+
+**Kind:** type | **File:** `policy-viewer-block.stories.tsx`
+
+```ts
+type Story = StoryObj<typeof meta>;
+```
+
+### LocalizedPolicyBody
+
+**Kind:** interface | **File:** `policy-viewer-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| locale | `string` | — |
+| html | `string` | — |
+
+### PolicyViewerBlockProps
+
+**Kind:** interface | **File:** `policy-viewer-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| title | `string` | — |
+| bodies | `LocalizedPolicyBody[]` | — |
+| defaultLocale | `string` | Yes |
+| jurisdiction | `string` | Yes |
+| version | `string` | Yes |
+| effectiveDate | `string` | Yes |
+| loading | `boolean` | Yes |
+| error | `Error | null` | Yes |
+| className | `string` | Yes |
+| messages | `MessageBag<PolicyViewerMessageKey>` | Yes |
+
+### PolicyViewerMessageKey
+
+**Kind:** type | **File:** `policy-viewer-block.tsx`
+
+```ts
+type PolicyViewerMessageKey = | 'effective'
+  | 'jurisdiction'
+  | 'version'
+  | 'notAvailable'
+  | 'loadError';
+```
+
+### Story
+
+**Kind:** type | **File:** `service-request-block.stories.tsx`
+
+```ts
+type Story = StoryObj<typeof meta>;
+```
+
+### ServiceFieldOption
+
+**Kind:** interface | **File:** `service-request-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| value | `string` | — |
+| label | `string` | — |
+
+### ServiceField
+
+**Kind:** interface | **File:** `service-request-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| type | `ServiceFieldType` | — |
+| label | `string` | — |
+| placeholder | `string` | Yes |
+| required | `boolean` | Yes |
+| help | `string` | Yes |
+| options | `ServiceFieldOption[]` | Yes |
+| maxLength | `number` | Yes |
+
+### ServiceRequestBlockProps
+
+**Kind:** interface | **File:** `service-request-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| serviceId | `string` | — |
+| heading | `string` | — |
+| description | `string` | Yes |
+| fields | `ServiceField[]` | — |
+| submitLabel | `string` | Yes |
+| onSubmit | `(values: Record<string, string>) => void | Promise<void>` | Yes |
+| successMessage | `string` | Yes |
+| className | `string` | Yes |
+| messages | `MessageBag<ServiceRequestMessageKey>` | Yes |
+
+### ServiceRequestMessageKey
+
+**Kind:** type | **File:** `service-request-block.tsx`
+
+```ts
+type ServiceRequestMessageKey = | 'submit'
+  | 'submitting'
+  | 'required'
+  | 'invalidEmail'
+  | 'success';
+```
+
+### ServiceFieldType
+
+**Kind:** type | **File:** `service-request-block.tsx`
+
+```ts
+type ServiceFieldType = 'text' | 'textarea' | 'email' | 'tel' | 'number' | 'select';
+```
+
+### VotingStory
+
+**Kind:** type | **File:** `voting-booth-block.stories.tsx`
+
+```ts
+type VotingStory = StoryObj<typeof meta>;
+```
+
+### VotingOption
+
+**Kind:** interface | **File:** `voting-booth-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| label | `string` | — |
+| description | `string` | Yes |
+
+### VotingProposal
+
+**Kind:** interface | **File:** `voting-booth-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| title | `string` | — |
+| description | `string` | Yes |
+| opensAt | `string` | Yes |
+| closesAt | `string` | Yes |
+| options | `VotingOption[]` | — |
+
+### VotingBoothBlockProps
+
+**Kind:** interface | **File:** `voting-booth-block.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| proposal | `VotingProposal` | Yes |
+| eligible | `boolean` | Yes |
+| ineligibleReason | `string` | Yes |
+| alreadyVoted | `boolean` | Yes |
+| receiptReference | `string` | Yes |
+| loading | `boolean` | Yes |
+| error | `Error | null` | Yes |
+| onCastVote | `(input: { proposalId: string; optionId: string }) => void | Promise<void>` | Yes |
+| className | `string` | Yes |
+| messages | `MessageBag<VotingBoothMessageKey>` | Yes |
+
+### VotingBoothMessageKey
+
+**Kind:** type | **File:** `voting-booth-block.tsx`
+
+```ts
+type VotingBoothMessageKey = | 'submit'
+  | 'submitting'
+  | 'ineligible'
+  | 'closed'
+  | 'recorded'
+  | 'receiptLabel'
+  | 'help'
+  | 'loadError';
+```
+
+## Dependencies
+
+### CityOS Core
+
+| Package | Type | Consumer |
+|---|---|---|
+| @cityos/blocks-core | prod | [blocks-core](/generated/packages/blocks-core) |
+| @cityos/design-runtime | prod | [design-runtime](/generated/packages/design-runtime) |
+| @cityos/design-system | prod | [design-system](/generated/packages/design-system) |
+| @cityos/design-tokens | prod | [design-tokens](/generated/packages/design-tokens) |
+
+## Consumers & Impact
+
+This package is used by:
+
+| Consumer | Type | Impact |
+|---|---|---|
+| [storefront](#) | apps | 🔴 Runtime dependency |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [blocks-governance.mmd](/generated/diagrams/class/blocks-governance.mmd) |
+| Dependency Graph | [blocks-governance-dependencies.mmd](/generated/diagrams/dependencies/blocks-governance-dependencies.mmd) |
+
+## Tests
+
+- `index.test.ts` (24 lines)
+- `__tests__/a11y.test.tsx` (60 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

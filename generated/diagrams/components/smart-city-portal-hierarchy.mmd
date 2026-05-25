@@ -1,0 +1,70 @@
+graph TD
+  direction TB
+
+  smart-city-portal[smart-city-portal]
+
+  subgraph Layouts[
+    Layouts
+  end
+  RootLayout[RootLayout]
+  smart-city-portal --> RootLayout
+  PortalLayout[PortalLayout]
+  smart-city-portal --> PortalLayout
+
+  subgraph Pages[
+    Pages
+  end
+  Page[Page]
+  RootLayout --> Page
+  Page[Page]
+  RootLayout --> Page
+
+  subgraph Components[
+    Shared Components
+  end
+  Error[Error]
+  RootLayout --> Error
+  Loading[Loading]
+  RootLayout --> Loading
+  NotFound[NotFound]
+  RootLayout --> NotFound
+  Home[Home]
+  RootLayout --> Home
+  Providers[Providers]
+  RootLayout --> Providers
+  CivicMapLayer[CivicMapLayer]
+  RootLayout --> CivicMapLayer
+  CivicTelemetryMap[CivicTelemetryMap]
+  RootLayout --> CivicTelemetryMap
+  LiveAssetMap[LiveAssetMap]
+  RootLayout --> LiveAssetMap
+  KuzzleProvider[KuzzleProvider]
+  RootLayout --> KuzzleProvider
+  ChatMessage[ChatMessage]
+  RootLayout --> ChatMessage
+  ChatPanel[ChatPanel]
+  RootLayout --> ChatPanel
+  CityMetricsWidget[CityMetricsWidget]
+  RootLayout --> CityMetricsWidget
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef layout fill:#fff3e0,stroke:#e65100,stroke-width:1px
+  classDef page fill:#e8f5e9,stroke:#1b5e20,stroke-width:1px
+  classDef component fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class smart-city-portal app
+  class RootLayout layout
+  class PortalLayout layout
+  class Page page
+  class Page page
+  class Error component
+  class Loading component
+  class NotFound component
+  class Home component
+  class Providers component
+  class CivicMapLayer component
+  class CivicTelemetryMap component
+  class LiveAssetMap component
+  class KuzzleProvider component
+  class ChatMessage component
+  class ChatPanel component
+  class CityMetricsWidget component

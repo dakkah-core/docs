@@ -1,0 +1,225 @@
+classDiagram
+  direction TB
+
+  class ActionContract ~interface~ {
+    +actionId: string
+    +domain: string
+    +label: string
+    -description: string
+    +safetyClass: ActionSafetyClass
+    +supportedSurfaces: UISurface[]
+    -excludedSurfaces: UISurface[]
+    -requiredRole: string
+    -requiredCapability: string
+    -confirmationMessage: string
+    +undoable: boolean
+    -bffEndpoint: string
+    ... 1 more
+  }
+
+  class ActionResolution ~interface~ {
+    +action: ActionContract
+    +allowed: boolean
+    -reason: string
+    +requiresConfirmation: boolean
+    -confirmationMessage: string
+    -fallbackAction: ActionContract
+  }
+
+  class ActionSafetyClass  {
+  }
+
+  class RendererProfile ~interface~ {
+    +surfaceId: string
+    +shellArchetype: string
+    +density: 'compact' | 'comfortable' | 'spacious'
+    +locale: string
+    +direction: 'ltr' | 'rtl'
+    +colorScheme: 'light' | 'dark' | 'auto'
+    +motionPreference: 'full' | 'reduced' | 'none'
+    -themeOverrideId: string
+  }
+
+  class BlockPlacement ~interface~ {
+    +blockId: string
+    +domain: string
+    +position: 'sidebar' | 'dashboard' | 'main' | 'quick-action' | 'header' | 'footer' | 'overlay'
+    +priority: number
+    -span: number
+  }
+
+  class AdapterInterface ~interface~ {
+  }
+
+  class AdaptedComponentTree ~interface~ {
+    +shell: string
+    +navigation: NavigationNode[]
+    +dashboard: BlockPlacement[]
+    +mainContent: BlockPlacement[]
+    +sidebar: BlockPlacement[]
+    +quickActions: BlockPlacement[]
+    +hiddenBlocks: Array{ blockId: string reason: string }
+    +hiddenActions: Array{ actionId: string reason: string }
+  }
+
+  class NavigationNode ~interface~ {
+    +id: string
+    +label: string
+    -icon: string
+    +path: string
+    -domain: string
+    -children: NavigationNode[]
+    -badge: string | number
+    +visible: boolean
+    -requiredRole: string
+  }
+
+  class PerformanceBudget ~interface~ {
+    +compositionMs: number
+    +renderMs: number
+    +bundleKb: number
+  }
+
+  class ScreenConstraints ~interface~ {
+    +minWidth: number
+    +maxWidth: number
+    +orientation: 'portrait' | 'landscape' | 'any'
+  }
+
+  class SafetyLimits ~interface~ {
+    -maxInteractions: number
+    -maxTextDensity: number
+    -requireVoiceFallback: boolean
+    -autoTimeout: number
+    -requireConfirmationForPayments: boolean
+  }
+
+  class CapabilityProfile ~interface~ {
+    +surfaceId: UISurface
+    +visualRichness: VisualRichness
+    +inputMethods: Array'touch' | 'keyboard' | 'mouse' | 'voice' | 'gesture'
+    +outputMethods: Array'screen' | 'audio' | 'haptic'
+    +navigationModel: NavigationModel
+    +safetyLimits: SafetyLimits
+    +connectivity: Connectivity
+    +performanceBudget: PerformanceBudget
+    +screenConstraints: ScreenConstraints
+    +attentionModel: AttentionModel
+    +dataTolerance: DataTolerance
+    +interactionDuration: InteractionDuration
+    ... 1 more
+  }
+
+  class VisualRichness  {
+  }
+
+  class NavigationModel  {
+  }
+
+  class Connectivity  {
+  }
+
+  class AttentionModel  {
+  }
+
+  class DataTolerance  {
+  }
+
+  class InteractionDuration  {
+  }
+
+  class SecurityLevel  {
+  }
+
+  class PolicyDecision ~interface~ {
+    +policyId: string
+    +domain: string
+    +decision: 'allow' | 'deny' | 'degrade'
+    +reason: string
+    +appliedAt: string
+  }
+
+  class LayoutHints ~interface~ {
+    +maxColumns: number
+    -sidebarWidth: number
+    -contentMaxWidth: number
+    +density: 'compact' | 'comfortable' | 'spacious'
+    -headerHeight: number
+    -footerHeight: number
+    +spacing: 'tight' | 'normal' | 'relaxed'
+  }
+
+  class ExperienceComposition ~interface~ {
+    +surfaceId: string
+    +resolvedAt: string
+    +tenantId: string
+    -nodeId: string
+    -userId: string
+    -personaId: string
+    +capabilityProfile: CapabilityProfile
+    +rendererProfile: RendererProfile
+    +layoutHints: LayoutHints
+    +navigation: NavigationNode[]
+    +dashboardBlocks: BlockPlacement[]
+    +mainBlocks: BlockPlacement[]
+    ... 9 more
+  }
+
+  class FallbackVariant ~interface~ {
+    +surfaceId: UISurface
+    +size: BlockVariantSize
+    +mode: BlockVariantMode
+    +componentPath: string
+  }
+
+  class SemanticBlockContract ~interface~ {
+    +blockId: string
+    +domain: string
+    +slug: string
+    +label: string
+    -description: string
+    +category: string
+    +supportedSurfaces: UISurface[]
+    +defaultVariant: {
+    size: BlockVariantSize
+    mode: BlockVariantMode
+  }
+    +fallbackVariants: FallbackVariant[]
+    +dataRequirements: {
+    bffEndpoints: string[]
+    requiredFields: string[]
+    optionalFields?: string[]
+    refreshInterval?: number
+  }
+    +actionBindings: string[]
+    -requiredRole: string
+    ... 1 more
+  }
+
+  class BlockVariantSize  {
+  }
+
+  class BlockVariantMode  {
+  }
+
+  %% Relationships
+  ActionResolution --> ActionContract : action
+  ActionResolution --> ActionContract : fallbackAction
+  AdaptedComponentTree --> BlockPlacement : dashboard
+  AdaptedComponentTree --> BlockPlacement : mainContent
+  AdaptedComponentTree --> BlockPlacement : sidebar
+  AdaptedComponentTree --> BlockPlacement : quickActions
+  CapabilityProfile --> SafetyLimits : safetyLimits
+  CapabilityProfile --> PerformanceBudget : performanceBudget
+  CapabilityProfile --> ScreenConstraints : screenConstraints
+  ExperienceComposition --> CapabilityProfile : capabilityProfile
+  ExperienceComposition --> RendererProfile : rendererProfile
+  ExperienceComposition --> LayoutHints : layoutHints
+  ExperienceComposition --> NavigationNode : navigation
+  ExperienceComposition --> BlockPlacement : dashboardBlocks
+  ExperienceComposition --> BlockPlacement : mainBlocks
+  ExperienceComposition --> BlockPlacement : sidebarBlocks
+  ExperienceComposition --> BlockPlacement : quickActions
+  ExperienceComposition --> ActionResolution : resolvedActions
+  ExperienceComposition --> PolicyDecision : policyDecisions
+  SemanticBlockContract --> FallbackVariant : fallbackVariants

@@ -1,0 +1,461 @@
+---
+title: "@cityos/cityos-core"
+description: "Deep dive into the cityos-core package"
+icon: "package"
+---
+
+> **Type:** CityOS Core Infrastructure | **Framework:** Payload CMS | **Version:** 0.1.0
+> **Path:** `packages/cityos-core` | **LOC:** 8,639 lines across 88 files
+
+[Back to Generated Packages](/generated/packages)
+> **Used by:** [merchant-app](/generated/apps/merchant-app), [cityos-events](/generated/packages/cityos-events), [cityos-outbox](/generated/packages/cityos-outbox), [domain-shared](/generated/packages/domain-shared), [module-payload](#)
+
+## Overview & Design Philosophy
+
+The `@cityos/core` package is a crucial component of the Dakkah CityOS monorepo, serving as the central hub for cross-cutting concerns such as authentication, context management, error handling, and logging. This package ensures consistency and efficiency across various parts of the system by providing standardized tools and utilities.
+
+## Cross-Cutting Concerns Addressed
+
+### 1. Authentication
+- **Functions**: `isAuthenticated`, `isSuperAdmin`, `isTenantAdmin`, `isAdminOrSelf`, `hasRole`, `publicAccess`, `noAccess`
+- **Description**: These functions handle user authentication and authorization, ensuring that only authorized users can access specific resources or perform certain actions.
+
+### 2. Context Management
+- **Modules**: `context/`, `contracts/`
+- **Description**: This package manages the context of requests, including headers, signatures, and node contexts. It provides utilities for extracting and resolving context information from HTTP requests.
+
+### 3. Error Handling
+- **Not explicitly detailed in exports**
+- **Description**: While not directly listed, error handling is a critical concern that would be integrated into the package to ensure consistent error reporting and management across the system.
+
+### 4. Logging
+- **Not explicitly detailed in exports**
+- **Description**: Centralized logging ensures that all parts of the system can log messages in a standardized format, aiding in debugging and monitoring.
+
+## Why These Concerns Are Centralized
+
+1. **Consistency**: By centralizing these concerns, the package ensures that authentication, context management, error handling, and logging are implemented consistently across different parts of the monorepo.
+2. **Maintainability**: Changes to these core functionalities can be made in one place, reducing the risk of inconsistencies and making maintenance easier.
+3. **Performance**: Centralizing these concerns allows for optimized performance by avoiding redundant implementations and ensuring that critical operations are handled efficiently.
+
+## Design Trade-offs
+
+### Performance vs Consistency
+- **Trade-off**: While centralization improves consistency, it may introduce some overhead due to additional layers of abstraction. However, the benefits in terms of reduced complexity and improved maintainability often outweigh this cost.
+- **Solution**: The package is designed with performance in mind, using efficient algorithms and data structures to minimize latency.
+
+### Simplicity vs Flexibility
+- **Trade-off**: Centralization simplifies the system by reducing duplication but may limit flexibility. For instance, custom authentication strategies might require additional configuration or extensions.
+- **Solution**: The package provides a flexible API that allows for customization while maintaining core functionality. Developers can extend or override certain behaviors as needed.
+
+## Impact on the Broader Monorepo Architecture
+
+1. **Dependency Management**: The `@cityos/core` package is a dependency for several other packages and applications within the monorepo, such as `merchant-app`, `cityos-events`, `cityos-outbox`, `domain-shared`, and `module-payload`. This centralization ensures that these components can rely on consistent core functionalities.
+2. **Modularity**: Despite its central role, the package remains modular, allowing for easy updates and maintenance without affecting other parts of the system.
+3. **Scalability**: The standardized approach to cross-cutting concerns makes it easier to scale the monorepo by adding new features or integrating with external systems.
+
+## Conclusion
+
+The `@cityos/core` package plays a pivotal role in the Dakkah CityOS monorepo by addressing critical cross-cutting concerns through centralized management. This design choice ensures consistency, maintainability, and performance while providing a flexible foundation for the broader architecture. By focusing on these core functionalities, the package supports the development of robust and scalable applications within the monorepo ecosystem.
+
+## Architecture
+
+The `@cityos/core` package is a foundational component of the Payload CMS framework, designed to provide core infrastructure services that enable multi-tenancy, secure access control, error handling, context propagation, and extensibility through plugin architecture. This document outlines the key architectural aspects of this package.
+
+## 1. Abstraction Layers and Their Boundaries
+
+### Access Layer
+- **Location**: `access/`
+- **Description**: The access layer is responsible for managing authentication and authorization checks. It provides functions to determine if a user has specific roles or permissions.
+- **Key Functions**:
+  - `isAuthenticated`: Checks if the current user is authenticated.
+  - `isSuperAdmin`, `isTenantAdmin`, `isAdminOrSelf`, `hasRole`: Role-based access control checks.
+  - `publicAccess`, `noAccess`: Define public and no-access policies.
+  - `canRead`, `canWrite`, `canDelete`: Permission checks for CRUD operations.
+  - `isAuditorOrAbove`: Checks if the user is an auditor or has higher privileges.
+  - `hasNodeAccess`, `hasNodeScopedWriteAccess`: Node-specific access control.
+
+### Context Layer
+- **Location**: `context/`
+- **Description**: The context layer manages request contexts, including headers, signatures, and correlation IDs. It ensures that context information is propagated across asynchronous boundaries.
+- **Key Components**:
+  - `context-headers.ts`, `context-signature.ts`: Handle context-related HTTP headers and signatures.
+  - `correlation.ts`: Manages correlation IDs for tracing requests.
+  - `extract-node-context.ts`, `node-context-resolver.ts`: Extract and resolve node-specific contexts.
+  - `request-envelope.ts`: Encapsulates request data with context information.
+
+### Contracts Layer
+- **Location**: `contracts/`
+- **Description**: The contracts layer defines the interfaces and types used throughout the system. It includes event envelopes and node contexts.
+- **Key Components**:
+  - `event-envelope.ts`, `node-context.ts`: Define structures for event envelopes and node contexts.
+
+## 2. Multi-Tenancy and Tenant Isolation
+
+### Key Features
+- **Tenant Identification**: The package uses tenant-specific identifiers to isolate data and operations within each tenant's context.
+- **Access Control**: Functions like `restrictToTenantRead` and `restrictToTenantIds` enforce tenant-level access control, ensuring that users can only access their own tenant's data.
+
+### Implementation Details
+- **Context Propagation**: Tenant information is propagated through request contexts, ensuring that all operations within a request are aware of the current tenant.
+- **Database Isolation**: The package may use database schemas or prefixes to isolate data between tenants.
+
+## 3. Error Taxonomy and Handling Patterns
+
+### Key Features
+- **Error Classification**: Errors are classified into categories such as authentication errors, authorization errors, and operational errors.
+- **Consistent Error Handling**: A consistent error handling pattern is applied across the package, ensuring that all errors are logged and returned in a standardized format.
+
+### Implementation Details
+- **Error Types**: The package defines specific error types for different scenarios, allowing for precise error handling and logging.
+- **Middleware**: Middleware components handle errors at various points in the request lifecycle, providing opportunities to log errors and return appropriate responses.
+
+## 4. Context Propagation Across Async Boundaries
+
+### Key Features
+- **Request Envelopes**: Request data is encapsulated within envelopes that include context information, ensuring that this information is propagated across asynchronous operations.
+- **Correlation IDs**: Correlation IDs are used to trace requests through the system, facilitating debugging and monitoring.
+
+### Implementation Details
+- **Context Extraction**: Functions like `extract-node-context.ts` extract context information from incoming requests.
+- **Async Context Management**: The package uses techniques such as async hooks or libraries (e.g., `cls-hooked`) to manage context across asynchronous operations.
+
+## 5. Extension Points and Plugin Architecture
+
+### Key Features
+- **Plugin System**: The package provides extension points that allow developers to add custom functionality without modifying the core codebase.
+- **Modular Design**: The modular design of the package makes it easy to integrate additional features or replace existing ones with plugins.
+
+### Implementation Details
+- **Hooks and Interfaces**: The package defines hooks and interfaces that plugins can implement to extend its functionality.
+- **Plugin Registration**: Plugins are registered through a configuration mechanism, allowing them to be loaded and initialized at runtime.
+
+## Conclusion
+
+The `@cityos/core` package is a robust foundation for building secure, multi-tenant applications with Payload CMS. Its well-defined abstraction layers, comprehensive error handling, context propagation mechanisms, and extensible plugin architecture make it a versatile tool for developers working on complex systems.
+
+## Public API Surface
+
+### Components (75)
+
+| Name | Kind | File |
+|---|---|---|
+| CITYOS_HEADERS | const | context/context-headers.ts |
+| CORRELATION_HEADER | const | context/correlation.ts |
+| REQUEST_ID_HEADER | const | context/correlation.ts |
+| TENANT_ID_HEADER | const | context/correlation.ts |
+| NODE_CONTEXT_HEADER | const | context/correlation.ts |
+| RequestEnvelopeSchema | const | context/request-envelope.ts |
+| PaginationMetaSchema | const | context/request-envelope.ts |
+| ResponseEnvelopeSchema | const | context/request-envelope.ts |
+| DOMAIN_EVENTS | const | contracts/event-envelope.ts |
+| DomainEventSchema | const | contracts/event-envelope.ts |
+| EventEnvelopeSchema | const | contracts/event-envelope.ts |
+| CHANNELS | const | contracts/node-context.ts |
+| ChannelSchema | const | contracts/node-context.ts |
+| SURFACE_TYPES | const | contracts/node-context.ts |
+| SurfaceTypeSchema | const | contracts/node-context.ts |
+| NODE_TENANT_TIERS | const | contracts/node-context.ts |
+| NodeTenantTierSchema | const | contracts/node-context.ts |
+| ZONE_TYPES | const | contracts/node-context.ts |
+| ZoneTypeSchema | const | contracts/node-context.ts |
+| NodeContextGlobalSchema | const | contracts/node-context.ts |
+| ... | | | (55 more) |
+
+### Functions (102)
+
+| Name | Kind | File |
+|---|---|---|
+| isAuthenticated | function | access/index.ts |
+| isSuperAdmin | function | access/index.ts |
+| isTenantAdmin | function | access/index.ts |
+| isAdminOrSelf | function | access/index.ts |
+| hasRole | function | access/index.ts |
+| publicAccess | function | access/index.ts |
+| noAccess | function | access/index.ts |
+| canRead | function | access/index.ts |
+| canWrite | function | access/index.ts |
+| canDelete | function | access/index.ts |
+| isAuditorOrAbove | function | access/index.ts |
+| hasNodeAccess | function | access/index.ts |
+| hasNodeScopedWriteAccess | function | access/index.ts |
+| restrictToTenantRead | function | access/index.ts |
+| restrictToTenantIds | function | access/index.ts |
+| contextToHeaders | function | context/context-headers.ts |
+| headersToContext | function | context/context-headers.ts |
+| signContext | function | context/context-signature.ts |
+| verifyContextSignature | function | context/context-signature.ts |
+| generateCorrelationId | function | context/correlation.ts |
+| ... | | | (82 more) |
+
+### Types (53)
+
+| Name | Kind | File |
+|---|---|---|
+| ResolverSource | interface | context/node-context-resolver.ts |
+| RequestEnvelope | type | context/request-envelope.ts |
+| PaginationMeta | type | context/request-envelope.ts |
+| ResponseEnvelope | type | context/request-envelope.ts |
+| DomainEvent | type | contracts/event-envelope.ts |
+| EventEnvelope | type | contracts/event-envelope.ts |
+| Channel | type | contracts/node-context.ts |
+| SurfaceType | type | contracts/node-context.ts |
+| NodeTenantTier | type | contracts/node-context.ts |
+| ZoneType | type | contracts/node-context.ts |
+| NodeContext | type | contracts/node-context.ts |
+| LegacyNodeContext | type | contracts/node-context.ts |
+| NodeType | type | contracts/node-types.ts |
+| TenantType | type | contracts/tenant.ts |
+| TenantTier | type | contracts/tenant.ts |
+| SubscriptionStatus | type | contracts/tenant.ts |
+| TenantFeature | type | contracts/tenant.ts |
+| Tenant | type | contracts/tenant.ts |
+| TenantRef | type | contracts/tenant.ts |
+| ErrorResponse | type | errors/cityos-error.ts |
+| ... | | | (33 more) |
+
+### Classes (2)
+
+| Name | Kind | File |
+|---|---|---|
+| NodeContextValidationError | class | context/extract-node-context.ts |
+| CityOSError | class | errors/cityos-error.ts |
+
+### Constants (2)
+
+| Name | Kind | File |
+|---|---|---|
+| medusaSyncFields | const | integrations/medusa/fields.ts |
+| cityosCoreEnv | const | lib/env.ts |
+
+## Type System
+
+### UserRoles
+
+**Kind:** type | **File:** `access/index.ts`
+
+```ts
+type UserRoles = RBACRole;
+```
+
+### UserLike
+
+**Kind:** type | **File:** `access/index.ts`
+
+```ts
+type UserLike = any;
+```
+
+### NodeRef
+
+**Kind:** type | **File:** `access/index.ts`
+
+```ts
+type NodeRef = string | { id: string; [key: string]: unknown };
+```
+
+### TenantRef
+
+**Kind:** type | **File:** `access/index.ts`
+
+```ts
+type TenantRef = string | { tenant?: string | { id: string }; id?: string; [key: string]: unknown };
+```
+
+### HeaderGetter
+
+**Kind:** type | **File:** `context/context-headers.ts`
+
+```ts
+type HeaderGetter = {
+  get(name: string): string | null;
+} | Record<string, string | undefined>;
+```
+
+### HeaderSource
+
+**Kind:** type | **File:** `context/extract-node-context.ts`
+
+```ts
+type HeaderSource = {
+  get(name: string): string | null;
+};
+```
+
+### NodeContextValidationError
+
+**Kind:** class | **File:** `context/extract-node-context.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| missingFields | `string[]` | — |
+
+### ResolverSource
+
+**Kind:** interface | **File:** `context/node-context-resolver.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| headers | `Record<string, string | undefined>` | Yes |
+| path | `string` | Yes |
+| cookies | `Record<string, string | undefined>` | Yes |
+| query | `Record<string, string | undefined>` | Yes |
+
+### RequestEnvelope
+
+**Kind:** type | **File:** `context/request-envelope.ts`
+
+```ts
+type RequestEnvelope = {
+  correlationId: string;
+  requestId: string;
+  timestamp: string;
+  nodeContext: z.infer<typeof LegacyNodeContextSchema>;
+  payload: T;
+};
+```
+
+### PaginationMeta
+
+**Kind:** type | **File:** `context/request-envelope.ts`
+
+```ts
+type PaginationMeta = z.infer<typeof PaginationMetaSchema>;
+```
+
+### ResponseEnvelope
+
+**Kind:** type | **File:** `context/request-envelope.ts`
+
+```ts
+type ResponseEnvelope = {
+  correlationId: string;
+  requestId: string;
+  timestamp: string;
+  data: T;
+  meta?: PaginationMeta;
+};
+```
+
+### DomainEvent
+
+**Kind:** type | **File:** `contracts/event-envelope.ts`
+
+```ts
+type DomainEvent = z.infer<typeof DomainEventSchema>;
+```
+
+### EventEnvelope
+
+**Kind:** type | **File:** `contracts/event-envelope.ts`
+
+```ts
+type EventEnvelope = {
+  eventId: string;
+  eventType: DomainEvent;
+  occurredAt: string;
+  tenantId: string;
+  nodeContext?: z.infer<typeof LegacyNodeContextSchema>;
+  correlationId: string;
+  payload: T;
+  version: string;
+};
+```
+
+### Channel
+
+**Kind:** type | **File:** `contracts/node-context.ts`
+
+```ts
+type Channel = z.infer<typeof ChannelSchema>;
+```
+
+### SurfaceType
+
+**Kind:** type | **File:** `contracts/node-context.ts`
+
+```ts
+type SurfaceType = z.infer<typeof SurfaceTypeSchema>;
+```
+
+### NodeTenantTier
+
+**Kind:** type | **File:** `contracts/node-context.ts`
+
+```ts
+type NodeTenantTier = z.infer<typeof NodeTenantTierSchema>;
+```
+
+### ZoneType
+
+**Kind:** type | **File:** `contracts/node-context.ts`
+
+```ts
+type ZoneType = z.infer<typeof ZoneTypeSchema>;
+```
+
+### NodeContext
+
+**Kind:** type | **File:** `contracts/node-context.ts`
+
+```ts
+type NodeContext = z.infer<typeof NodeContextSchema>;
+```
+
+### LegacyNodeContext
+
+**Kind:** type | **File:** `contracts/node-context.ts`
+
+```ts
+type LegacyNodeContext = z.infer<typeof LegacyNodeContextSchema>;
+```
+
+### NodeType
+
+**Kind:** type | **File:** `contracts/node-types.ts`
+
+```ts
+type NodeType = z.infer<typeof NodeTypeSchema>;
+```
+
+*... and 81 more types*
+
+## Consumers & Impact
+
+This package is used by:
+
+| Consumer | Type | Impact |
+|---|---|---|
+| [merchant-app](/generated/apps/merchant-app) | apps | 🔴 Runtime dependency |
+| [cityos-events](/generated/packages/cityos-events) | packages | 🟡 Build-time dependency |
+| [cityos-outbox](/generated/packages/cityos-outbox) | packages | 🟡 Build-time dependency |
+| [domain-shared](/generated/packages/domain-shared) | packages | 🟡 Build-time dependency |
+| [module-payload](#) | packages | 🟡 Build-time dependency |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [cityos-core.mmd](/generated/diagrams/class/cityos-core.mmd) |
+| Dependency Graph | [cityos-core-dependencies.mmd](/generated/diagrams/dependencies/cityos-core-dependencies.mmd) |
+
+## Tests
+
+- `context/__tests__/context-signature.test.ts` (127 lines)
+- `fields/cityosBlocks/__tests__/assertUniqueBlocks.test.ts` (92 lines)
+- `hooks/__tests__/auditLog_standalone.test.ts` (272 lines)
+- `hooks/__tests__/capabilityResolverHook.test.ts` (164 lines)
+- `hooks/__tests__/complianceCheck.test.ts` (226 lines)
+- `hooks/__tests__/contentVersioning.test.ts` (130 lines)
+- `hooks/__tests__/cross-domain-validation-hook.test.ts` (192 lines)
+- `hooks/__tests__/featureGating.test.ts` (234 lines)
+- `hooks/__tests__/geoIndexHook.test.ts` (119 lines)
+- `hooks/__tests__/governanceValidation.test.ts` (197 lines)
+- `hooks/__tests__/nodeValidation.test.ts` (119 lines)
+- `hooks/__tests__/policyInheritance.test.ts` (212 lines)
+- `hooks/__tests__/stewardshipValidation.test.ts` (148 lines)
+- `hooks/__tests__/webhookDispatch.test.ts` (201 lines)
+- `lib/collections/__tests__/createCityOSCollection.test.ts` (102 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

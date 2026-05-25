@@ -1,0 +1,13 @@
+graph LR
+  merchant-app[merchant-app]
+  merchant-app --> api-client[api-client]
+  merchant-app --> api-client-react[api-client-react]
+  merchant-app --> auth[auth]
+  merchant-app --> cityos-core[cityos-core]
+  merchant-app --> i18n[i18n]
+  merchant-app --> design-tokens[design-tokens]
+  merchant-app --> merchant-experience[merchant-experience]
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef dep fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class merchant-app app

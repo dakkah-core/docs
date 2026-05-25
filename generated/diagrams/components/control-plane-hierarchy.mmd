@@ -1,0 +1,49 @@
+graph TD
+  direction TB
+
+  control-plane[control-plane]
+
+  subgraph Layouts[
+    Layouts
+  end
+  RootLayout[RootLayout]
+  control-plane --> RootLayout
+
+  subgraph Pages[
+    Pages
+  end
+  DashboardPage[DashboardPage]
+  RootLayout --> DashboardPage
+  DeploymentsPage[DeploymentsPage]
+  RootLayout --> DeploymentsPage
+  HealthPage[HealthPage]
+  RootLayout --> HealthPage
+  PodsPage[PodsPage]
+  RootLayout --> PodsPage
+  SchemasPage[SchemasPage]
+  RootLayout --> SchemasPage
+
+  subgraph Components[
+    Shared Components
+  end
+  Sidebar[Sidebar]
+  DashboardPage --> Sidebar
+  NotFound[NotFound]
+  DashboardPage --> NotFound
+  Providers[Providers]
+  DashboardPage --> Providers
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef layout fill:#fff3e0,stroke:#e65100,stroke-width:1px
+  classDef page fill:#e8f5e9,stroke:#1b5e20,stroke-width:1px
+  classDef component fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class control-plane app
+  class RootLayout layout
+  class DashboardPage page
+  class DeploymentsPage page
+  class HealthPage page
+  class PodsPage page
+  class SchemasPage page
+  class Sidebar component
+  class NotFound component
+  class Providers component

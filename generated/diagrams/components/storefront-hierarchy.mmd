@@ -1,0 +1,85 @@
+graph TD
+  direction TB
+
+  storefront[storefront]
+
+  subgraph Layouts[
+    Layouts
+  end
+  AccountLayout[AccountLayout]
+  storefront --> AccountLayout
+  GridLayoutBlock[GridLayoutBlock]
+  storefront --> GridLayoutBlock
+
+  subgraph Pages[
+    Pages
+  end
+  ConsentsPage[ConsentsPage]
+  AccountLayout --> ConsentsPage
+  DownloadsPage[DownloadsPage]
+  AccountLayout --> DownloadsPage
+  InstallmentsPage[InstallmentsPage]
+  AccountLayout --> InstallmentsPage
+  LoyaltyDashboardPage[LoyaltyDashboardPage]
+  AccountLayout --> LoyaltyDashboardPage
+  StoreCreditsPage[StoreCreditsPage]
+  AccountLayout --> StoreCreditsPage
+  VerificationPage[VerificationPage]
+  AccountLayout --> VerificationPage
+  WalletPage[WalletPage]
+  AccountLayout --> WalletPage
+
+  subgraph Components[
+    Shared Components
+  end
+  DomainGate[DomainGate]
+  AccountLayout --> DomainGate
+  FlagGate[FlagGate]
+  AccountLayout --> FlagGate
+  FeatureGate[FeatureGate]
+  AccountLayout --> FeatureGate
+  BffErrorFallback[BffErrorFallback]
+  AccountLayout --> BffErrorFallback
+  DegradedBanner[DegradedBanner]
+  AccountLayout --> DegradedBanner
+  ProductActions[ProductActions]
+  AccountLayout --> ProductActions
+  ProductPrice[ProductPrice]
+  AccountLayout --> ProductPrice
+  RouteErrorFallback[RouteErrorFallback]
+  AccountLayout --> RouteErrorFallback
+  RoutePending[RoutePending]
+  AccountLayout --> RoutePending
+  AccountDashboard[AccountDashboard]
+  ConsentsPage --> AccountDashboard
+  AccountHeader[AccountHeader]
+  ConsentsPage --> AccountHeader
+  AccountMobileNav[AccountMobileNav]
+  ConsentsPage --> AccountMobileNav
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef layout fill:#fff3e0,stroke:#e65100,stroke-width:1px
+  classDef page fill:#e8f5e9,stroke:#1b5e20,stroke-width:1px
+  classDef component fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class storefront app
+  class AccountLayout layout
+  class GridLayoutBlock layout
+  class ConsentsPage page
+  class DownloadsPage page
+  class InstallmentsPage page
+  class LoyaltyDashboardPage page
+  class StoreCreditsPage page
+  class VerificationPage page
+  class WalletPage page
+  class DomainGate component
+  class FlagGate component
+  class FeatureGate component
+  class BffErrorFallback component
+  class DegradedBanner component
+  class ProductActions component
+  class ProductPrice component
+  class RouteErrorFallback component
+  class RoutePending component
+  class AccountDashboard component
+  class AccountHeader component
+  class AccountMobileNav component

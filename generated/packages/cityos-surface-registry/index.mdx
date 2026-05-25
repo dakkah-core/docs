@@ -1,0 +1,262 @@
+---
+title: "@cityos/cityos-surface-registry"
+description: "Deep dive into the cityos-surface-registry package"
+icon: "package"
+---
+
+> **Type:** CityOS Core Infrastructure | **Framework:** Node.js | **Version:** 0.1.0
+> **Path:** `packages/cityos-surface-registry` | **LOC:** 1,388 lines across 9 files
+
+[Back to Generated Packages](/generated/packages)
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 9 | — |
+| Lines of Code | 1,388 | — |
+| Test Coverage | 22.2% | 🔴 |
+| Oversized Files | 1 | 🟡 |
+| Components | 0 | — |
+| Hooks | 0 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 10 | — |
+| Internal Deps | 0 | — |
+| Dependents | 0 | 🟢 Low impact |
+
+### ⚠️ Oversized Files
+
+| File | Lines |
+|---|---|
+| packages/cityos-surface-registry/src/surfaces/specialty.ts | 404 |
+
+## Architecture
+
+### File Structure
+
+```
+budgets.ts (155L, 0C, 0T)
+index.ts (51L, 0C, 0T)
+matchers.ts (188L, 0C, 1T)
+registry.test.ts (37L, 0C, 0T)
+registry.ts (106L, 0C, 1T)
+types.ts (133L, 0C, 8T)
+surfaces/
+  mobile.ts (127L, 0C, 0T)
+  specialty.ts (404L, 0C, 0T)
+  web.ts (187L, 0C, 0T)
+```
+
+## Public API Surface
+
+### Components (5)
+
+| Name | Kind | File |
+|---|---|---|
+| DEFAULT_BUDGETS | const | budgets.ts |
+| ALL_SURFACES | const | registry.ts |
+| MOBILE_SURFACES | const | surfaces/mobile.ts |
+| SPECIALTY_SURFACES | const | surfaces/specialty.ts |
+| WEB_SURFACES | const | surfaces/web.ts |
+
+### Functions (18)
+
+| Name | Kind | File |
+|---|---|---|
+| getDefaultBudget | function | budgets.ts |
+| exceedsBudget | function | budgets.ts |
+| truncateToOptimal | function | budgets.ts |
+| partitionActions | function | budgets.ts |
+| matchesSurface | function | matchers.ts |
+| findSurfaces | function | matchers.ts |
+| viewportFitScore | function | matchers.ts |
+| resolveSurface | function | matchers.ts |
+| groupByCategory | function | matchers.ts |
+| groupByAudience | function | matchers.ts |
+| getSurface | function | registry.ts |
+| getSurfacesByCategory | function | registry.ts |
+| getSurfacesByAudience | function | registry.ts |
+| getActiveSurfaces | function | registry.ts |
+| findDuplicateSurfaces | function | registry.ts |
+| getSurfacePrefixes | function | registry.ts |
+| getRegistryStats | function | registry.ts |
+| defineSurface | function | types.ts |
+
+### Types (10)
+
+| Name | Kind | File |
+|---|---|---|
+| SurfaceMatchCriteria | interface | matchers.ts |
+| RegistryStats | interface | registry.ts |
+| AttentionBudget | interface | types.ts |
+| ViewportConstraints | interface | types.ts |
+| SurfaceDefinition | interface | types.ts |
+| SurfaceCategory | type | types.ts |
+| InputModality | type | types.ts |
+| SurfaceAudience | type | types.ts |
+| RenderEngine | type | types.ts |
+| ConnectivityProfile | type | types.ts |
+
+## Type System
+
+### SurfaceMatchCriteria
+
+**Kind:** interface | **File:** `matchers.ts`
+> Criteria used to find matching surfaces. All provided fields are AND-ed together; omitted fields are ignored.
+
+| Property | Type | Optional |
+|---|---|---|
+| category | `SurfaceCategory` | Yes |
+| audience | `SurfaceAudience` | Yes |
+| requiredModalities | `readonly InputModality[]` | Yes |
+| anyModality | `readonly InputModality[]` | Yes |
+| renderEngine | `RenderEngine` | Yes |
+| connectivity | `ConnectivityProfile` | Yes |
+| activeOnly | `boolean` | Yes |
+| minViewportWidth | `number` | Yes |
+| maxViewportWidth | `number` | Yes |
+
+### RegistryStats
+
+**Kind:** interface | **File:** `registry.ts`
+> Summary statistics for the registry.
+
+| Property | Type | Optional |
+|---|---|---|
+| total | `number` | — |
+| active | `number` | — |
+| byCategory | `Record<string, number>` | — |
+| byAudience | `Record<string, number>` | — |
+| byRenderEngine | `Record<string, number>` | — |
+
+### AttentionBudget
+
+**Kind:** interface | **File:** `types.ts`
+> Attention budget controlling how much content an SDUI layout should push to this surface. Higher = more content density allowed.
+
+| Property | Type | Optional |
+|---|---|---|
+| maxPrimaryBlocks | `number` | — |
+| maxSecondaryBlocks | `number` | — |
+| maxVisibleActions | `number` | — |
+| optimalTextLength | `number` | — |
+| allowAutoPlayMedia | `boolean` | — |
+| typicalSessionSeconds | `number` | — |
+
+### ViewportConstraints
+
+**Kind:** interface | **File:** `types.ts`
+> Viewport constraints for the surface.
+
+| Property | Type | Optional |
+|---|---|---|
+| minWidth | `number` | — |
+| maxWidth | `number` | — |
+| supportsLandscape | `boolean` | — |
+| supportsPortrait | `boolean` | — |
+| densityBucket | `'ldpi' | 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi'` | — |
+
+### SurfaceDefinition
+
+**Kind:** interface | **File:** `types.ts`
+> Full definition of a platform surface.
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| name | `string` | — |
+| description | `string` | — |
+| category | `SurfaceCategory` | — |
+| audience | `SurfaceAudience` | — |
+| inputModalities | `readonly InputModality[]` | — |
+| renderEngine | `RenderEngine` | — |
+| connectivity | `ConnectivityProfile` | — |
+| viewport | `ViewportConstraints` | — |
+| budget | `AttentionBudget` | — |
+| active | `boolean` | — |
+| appPath | `string` | Yes |
+
+### SurfaceCategory
+
+**Kind:** type | **File:** `types.ts`
+> Surface type definitions for the Dakkah CityOS platform. A "surface" is any interface through which a user (citizen, merchant, government official, driver, etc.) interacts with the CityOS platform. Each surface has specific constraints around screen real-estate, input modality, attention budget, and rendering capabilities. Broad categories of surface form-factors.
+
+```ts
+type SurfaceCategory = | 'web'
+  | 'mobile'
+  | 'tablet'
+  | 'kiosk'
+  | 'car'
+  | 'tv'
+  | 'watch'
+  | 'embed'
+  | 'api'
+  | 'voice'
+  | 'print';
+```
+
+### InputModality
+
+**Kind:** type | **File:** `types.ts`
+> Input modalities a surface supports.
+
+```ts
+type InputModality = | 'touch'
+  | 'keyboard'
+  | 'mouse'
+  | 'voice'
+  | 'gesture'
+  | 'dpad'
+  | 'crown'
+  | 'stylus';
+```
+
+### SurfaceAudience
+
+**Kind:** type | **File:** `types.ts`
+> Audience for a surface.
+
+```ts
+type SurfaceAudience = | 'citizen'
+  | 'merchant'
+  | 'driver'
+  | 'government'
+  | 'admin'
+  | 'developer'
+  | 'public'
+  | 'internal';
+```
+
+### RenderEngine
+
+**Kind:** type | **File:** `types.ts`
+> Rendering engine the surface uses for SDUI content.
+
+```ts
+type RenderEngine = 'react-dom' | 'react-native' | 'react-native-web' | 'pdf' | 'json' | 'none';
+```
+
+### ConnectivityProfile
+
+**Kind:** type | **File:** `types.ts`
+> Connectivity profile — affects prefetch and caching strategies.
+
+```ts
+type ConnectivityProfile = 'always-on' | 'intermittent' | 'offline-first';
+```
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [cityos-surface-registry.mmd](/generated/diagrams/class/cityos-surface-registry.mmd) |
+| Dependency Graph | [cityos-surface-registry-dependencies.mmd](#) |
+
+## Tests
+
+- `registry.test.ts` (37 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

@@ -1,0 +1,344 @@
+---
+title: "@cityos/design-tokens"
+description: "Deep dive into the design-tokens package"
+icon: "palette"
+---
+
+> **Type:** Design System Package | **Framework:** Node.js | **Version:** 0.1.0
+> **Path:** `packages/design-tokens` | **LOC:** 22,321 lines across 276 files
+
+[Back to Generated Packages](/generated/packages)
+> **Used by:** [business-dashboard](/generated/apps/business-dashboard), [car-app](/generated/apps/car-app), [city-dashboard](/generated/apps/city-dashboard), [control-plane](/generated/apps/control-plane), [dev-portal](/generated/apps/dev-portal) +36 more
+
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 276 | — |
+| Lines of Code | 22,321 | — |
+| Test Coverage | 5.2% | 🔴 |
+| Oversized Files | 1 | 🟡 |
+| Components | 0 | — |
+| Hooks | 9 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 120 | — |
+| Internal Deps | 0 | — |
+| Dependents | 41 | 🔴 High impact |
+
+### ⚠️ Oversized Files
+
+| File | Lines |
+|---|---|
+| packages/design-tokens/src/tokens/semantic.ts | 438 |
+
+## Architecture
+
+### File Structure
+
+```
+css-generator.js (253L, 0C, 0T)
+css-generator.ts (296L, 0C, 0T)
+env.ts (6L, 0C, 0T)
+index.js (130L, 0C, 0T)
+index.test.ts (27L, 0C, 0T)
+index.ts (303L, 0C, 0T)
+native-generator.js (37L, 0C, 0T)
+native-generator.ts (37L, 0C, 0T)
+utils.js (130L, 0C, 0T)
+utils.ts (162L, 0C, 0T)
+css/
+domains/
+  commerce-tokens.js (33L, 0C, 0T)
+  commerce-tokens.ts (35L, 0C, 0T)
+  finance-tokens.js (27L, 0C, 0T)
+  finance-tokens.ts (29L, 0C, 0T)
+  fleet-tokens.js (35L, 0C, 0T)
+  fleet-tokens.ts (37L, 0C, 0T)
+  governance-tokens.js (33L, 0C, 0T)
+  governance-tokens.ts (35L, 0C, 0T)
+  healthcare-tokens.js (25L, 0C, 0T)
+  healthcare-tokens.ts (27L, 0C, 0T)
+  index.ts (6L, 0C, 0T)
+guards/
+  sidebar-token-drift-guard.ts (182L, 0C, 1T)
+hooks/
+  use-rtl-direction.ts (136L, 0C, 2T)
+  useChartColors.js (54L, 0C, 0T)
+  useChartColors.ts (71L, 0C, 5T)
+  useMapColors.js (37L, 0C, 0T)
+  useMapColors.ts (68L, 0C, 7T)
+native/
+  index.js (9L, 0C, 0T)
+  index.ts (12L, 0C, 0T)
+  theme.js (229L, 0C, 0T)
+  theme.ts (232L, 0C, 1T)
+  useNativeTheme.js (10L, 0C, 0T)
+  useNativeTheme.ts (21L, 0C, 0T)
+  utils.js (19L, 0C, 0T)
+  utils.ts (22L, 0C, 0T)
+... and 164 more files
+```
+
+## Public API Surface
+
+### Components (34)
+
+| Name | Kind | File |
+|---|---|---|
+| CANONICAL_SIDEBAR_TOKENS | const | guards/sidebar-token-drift-guard.ts |
+| SIDEBAR_TOKEN_DEFAULTS | const | guards/sidebar-token-drift-guard.ts |
+| RTL_LOCALES | const | hooks/use-rtl-direction.ts |
+| MARKETPLACE_CATEGORIES | const | sdk/marketplace.ts |
+| UMM_AL_QURA_TABLE | const | themes/seasonal/hijri.js |
+| UMM_AL_QURA_TABLE | const | themes/seasonal/hijri.ts |
+| BreakpointTokens | const | tokens/breakpoints.js |
+| ContainerTokens | const | tokens/breakpoints.js |
+| ResponsiveSpacing | const | tokens/breakpoints.js |
+| BreakpointTokens | const | tokens/breakpoints.ts |
+| ContainerTokens | const | tokens/breakpoints.ts |
+| ResponsiveSpacing | const | tokens/breakpoints.ts |
+| DARK_TOKENS | const | tokens/dark-mode.js |
+| DARK_TOKENS | const | tokens/dark-mode.ts |
+| ElevationTokens | const | tokens/elevation.js |
+| ElevationTokens | const | tokens/elevation.ts |
+| MOBILE_LIGHT_TOKENS | const | tokens/mobile-dark-mode.js |
+| MOBILE_DARK_TOKENS | const | tokens/mobile-dark-mode.js |
+| DARK_MODE_INTERPOLATIONS | const | tokens/mobile-dark-mode.js |
+| MOBILE_LIGHT_TOKENS | const | tokens/mobile-dark-mode.ts |
+| ... | | | (14 more) |
+
+### Hooks (7)
+
+| Name | Kind | File |
+|---|---|---|
+| useRtlDirection | function | hooks/use-rtl-direction.ts |
+| useChartColors | function | hooks/useChartColors.js |
+| useChartColors | function | hooks/useChartColors.ts |
+| useMapColors | function | hooks/useMapColors.js |
+| useMapColors | function | hooks/useMapColors.ts |
+| useNativeTheme | function | native/useNativeTheme.js |
+| useNativeTheme | function | native/useNativeTheme.ts |
+
+### Functions (146)
+
+| Name | Kind | File |
+|---|---|---|
+| generateTokenCSS | function | css-generator.js |
+| generateThemeCSS | function | css-generator.js |
+| generateDomainTokenCSS | function | css-generator.js |
+| generateTokenCSS | function | css-generator.ts |
+| generateThemeCSS | function | css-generator.ts |
+| generateDomainTokenCSS | function | css-generator.ts |
+| convertToNativeValue | function | native-generator.js |
+| transformToNativeTokens | function | native-generator.js |
+| convertToNativeValue | function | native-generator.ts |
+| transformToNativeTokens | function | native-generator.ts |
+| hexToRgb | function | utils.js |
+| rgbToHsl | function | utils.js |
+| adjustLightness | function | utils.js |
+| getContrastRatio | function | utils.js |
+| meetsAccessibility | function | utils.js |
+| generateColorScale | function | utils.js |
+| hexToRgb | function | utils.ts |
+| rgbToHsl | function | utils.ts |
+| adjustLightness | function | utils.ts |
+| getContrastRatio | function | utils.ts |
+| ... | | | (126 more) |
+
+### Types (103)
+
+| Name | Kind | File |
+|---|---|---|
+| DriftResult | interface | guards/sidebar-token-drift-guard.ts |
+| TextDirection | type | hooks/use-rtl-direction.ts |
+| UseRtlDirectionResult | interface | hooks/use-rtl-direction.ts |
+| UseChartColorsReturn | interface | hooks/useChartColors.ts |
+| ZoneStyle | interface | hooks/useMapColors.ts |
+| RouteStyle | interface | hooks/useMapColors.ts |
+| ClusterStyle | interface | hooks/useMapColors.ts |
+| MobileTheme | type | native/theme.ts |
+| PropDef | interface | sdk/block-kit.ts |
+| BlockConfig | interface | sdk/block-kit.ts |
+| BlockDefinition | interface | sdk/block-kit.ts |
+| BlockValidationResult | interface | sdk/block-kit.ts |
+| BlockManifestRecord | interface | sdk/block-kit.ts |
+| ThemeInput | interface | sdk/index.ts |
+| ThemeValidationResult | interface | sdk/index.ts |
+| MarketplaceCategory | type | sdk/marketplace.ts |
+| ThemeQualityScore | interface | sdk/marketplace.ts |
+| MarketplaceTheme | interface | sdk/marketplace.ts |
+| MarketplaceFilters | interface | sdk/marketplace.ts |
+| ResolvedDesignLanguage | interface | themes/resolver.ts |
+| ... | | | (83 more) |
+
+### Constants (185)
+
+| Name | Kind | File |
+|---|---|---|
+| designTokensEnv | const | env.ts |
+| commerceTokens | const | domains/commerce-tokens.js |
+| commerceTokens | const | domains/commerce-tokens.ts |
+| financeTokens | const | domains/finance-tokens.js |
+| financeTokens | const | domains/finance-tokens.ts |
+| fleetTokens | const | domains/fleet-tokens.js |
+| fleetTokens | const | domains/fleet-tokens.ts |
+| governanceTokens | const | domains/governance-tokens.js |
+| governanceTokens | const | domains/governance-tokens.ts |
+| healthcareTokens | const | domains/healthcare-tokens.js |
+| healthcareTokens | const | domains/healthcare-tokens.ts |
+| nativeDesignTokens | const | native/index.js |
+| nativeThemePresets | const | native/index.js |
+| nativeDesignTokens | const | native/index.ts |
+| nativeThemePresets | const | native/index.ts |
+| mobileTheme | const | native/theme.js |
+| mobileThemeDark | const | native/theme.js |
+| mobileTheme | const | native/theme.ts |
+| mobileThemeDark | const | native/theme.ts |
+| agricultureEarth | const | themes/presets/agriculture-earth.ts |
+| ... | | | (165 more) |
+
+## Type System
+
+### DriftResult
+
+**Kind:** interface | **File:** `guards/sidebar-token-drift-guard.ts`
+
+### TextDirection
+
+**Kind:** type | **File:** `hooks/use-rtl-direction.ts`
+
+### UseRtlDirectionResult
+
+**Kind:** interface | **File:** `hooks/use-rtl-direction.ts`
+
+### Palette
+
+**Kind:** type | **File:** `hooks/useChartColors.ts`
+
+### SeqScheme
+
+**Kind:** type | **File:** `hooks/useChartColors.ts`
+
+### DivScheme
+
+**Kind:** type | **File:** `hooks/useChartColors.ts`
+
+### CatScheme
+
+**Kind:** type | **File:** `hooks/useChartColors.ts`
+
+### UseChartColorsReturn
+
+**Kind:** interface | **File:** `hooks/useChartColors.ts`
+
+### MarkerType
+
+**Kind:** type | **File:** `hooks/useMapColors.ts`
+
+### ZoneType
+
+**Kind:** type | **File:** `hooks/useMapColors.ts`
+
+### RouteType
+
+**Kind:** type | **File:** `hooks/useMapColors.ts`
+
+### HeatmapType
+
+**Kind:** type | **File:** `hooks/useMapColors.ts`
+
+### ZoneStyle
+
+**Kind:** interface | **File:** `hooks/useMapColors.ts`
+
+### RouteStyle
+
+**Kind:** interface | **File:** `hooks/useMapColors.ts`
+
+### ClusterStyle
+
+**Kind:** interface | **File:** `hooks/useMapColors.ts`
+
+### MobileTheme
+
+**Kind:** type | **File:** `native/theme.ts`
+
+### PropDef
+
+**Kind:** interface | **File:** `sdk/block-kit.ts`
+
+### BlockConfig
+
+**Kind:** interface | **File:** `sdk/block-kit.ts`
+
+### BlockDefinition
+
+**Kind:** interface | **File:** `sdk/block-kit.ts`
+
+### BlockValidationResult
+
+**Kind:** interface | **File:** `sdk/block-kit.ts`
+
+*... and 100 more types*
+
+## Hooks
+
+| Hook | File | Params | Return |
+|---|---|---|---|
+| useRtlDirection | hooks/use-rtl-direction.ts | — | — |
+| useChartColors | hooks/useChartColors.js | — | — |
+| useChartColors | hooks/useChartColors.ts | — | — |
+| useMapColors | hooks/useMapColors.js | — | — |
+| useMapColors | hooks/useMapColors.ts | — | — |
+| useNativeTheme | native/useNativeTheme.js | — | — |
+| useNativeTheme | native/useNativeTheme.ts | — | — |
+| useThemeTokens | tokens/mobile-dark-mode.js | — | — |
+| useThemeTokens | tokens/mobile-dark-mode.ts | — | — |
+
+## Consumers & Impact
+
+This package is used by:
+
+| Consumer | Type | Impact |
+|---|---|---|
+| [business-dashboard](/generated/apps/business-dashboard) | apps | 🔴 Runtime dependency |
+| [car-app](/generated/apps/car-app) | apps | 🔴 Runtime dependency |
+| [city-dashboard](/generated/apps/city-dashboard) | apps | 🔴 Runtime dependency |
+| [control-plane](/generated/apps/control-plane) | apps | 🔴 Runtime dependency |
+| [dev-portal](/generated/apps/dev-portal) | apps | 🔴 Runtime dependency |
+| [driver-app](/generated/apps/driver-app) | apps | 🔴 Runtime dependency |
+| [fleetops](/generated/apps/fleetops) | apps | 🔴 Runtime dependency |
+| [hostinger-root-portal](/generated/apps/hostinger-root-portal) | apps | 🔴 Runtime dependency |
+| [merchant-app](/generated/apps/merchant-app) | apps | 🔴 Runtime dependency |
+| [mobile](/generated/apps/mobile) | apps | 🔴 Runtime dependency |
+| [mobile-driver](#) | apps | 🔴 Runtime dependency |
+| [mobile-government](#) | apps | 🔴 Runtime dependency |
+| [mobile-inspector](#) | apps | 🔴 Runtime dependency |
+| [mobile-merchant](#) | apps | 🔴 Runtime dependency |
+| [mobile-pos](#) | apps | 🔴 Runtime dependency |
+| [smart-city-portal](#) | apps | 🔴 Runtime dependency |
+| [smart-signage](#) | apps | 🔴 Runtime dependency |
+| [storefront](#) | apps | 🔴 Runtime dependency |
+| [storybook](#) | apps | 🔴 Runtime dependency |
+| [superapp](#) | apps | 🔴 Runtime dependency |
+| ... | | | (21 more) |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [design-tokens.mmd](/generated/diagrams/class/design-tokens.mmd) |
+| Dependency Graph | [design-tokens-dependencies.mmd](/generated/diagrams/dependencies/design-tokens-dependencies.mmd) |
+
+## Tests
+
+- `index.test.ts` (27 lines)
+- `themes/resolver.test.ts` (42 lines)
+- `themes/seasonal/__tests__/hijri.test.ts` (103 lines)
+- `tokens/rtl.test.ts` (23 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

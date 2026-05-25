@@ -1,0 +1,251 @@
+---
+title: "Erp Bridge"
+description: "Deep dive into the erp-bridge application"
+icon: "smartphone"
+---
+
+> **Type:** Web Application (Next.js) | **Framework:** Vitest | **Version:** 0.1.0
+> **Path:** `apps/erp-bridge` | **Architectural Role:** ERP Integration
+
+[Back to Generated Apps](/generated/apps)
+## Overview & Purpose
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 18 | — |
+| Lines of Code | 1,518 | — |
+| Test Coverage | 100.0% | 🟢 |
+| Oversized Files | 1 | 🟡 |
+| Components | 0 | — |
+| Hooks | 0 | — |
+| Types & Interfaces | 11 | — |
+| API Routes | 0 | — |
+| Page Routes | 0 | — |
+| Internal Deps | 0 | — |
+| Dependents | 0 | — |
+
+### ⚠️ Oversized Files
+
+| File | Lines |
+|---|---|
+| apps/erp-bridge/src/routes.test.ts | 503 |
+
+## Architecture
+
+### File Structure
+
+```
+env.test.ts (8L, 0C, 0T)
+env.ts (23L, 0C, 0T)
+index.test.ts (8L, 0C, 0T)
+index.ts (22L, 0C, 0T)
+routes.test.ts (503L, 0C, 0T)
+routes.ts (372L, 0C, 1T)
+types.test.ts (8L, 0C, 0T)
+types.ts (78L, 0C, 8T)
+lib/
+  adapter.test.ts (8L, 0C, 0T)
+  adapter.ts (10L, 0C, 0T)
+  http.test.ts (155L, 0C, 0T)
+  http.ts (119L, 0C, 2T)
+  lib/config/
+    env.test.ts (23L, 0C, 0T)
+    env.ts (38L, 0C, 0T)
+sync/
+  customer-sync.test.ts (8L, 0C, 0T)
+  customer-sync.ts (38L, 0C, 0T)
+  invoice-sync.test.ts (60L, 0C, 0T)
+  invoice-sync.ts (37L, 0C, 0T)
+```
+
+## Types & Interfaces
+
+### RouteHandler
+
+**Kind:** type | **File:** `routes.ts`
+
+```ts
+type RouteHandler = (req: Request, res: Response) => Promise<void>;
+```
+
+### CustomerSyncPayload
+
+**Kind:** interface | **File:** `types.ts`
+> Customer record for sync
+
+| Property | Type | Optional |
+|---|---|---|
+| externalId | `string` | — |
+| name | `string` | — |
+| email | `string` | — |
+| phone | `string` | Yes |
+| taxId | `string` | Yes |
+| billingAddress | `Address` | Yes |
+| metadata | `Record<string, unknown>` | Yes |
+
+### Address
+
+**Kind:** interface | **File:** `types.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| line1 | `string` | — |
+| line2 | `string` | Yes |
+| city | `string` | — |
+| region | `string` | Yes |
+| postalCode | `string` | — |
+| country | `string` | — |
+
+### InvoiceSyncPayload
+
+**Kind:** interface | **File:** `types.ts`
+> Invoice record for sync
+
+| Property | Type | Optional |
+|---|---|---|
+| externalId | `string` | — |
+| orderId | `string` | — |
+| customerId | `string` | — |
+| lineItems | `InvoiceLineItem[]` | — |
+| subtotal | `number` | — |
+| taxTotal | `number` | — |
+| grandTotal | `number` | — |
+| currency | `string` | — |
+| issuedAt | `string` | — |
+| dueAt | `string` | — |
+| status | `"draft" | "posted" | "paid" | "cancelled"` | — |
+
+### InvoiceLineItem
+
+**Kind:** interface | **File:** `types.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| productId | `string` | — |
+| description | `string` | — |
+| quantity | `number` | — |
+| unitPrice | `number` | — |
+| taxRate | `number` | — |
+| total | `number` | — |
+
+### SyncResult
+
+**Kind:** interface | **File:** `types.ts`
+> Result of a sync operation
+
+| Property | Type | Optional |
+|---|---|---|
+| success | `boolean` | — |
+| entityType | `"customer" | "invoice"` | — |
+| externalId | `string` | — |
+| erpId | `string` | Yes |
+| direction | `SyncDirection` | — |
+| error | `string` | Yes |
+| syncedAt | `string` | — |
+
+### SyncJob
+
+**Kind:** interface | **File:** `types.ts`
+> Sync job definition
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| entityType | `"customer" | "invoice"` | — |
+| direction | `SyncDirection` | — |
+| backend | `ErpBackend` | — |
+| status | `"pending" | "running" | "completed" | "failed"` | — |
+| createdAt | `string` | — |
+| completedAt | `string` | Yes |
+| results | `SyncResult[]` | — |
+
+### SyncDirection
+
+**Kind:** type | **File:** `types.ts`
+> Core types for the ERP Bridge — invoice/customer sync between Medusa commerce and ERPNext/Tryton ERP systems. Direction of sync
+
+```ts
+type SyncDirection = "medusa-to-erp" | "erp-to-medusa" | "bidirectional";
+```
+
+### ErpBackend
+
+**Kind:** type | **File:** `types.ts`
+> Supported ERP backends
+
+```ts
+type ErpBackend = "erpnext" | "tryton";
+```
+
+### BridgeRequestContext
+
+**Kind:** interface | **File:** `lib/http.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| correlationId | `string` | — |
+| tenantId | `string` | — |
+| userId | `string` | Yes |
+
+### BridgeHttpError
+
+**Kind:** class | **File:** `lib/http.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| status | `number` | — |
+| code | `string` | — |
+| details | `unknown` | Yes |
+
+## Public API Surface
+
+| Export | Kind | File |
+|---|---|---|
+| env | const | env.ts |
+| requireEnv | function | env.ts |
+| createRoutes | function | routes.ts |
+| CustomerSyncPayload | interface | types.ts |
+| Address | interface | types.ts |
+| InvoiceSyncPayload | interface | types.ts |
+| InvoiceLineItem | interface | types.ts |
+| SyncResult | interface | types.ts |
+| SyncJob | interface | types.ts |
+| SyncDirection | type | types.ts |
+| ErpBackend | type | types.ts |
+| createTenantAdapter | function | lib/adapter.ts |
+| getCorrelationId | function | lib/http.ts |
+| assertBridgeAuth | function | lib/http.ts |
+| requireContext | function | lib/http.ts |
+| sendSuccess | function | lib/http.ts |
+| sendError | function | lib/http.ts |
+| BridgeRequestContext | interface | lib/http.ts |
+| BridgeHttpError | class | lib/http.ts |
+| env | const | lib/config/env.ts |
+| syncCustomerToErp | function | sync/customer-sync.ts |
+| syncCustomerFromErp | function | sync/customer-sync.ts |
+| syncInvoiceToErp | function | sync/invoice-sync.ts |
+| syncInvoiceFromErp | function | sync/invoice-sync.ts |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Component Hierarchy | [erp-bridge-hierarchy.mmd](#) |
+| Dependency Graph | [erp-bridge-dependencies.mmd](#) |
+
+## Tests
+
+- `env.test.ts` (8 lines)
+- `index.test.ts` (8 lines)
+- `routes.test.ts` (503 lines)
+- `types.test.ts` (8 lines)
+- `lib/adapter.test.ts` (8 lines)
+- `lib/http.test.ts` (155 lines)
+- `lib/config/env.test.ts` (23 lines)
+- `sync/customer-sync.test.ts` (8 lines)
+- `sync/invoice-sync.test.ts` (60 lines)
+
+---
+*Generated by scripts/docs/generators/deep/app-deep-dive.mjs*

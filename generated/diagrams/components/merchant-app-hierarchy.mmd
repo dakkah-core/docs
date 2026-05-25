@@ -1,0 +1,88 @@
+graph TD
+  direction TB
+
+  merchant-app[merchant-app]
+
+  subgraph Layouts[
+    Layouts
+  end
+  RootLayout[RootLayout]
+  merchant-app --> RootLayout
+  ConsoleLayout[ConsoleLayout]
+  merchant-app --> ConsoleLayout
+
+  subgraph Pages[
+    Pages
+  end
+  NotFoundPage[NotFoundPage]
+  RootLayout --> NotFoundPage
+  AnalyticsPage[AnalyticsPage]
+  RootLayout --> AnalyticsPage
+  DashboardPage[DashboardPage]
+  RootLayout --> DashboardPage
+  OrdersPage[OrdersPage]
+  RootLayout --> OrdersPage
+  ProductsPage[ProductsPage]
+  RootLayout --> ProductsPage
+  NewProductPage[NewProductPage]
+  RootLayout --> NewProductPage
+  SettingsPage[SettingsPage]
+  RootLayout --> SettingsPage
+  LoginPage[LoginPage]
+  RootLayout --> LoginPage
+
+  subgraph Components[
+    Shared Components
+  end
+  Error[Error]
+  NotFoundPage --> Error
+  GlobalError[GlobalError]
+  NotFoundPage --> GlobalError
+  Loading[Loading]
+  NotFoundPage --> Loading
+  Providers[Providers]
+  NotFoundPage --> Providers
+  KpiCard[KpiCard]
+  AnalyticsPage --> KpiCard
+  StatsLoading[StatsLoading]
+  DashboardPage --> StatsLoading
+  OrdersLoading[OrdersLoading]
+  DashboardPage --> OrdersLoading
+  PendingLoading[PendingLoading]
+  DashboardPage --> PendingLoading
+  OrderStatusBadge[OrderStatusBadge]
+  OrdersPage --> OrderStatusBadge
+  ProductStatusBadge[ProductStatusBadge]
+  ProductsPage --> ProductStatusBadge
+  GET[GET]
+  RootLayout --> GET
+  NewProductForm[NewProductForm]
+  RootLayout --> NewProductForm
+
+  classDef app fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+  classDef layout fill:#fff3e0,stroke:#e65100,stroke-width:1px
+  classDef page fill:#e8f5e9,stroke:#1b5e20,stroke-width:1px
+  classDef component fill:#f3e5f5,stroke:#4a148c,stroke-width:1px
+  class merchant-app app
+  class RootLayout layout
+  class ConsoleLayout layout
+  class NotFoundPage page
+  class AnalyticsPage page
+  class DashboardPage page
+  class OrdersPage page
+  class ProductsPage page
+  class NewProductPage page
+  class SettingsPage page
+  class LoginPage page
+  class Error component
+  class GlobalError component
+  class Loading component
+  class Providers component
+  class KpiCard component
+  class StatsLoading component
+  class OrdersLoading component
+  class PendingLoading component
+  class OrderStatusBadge component
+  class ProductStatusBadge component
+  class GET component
+  class NewProductForm component

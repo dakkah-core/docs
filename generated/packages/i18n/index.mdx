@@ -1,0 +1,403 @@
+---
+title: "@cityos/i18n"
+description: "Deep dive into the i18n package"
+icon: "package"
+---
+
+> **Type:** Utility Package | **Framework:** Node.js | **Version:** 0.0.0
+> **Path:** `packages/i18n` | **LOC:** 17,879 lines across 16 files
+
+[Back to Generated Packages](/generated/packages)
+> **Used by:** [ai-assistant](/generated/packages/ai-assistant), [business-dashboard](/generated/apps/business-dashboard), [city-dashboard](/generated/apps/city-dashboard), [dev-portal](/generated/apps/dev-portal), [merchant-app](/generated/apps/merchant-app) +5 more
+
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 16 | — |
+| Lines of Code | 17,879 | — |
+| Test Coverage | 37.5% | 🟡 |
+| Oversized Files | 4 | 🟡 |
+| Components | 4 | — |
+| Hooks | 13 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 17 | — |
+| Internal Deps | 0 | — |
+| Dependents | 10 | 🟡 Medium impact |
+
+### ⚠️ Oversized Files
+
+| File | Lines |
+|---|---|
+| packages/i18n/src/locales/en.ts | 6661 |
+| packages/i18n/src/locales/ar.ts | 6656 |
+| packages/i18n/src/locales/hi.ts | 1734 |
+| packages/i18n/src/locales/ur.ts | 1714 |
+
+## Architecture
+
+### File Structure
+
+```
+LanguageToggle.tsx (19L, 1C, 0T)
+context.test.tsx (42L, 1C, 0T)
+context.tsx (275L, 2C, 3T)
+formatters.ts (150L, 0C, 3T)
+index.ts (51L, 0C, 0T)
+missingKey.test.ts (71L, 0C, 0T)
+missingKey.ts (87L, 0C, 2T)
+pluralization.test.ts (119L, 0C, 0T)
+pluralization.ts (101L, 0C, 4T)
+rtl.ts (82L, 0C, 0T)
+types.ts (54L, 0C, 5T)
+useFocusTrap.ts (63L, 0C, 0T)
+locales/
+  ar.ts (0L, 0C, 0T)
+  en.ts (0L, 0C, 0T)
+  hi.ts (1734L, 0C, 0T)
+  ur.ts (1714L, 0C, 0T)
+messages/
+```
+
+## Public API Surface
+
+### Components (3)
+
+| Name | Kind | File |
+|---|---|---|
+| LanguageToggle | function | LanguageToggle.tsx |
+| I18nProvider | function | context.tsx |
+| LocaleProvider | function | context.tsx |
+
+### Hooks (13)
+
+| Name | Kind | File |
+|---|---|---|
+| useLocale | function | context.tsx |
+| useTranslation | function | context.tsx |
+| useI18n | function | context.tsx |
+| useT | function | context.tsx |
+| useRelativeTime | function | context.tsx |
+| useStatusLabel | function | context.tsx |
+| useDuration | function | context.tsx |
+| useIsRTL | function | rtl.ts |
+| useTextAlign | function | rtl.ts |
+| useFlexDirection | function | rtl.ts |
+| useStartEnd | function | rtl.ts |
+| useRTLScaleX | function | rtl.ts |
+| useFocusTrap | function | useFocusTrap.ts |
+
+### Functions (13)
+
+| Name | Kind | File |
+|---|---|---|
+| getT | function | context.tsx |
+| createHijriFormatter | function | formatters.ts |
+| toArabicNumerals | function | formatters.ts |
+| fromArabicNumerals | function | formatters.ts |
+| createArabicNumeralFormatter | function | formatters.ts |
+| createCurrencyFormatter | function | formatters.ts |
+| reportMissingKey | function | missingKey.ts |
+| subscribeMissingKey | function | missingKey.ts |
+| markIfMissing | function | missingKey.ts |
+| getArabicPluralCategory | function | pluralization.ts |
+| getEnglishPluralCategory | function | pluralization.ts |
+| getPluralCategory | function | pluralization.ts |
+| formatPlural | function | pluralization.ts |
+
+### Types (14)
+
+| Name | Kind | File |
+|---|---|---|
+| LocaleFormatters | interface | context.tsx |
+| HijriFormatter | interface | formatters.ts |
+| ArabicNumeralFormatter | interface | formatters.ts |
+| CurrencyFormatter | interface | formatters.ts |
+| MissingKeyEvent | interface | missingKey.ts |
+| ArabicPluralCategory | type | pluralization.ts |
+| EnglishPluralCategory | type | pluralization.ts |
+| PluralCategory | type | pluralization.ts |
+| PluralRules | type | pluralization.ts |
+| Locale | type | types.ts |
+| SupportedLocale | type | types.ts |
+| TranslationKey | type | types.ts |
+| MessageKey | type | types.ts |
+| Direction | type | types.ts |
+
+### Constants (2)
+
+| Name | Kind | File |
+|---|---|---|
+| hi | const | locales/hi.ts |
+| ur | const | locales/ur.ts |
+
+## Component Catalog
+
+| Component | File | Kind | Props |
+|---|---|---|---|
+| LanguageToggle | LanguageToggle.tsx | function | className: unknown |
+| I18nProbe | context.test.tsx | function | — |
+| I18nProvider | context.tsx | function | children: unknown |
+| LocaleProvider | context.tsx | function | children: unknown, defaultLocale: unknown |
+
+## Type System
+
+### LocaleFormatters
+
+**Kind:** interface | **File:** `context.tsx`
+> All formatters available from the locale context
+
+| Property | Type | Optional |
+|---|---|---|
+| hijri | `HijriFormatter` | — |
+| number | `ArabicNumeralFormatter` | — |
+| currency | `CurrencyFormatter` | — |
+| plural | `(count: number, rules: PluralRules) => string` | — |
+
+### I18nContextValue
+
+**Kind:** type | **File:** `context.tsx`
+
+```ts
+type I18nContextValue = {
+  locale: Locale;
+  dir: Direction;
+  t: Translations;
+  setLocale: (locale: Locale) => void;
+  toggleLocale: () => void;
+};
+```
+
+### LocaleContextValue
+
+**Kind:** type | **File:** `context.tsx`
+
+```ts
+type LocaleContextValue = {
+  locale: SupportedLocale;
+  dir: Direction;
+  isRTL: boolean;
+  setLocale: (locale: SupportedLocale) => void;
+  formatters: LocaleFormatters;
+  translate: (key: MessageKey, fallback?: string) => string;
+};
+```
+
+### HijriFormatter
+
+**Kind:** interface | **File:** `formatters.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| format | `(date: Date) => string` | — |
+| formatWithOptions | `(date: Date, options: Intl.DateTimeFormatOptions) => string` | — |
+
+### ArabicNumeralFormatter
+
+**Kind:** interface | **File:** `formatters.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| format | `(value: number) => string` | — |
+| formatGrouped | `(value: number, fractionDigits?: number) => string` | — |
+
+### CurrencyFormatter
+
+**Kind:** interface | **File:** `formatters.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| format | `(halalas: number) => string` | — |
+| formatRiyals | `(riyals: number) => string` | — |
+
+### MissingKeyEvent
+
+**Kind:** interface | **File:** `missingKey.ts`
+> Dev-mode missing-key warning channel. ------------------------------------- When a translation key falls through to its English fallback, apps in development register a handler here so the UI can render a visible warning (e.g. the block's rendered text wraps in `⚠️ <key>`). Production builds disable the mechanism entirely. Usage: import { reportMissingKey, subscribeMissingKey } from '@cityos/i18n' // in the app root (dev only): subscribeMissingKey(({ key, locale }) => { console.warn(`[i18n] miss
+
+| Property | Type | Optional |
+|---|---|---|
+| key | `string` | — |
+| locale | `string` | Yes |
+| namespace | `string` | Yes |
+| timestamp | `number` | — |
+
+### MissingKeyListener
+
+**Kind:** type | **File:** `missingKey.ts`
+
+```ts
+type MissingKeyListener = (evt: MissingKeyEvent) => void;
+```
+
+### ArabicPluralCategory
+
+**Kind:** type | **File:** `pluralization.ts`
+> Plural categories used by Arabic (CLDR)
+
+```ts
+type ArabicPluralCategory = "zero" | "one" | "two" | "few" | "many" | "other";
+```
+
+### EnglishPluralCategory
+
+**Kind:** type | **File:** `pluralization.ts`
+> English uses only: one, other
+
+```ts
+type EnglishPluralCategory = "one" | "other";
+```
+
+### PluralCategory
+
+**Kind:** type | **File:** `pluralization.ts`
+> Union of all plural categories
+
+```ts
+type PluralCategory = ArabicPluralCategory;
+```
+
+### PluralRules
+
+**Kind:** type | **File:** `pluralization.ts`
+> A pluralization rule set mapping categories to translated strings. The `#` character in the string will be replaced with the formatted count.
+
+```ts
+type PluralRules = Partial<Record<PluralCategory, string>> & {
+  other: string; // 'other' is always required as the fallback
+};
+```
+
+### Locale
+
+**Kind:** type | **File:** `types.ts`
+
+```ts
+type Locale = "en" | "ar" | "hi" | "ur";
+```
+
+### SupportedLocale
+
+**Kind:** type | **File:** `types.ts`
+> Supported locales for the Arabic-first i18n system. ar-SA is the primary locale; en is the fallback.
+
+```ts
+type SupportedLocale = "ar-SA" | "en";
+```
+
+### TranslationKey
+
+**Kind:** type | **File:** `types.ts`
+
+```ts
+type TranslationKey = keyof typeof import("./locales/en").en;
+```
+
+### MessageKey
+
+**Kind:** type | **File:** `types.ts`
+> Keys available in the shared JSON message catalogs
+
+```ts
+type MessageKey = | "home"
+  | "settings"
+  | "profile"
+  | "orders"
+  | "bookings"
+  | "subscriptions"
+  | "notifications"
+  | "wallet"
+  | "search"
+  | "cancel"
+  | "confirm"
+  | "back"
+  | "next"
+  | "loading"
+  | "errorLoadingSubscriptions"
+  | "error"
+  | "retry"
+  | "offline"
+  | "online"
+  | "services"
+  | "commerce"
+  | "identity"
+  | "language"
+  | "restartRequired"
+  | "deliveries"
+  | "earnings"
+  | "map"
+  | "inspection"
+  | "accept"
+  | "reject"
+  | "arrived"
+  | "pickup"
+  | "deliver"
+  | "complete"
+  | "error.title"
+  | "error.description"
+  | "error.retry"
+  | "error.errorId";
+```
+
+### Direction
+
+**Kind:** type | **File:** `types.ts`
+> Direction type
+
+```ts
+type Direction = "ltr" | "rtl";
+```
+
+## Hooks
+
+| Hook | File | Params | Return |
+|---|---|---|---|
+| useLocale | context.tsx | — | LocaleContextValue |
+| useTranslation | context.tsx | key: MessageKey, fallback: string | string |
+| useI18n | context.tsx | — | I18nContextValue |
+| useT | context.tsx | — | Translations |
+| useRelativeTime | context.tsx | — | (minutesAgo: number) => string |
+| useStatusLabel | context.tsx | — | (status: string) => string |
+| useDuration | context.tsx | — | (minutes: number) => string |
+| useIsRTL | rtl.ts | — | boolean |
+| useTextAlign | rtl.ts | — | "left" | "right" |
+| useFlexDirection | rtl.ts | — | "row" | "row-reverse" |
+| useStartEnd | rtl.ts | — | { start: "left" | "right"; end: "left" | "right" } |
+| useRTLScaleX | rtl.ts | — | 1 | -1 |
+| useFocusTrap | useFocusTrap.ts | isActive: boolean | unknown |
+
+## Consumers & Impact
+
+This package is used by:
+
+| Consumer | Type | Impact |
+|---|---|---|
+| [ai-assistant](/generated/packages/ai-assistant) | apps | 🔴 Runtime dependency |
+| [business-dashboard](/generated/apps/business-dashboard) | apps | 🔴 Runtime dependency |
+| [city-dashboard](/generated/apps/city-dashboard) | apps | 🔴 Runtime dependency |
+| [dev-portal](/generated/apps/dev-portal) | apps | 🔴 Runtime dependency |
+| [merchant-app](/generated/apps/merchant-app) | apps | 🔴 Runtime dependency |
+| [merchant-app-mobile](/generated/apps/merchant-app-mobile) | apps | 🔴 Runtime dependency |
+| [mobile-driver](#) | apps | 🔴 Runtime dependency |
+| [smart-city-portal](#) | apps | 🔴 Runtime dependency |
+| [superapp](#) | apps | 🔴 Runtime dependency |
+| [web-platform](#) | apps | 🔴 Runtime dependency |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [i18n.mmd](/generated/diagrams/class/i18n.mmd) |
+| Dependency Graph | [i18n-dependencies.mmd](/generated/diagrams/dependencies/i18n-dependencies.mmd) |
+
+## Tests
+
+- `context.test.tsx` (42 lines)
+- `missingKey.test.ts` (71 lines)
+- `pluralization.test.ts` (119 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

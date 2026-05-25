@@ -1,0 +1,64 @@
+classDiagram
+  direction TB
+
+  class MerchantDashboardStat ~interface~ {
+    +label: string
+    +value: string
+    +change: string
+    +trend: "up" | "down" | "flat"
+  }
+
+  class MerchantPendingData ~interface~ {
+    +pendingOrders: number
+    +processingOrders: number
+    +lowStockProducts: number
+    +unreadReviews: number
+  }
+
+  class MerchantAnalyticsPeriod  {
+  }
+
+  class MerchantLocalizedLabel ~interface~ {
+    +en: string
+    +ar: string
+  }
+
+  class MerchantOperation ~interface~ {
+    +id: MerchantOperationId
+    +label: MerchantLocalizedLabel
+    +icon: {
+    readonly webPath: string
+    readonly mobileGlyph: string
+  }
+    -web: {
+    readonly href: string
+    readonly navigation?: boolean
+  }
+    -mobile: {
+    readonly route: string
+    readonly screenName: string
+    readonly sduiScreenId?: string
+    readonly navigation?: boolean
+  }
+  }
+
+  class MerchantQuickAction ~interface~ {
+    +id: string
+    +label: MerchantLocalizedLabel
+    +iconWebPath: string
+    -webHref: string
+    -mobileRoute: string
+  }
+
+  class MerchantSurface  {
+  }
+
+  class MerchantOperationId  {
+  }
+
+  class MerchantOrderStatus  {
+  }
+
+  %% Relationships
+  MerchantOperation --> MerchantLocalizedLabel : label
+  MerchantQuickAction --> MerchantLocalizedLabel : label

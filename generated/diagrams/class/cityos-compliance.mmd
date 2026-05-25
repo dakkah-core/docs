@@ -1,0 +1,122 @@
+classDiagram
+  direction TB
+
+  class ComplianceEngine  {
+    +validators: MapPolicyFramework, IComplianceValidator
+  }
+
+  class ResidencyZone  {
+  }
+
+  class DataClassification  {
+  }
+
+  class FeatureGate  {
+  }
+
+  class ComplianceViolation  {
+  }
+
+  class ComplianceViolation ~interface~ {
+    +rule: string
+    +severity: ComplianceSeverity
+    +message: string
+    -field: string
+    -detail: string
+  }
+
+  class PolicyDefinition ~interface~ {
+    +id: string
+    +name: string
+    +framework: PolicyFramework
+    +description: string
+    +applies_to: DataClassification[]
+    +zones: ResidencyZone[]
+    +required_controls: string[]
+  }
+
+  class ComplianceCheckContext ~interface~ {
+    +tenantId: string
+    -userId: string
+    +roles: string[]
+    +zone: ResidencyZone
+    +classification: DataClassification
+    +frameworks: PolicyFramework[]
+    -resourceType: string
+    -resourceId: string
+    -metadata: Recordstring, unknown
+  }
+
+  class ComplianceCheckResult ~interface~ {
+    +passed: boolean
+    +score: number
+    +violations: ComplianceViolation[]
+    +warnings: ComplianceViolation[]
+    +frameworks_checked: PolicyFramework[]
+    +checked_at: string
+    +context: PickComplianceCheckContext, 'tenantId' | 'zone' | 'classification'
+  }
+
+  class ComplianceReport ~interface~ {
+    +id: string
+    +tenant_id: string
+    +generated_at: string
+    +period: ReportPeriod
+    +frameworks: PolicyFramework[]
+    +summary: {
+    total_checks: number
+    passed: number
+    failed: number
+    score: number
+    critical_violations: number
+    warnings: number
+  }
+    +violations: ComplianceViolation[]
+    +recommendations: string[]
+  }
+
+  class IComplianceValidator ~interface~ {
+    +framework: PolicyFramework
+  }
+
+  class ResidencyZone  {
+  }
+
+  class DataClassification  {
+  }
+
+  class ComplianceSeverity  {
+  }
+
+  class PolicyFramework  {
+  }
+
+  class ReportFormat  {
+  }
+
+  class ReportPeriod  {
+  }
+
+  class DataResidencyValidator  {
+    +framework: unknown
+  }
+
+  class GdprValidator  {
+    +framework: unknown
+  }
+
+  class NcaValidator  {
+    +framework: unknown
+  }
+
+  %% Relationships
+  PolicyDefinition --> DataClassification : applies_to
+  PolicyDefinition --> ResidencyZone : zones
+  ComplianceCheckContext --> ResidencyZone : zone
+  ComplianceCheckContext --> DataClassification : classification
+  ComplianceCheckResult --> ComplianceViolation : violations
+  ComplianceCheckResult --> ComplianceViolation : warnings
+  ComplianceReport --> ComplianceViolation : violations
+  IComplianceValidator <|.. DataResidencyValidator
+  IComplianceValidator <|.. GdprValidator
+  IComplianceValidator <|.. NcaValidator

@@ -1,0 +1,390 @@
+---
+title: "@cityos/api-client-react"
+description: "Deep dive into the api-client-react package"
+icon: "code"
+---
+
+> **Type:** API Client Package | **Framework:** Node.js | **Version:** 0.0.0
+> **Path:** `packages/api-client-react` | **LOC:** 12,344 lines across 10 files
+
+[Back to Generated Packages](/generated/packages)
+> **Used by:** [ai-assistant](/generated/packages/ai-assistant), [business-dashboard](/generated/apps/business-dashboard), [city-dashboard](/generated/apps/city-dashboard), [dev-portal](/generated/apps/dev-portal), [merchant-app](/generated/apps/merchant-app) +5 more
+
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 10 | — |
+| Lines of Code | 12,344 | — |
+| Test Coverage | 40.0% | 🟡 |
+| Oversized Files | 2 | 🟡 |
+| Components | 1 | — |
+| Hooks | 4 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 227 | — |
+| Internal Deps | 0 | — |
+| Dependents | 10 | 🟡 Medium impact |
+
+### ⚠️ Oversized Files
+
+| File | Lines |
+|---|---|
+| packages/api-client-react/src/generated/api.ts | 10334 |
+| packages/api-client-react/src/generated/api.schemas.ts | 1173 |
+
+## Architecture
+
+### File Structure
+
+```
+custom-fetch.test.ts (44L, 0C, 0T)
+custom-fetch.ts (364L, 0C, 5T)
+index.ts (12L, 0C, 0T)
+offline-queue.test.ts (43L, 0C, 0T)
+offline-queue.ts (118L, 0C, 1T)
+use-bff.ts (45L, 0C, 1T)
+use-event-stream.ts (117L, 0C, 2T)
+use-feature-flags.tsx (94L, 1C, 3T)
+generated/
+  api.schemas.ts (1173L, 0C, 215T)
+  api.ts (0L, 0C, 0T)
+```
+
+## Public API Surface
+
+### Components (9)
+
+| Name | Kind | File |
+|---|---|---|
+| FeatureFlagProvider | function | use-feature-flags.tsx |
+| FeatureGate | function | use-feature-flags.tsx |
+| DriverStatusStatus | const | generated/api.schemas.ts |
+| DriverStatusUpdateStatus | const | generated/api.schemas.ts |
+| FleetVehicleStatus | const | generated/api.schemas.ts |
+| IotDeviceStatus | const | generated/api.schemas.ts |
+| SafetyIncidentSeverity | const | generated/api.schemas.ts |
+| PropertyType | const | generated/api.schemas.ts |
+| DeviceRegistrationInputPlatform | const | generated/api.schemas.ts |
+
+### Hooks (4)
+
+| Name | Kind | File |
+|---|---|---|
+| useBff | function | use-bff.ts |
+| useBffList | function | use-bff.ts |
+| useEventStream | function | use-event-stream.ts |
+| useFeatureFlags | function | use-feature-flags.tsx |
+
+### Functions (7)
+
+| Name | Kind | File |
+|---|---|---|
+| setApiBaseUrl | function | custom-fetch.ts |
+| getApiBaseUrl | function | custom-fetch.ts |
+| customFetch | function | custom-fetch.ts |
+| enqueueMutation | function | offline-queue.ts |
+| getPendingMutationCount | function | offline-queue.ts |
+| drainQueue | function | offline-queue.ts |
+| isMutationMethod | function | offline-queue.ts |
+
+### Types (220)
+
+| Name | Kind | File |
+|---|---|---|
+| CustomFetchOptions | type | custom-fetch.ts |
+| ErrorType | type | custom-fetch.ts |
+| BodyType | type | custom-fetch.ts |
+| SSEMessage | interface | use-event-stream.ts |
+| FeatureFlag | interface | use-feature-flags.tsx |
+| HealthStatus | interface | generated/api.schemas.ts |
+| GeoPoint | interface | generated/api.schemas.ts |
+| DriverStatus | interface | generated/api.schemas.ts |
+| DriverStatusUpdate | interface | generated/api.schemas.ts |
+| DriverJob | interface | generated/api.schemas.ts |
+| DriverJobList | interface | generated/api.schemas.ts |
+| FleetVehicle | interface | generated/api.schemas.ts |
+| FleetVehicleList | interface | generated/api.schemas.ts |
+| ShipmentList | interface | generated/api.schemas.ts |
+| MaintenanceList | interface | generated/api.schemas.ts |
+| FuelRecordList | interface | generated/api.schemas.ts |
+| Product | interface | generated/api.schemas.ts |
+| ProductList | interface | generated/api.schemas.ts |
+| ProductInput | interface | generated/api.schemas.ts |
+| Cart | interface | generated/api.schemas.ts |
+| ... | | | (200 more) |
+
+### Classes (2)
+
+| Name | Kind | File |
+|---|---|---|
+| ApiError | class | custom-fetch.ts |
+| ResponseParseError | class | custom-fetch.ts |
+
+## Component Catalog
+
+| Component | File | Kind | Props |
+|---|---|---|---|
+| FeatureFlagProvider | use-feature-flags.tsx | function | children: ReactNode, tenant: string, enabled?: boolean |
+
+## Type System
+
+### CustomFetchOptions
+
+**Kind:** type | **File:** `custom-fetch.ts`
+
+```ts
+type CustomFetchOptions = RequestInit & {
+  responseType?: "json" | "text" | "blob" | "auto";
+};
+```
+
+### ErrorType
+
+**Kind:** type | **File:** `custom-fetch.ts`
+
+```ts
+type ErrorType = ApiError<T>;
+```
+
+### BodyType
+
+**Kind:** type | **File:** `custom-fetch.ts`
+
+```ts
+type BodyType = T;
+```
+
+### ApiError
+
+**Kind:** class | **File:** `custom-fetch.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| name | `unknown` | — |
+| status | `number` | — |
+| statusText | `string` | — |
+| data | `T | null` | — |
+| headers | `Headers` | — |
+| response | `Response` | — |
+| method | `string` | — |
+| url | `string` | — |
+
+### ResponseParseError
+
+**Kind:** class | **File:** `custom-fetch.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| name | `unknown` | — |
+| status | `number` | — |
+| statusText | `string` | — |
+| headers | `Headers` | — |
+| response | `Response` | — |
+| method | `string` | — |
+| url | `string` | — |
+| rawBody | `string` | — |
+| cause | `unknown` | — |
+
+### QueuedMutation
+
+**Kind:** interface | **File:** `offline-queue.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `number` | Yes |
+| url | `string` | — |
+| method | `string` | — |
+| headers | `Record<string, string>` | — |
+| body | `string | null` | — |
+| timestamp | `number` | — |
+
+### BffResponse
+
+**Kind:** interface | **File:** `use-bff.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| success | `boolean` | — |
+| data | `T` | — |
+
+### SSEMessage
+
+**Kind:** interface | **File:** `use-event-stream.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| type | `string` | — |
+| data | `T` | — |
+| receivedAt | `number` | — |
+
+### UseEventStreamOptions
+
+**Kind:** interface | **File:** `use-event-stream.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| types | `string[]` | Yes |
+| interval | `number` | Yes |
+| enabled | `boolean` | Yes |
+| maxEvents | `number` | Yes |
+
+### FeatureFlag
+
+**Kind:** interface | **File:** `use-feature-flags.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | — |
+| key | `string` | — |
+| name | `string` | — |
+| description | `string` | — |
+| enabled | `boolean` | — |
+| rolloutPercentage | `number` | — |
+| tenants | `string[]` | — |
+
+### FeatureFlagContextValue
+
+**Kind:** interface | **File:** `use-feature-flags.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| flags | `FeatureFlag[]` | — |
+| isLoading | `boolean` | — |
+| isEnabled | `(key: string) => boolean` | — |
+| getFlag | `(key: string) => FeatureFlag | undefined` | — |
+
+### FeatureFlagProviderProps
+
+**Kind:** interface | **File:** `use-feature-flags.tsx`
+
+| Property | Type | Optional |
+|---|---|---|
+| children | `ReactNode` | — |
+| tenant | `string` | Yes |
+| enabled | `boolean` | Yes |
+
+### HealthStatus
+
+**Kind:** interface | **File:** `generated/api.schemas.ts`
+> Generated by orval v8.5.3 🍺 Do not edit manually. Api Dakkah CityOS API specification OpenAPI spec version: 0.1.0
+
+| Property | Type | Optional |
+|---|---|---|
+| status | `string` | — |
+
+### GeoPoint
+
+**Kind:** interface | **File:** `generated/api.schemas.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| lat | `number` | Yes |
+| lng | `number` | Yes |
+
+### DriverStatus
+
+**Kind:** interface | **File:** `generated/api.schemas.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | Yes |
+| status | `DriverStatusStatus` | Yes |
+| location | `GeoPoint` | Yes |
+
+### DriverStatusUpdate
+
+**Kind:** interface | **File:** `generated/api.schemas.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| status | `DriverStatusUpdateStatus` | — |
+
+### DriverJob
+
+**Kind:** interface | **File:** `generated/api.schemas.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | Yes |
+| type | `string` | Yes |
+| status | `string` | Yes |
+| pickup | `GeoPoint` | Yes |
+| dropoff | `GeoPoint` | Yes |
+
+### DriverJobList
+
+**Kind:** interface | **File:** `generated/api.schemas.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| jobs | `DriverJob[]` | Yes |
+
+### FleetVehicle
+
+**Kind:** interface | **File:** `generated/api.schemas.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| id | `string` | Yes |
+| type | `string` | Yes |
+| status | `FleetVehicleStatus` | Yes |
+| licensePlate | `string` | Yes |
+| location | `GeoPoint` | Yes |
+
+### FleetVehicleList
+
+**Kind:** interface | **File:** `generated/api.schemas.ts`
+
+| Property | Type | Optional |
+|---|---|---|
+| vehicles | `FleetVehicle[]` | Yes |
+
+*... and 207 more types*
+
+## Hooks
+
+| Hook | File | Params | Return |
+|---|---|---|---|
+| useBff | use-bff.ts | path: string, options: Omit<UseQueryOptions<BffResponse<T>>, "queryKey" | "queryFn"> & {
+    enabled?: boolean;
+  } | unknown |
+| useBffList | use-bff.ts | path: string, listKey: string, fallback: T[], options: Omit<UseQueryOptions<BffResponse<Record<string, unknown>>>, "queryKey" | "queryFn"> & {
+    enabled?: boolean;
+  } | unknown |
+| useEventStream | use-event-stream.ts | options: UseEventStreamOptions | unknown |
+| useFeatureFlags | use-feature-flags.tsx | — | FeatureFlagContextValue |
+
+## Consumers & Impact
+
+This package is used by:
+
+| Consumer | Type | Impact |
+|---|---|---|
+| [ai-assistant](/generated/packages/ai-assistant) | apps | 🔴 Runtime dependency |
+| [business-dashboard](/generated/apps/business-dashboard) | apps | 🔴 Runtime dependency |
+| [city-dashboard](/generated/apps/city-dashboard) | apps | 🔴 Runtime dependency |
+| [dev-portal](/generated/apps/dev-portal) | apps | 🔴 Runtime dependency |
+| [merchant-app](/generated/apps/merchant-app) | apps | 🔴 Runtime dependency |
+| [merchant-app-mobile](/generated/apps/merchant-app-mobile) | apps | 🔴 Runtime dependency |
+| [mobile](/generated/apps/mobile) | apps | 🔴 Runtime dependency |
+| [smart-city-portal](#) | apps | 🔴 Runtime dependency |
+| [superapp](#) | apps | 🔴 Runtime dependency |
+| [web-platform](#) | apps | 🔴 Runtime dependency |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [api-client-react.mmd](/generated/diagrams/class/api-client-react.mmd) |
+| Dependency Graph | [api-client-react-dependencies.mmd](/generated/diagrams/dependencies/api-client-react-dependencies.mmd) |
+
+## Tests
+
+- `custom-fetch.test.ts` (44 lines)
+- `offline-queue.test.ts` (43 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

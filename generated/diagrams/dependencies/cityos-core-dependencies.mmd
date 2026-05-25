@@ -1,0 +1,7 @@
+graph LR
+  cityos-core[cityos-core]
+  merchant-app[merchant-app] --> cityos-core
+  cityos-events[cityos-events] --> cityos-core
+  cityos-outbox[cityos-outbox] --> cityos-core
+  domain-shared[domain-shared] --> cityos-core
+  module-payload[module-payload] --> cityos-core

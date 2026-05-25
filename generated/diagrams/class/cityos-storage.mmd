@@ -1,0 +1,51 @@
+classDiagram
+  direction TB
+
+  class AssetService ~interface~ {
+  }
+
+  class SignedUrlService ~interface~ {
+  }
+
+  class StorageConfig ~interface~ {
+    +endpoint: string
+    +port: number
+    +accessKey: string
+    +secretKey: string
+    +bucket: string
+    +region: string
+    +useSSL: boolean
+    -cdnBaseUrl: string
+  }
+
+  class AssetMetadata ~interface~ {
+    +assetId: string
+    +domain: StorageDomain
+    +filename: string
+    +mimeType: string
+    +size: number
+    -uploadedBy: string
+    +tenantId: string
+    -nodeId: string
+    +createdAt: string
+    +url: string
+    -cdnUrl: string
+  }
+
+  class UploadOptions ~interface~ {
+    +domain: StorageDomain
+    +filename: string
+    +mimeType: string
+    +tenantId: string
+    -nodeId: string
+    -uploadedBy: string
+    -isPublic: boolean
+  }
+
+  class SignedUrlOptions ~interface~ {
+    -expiresIn: number
+    -contentType: string
+  }
+
+  class StorageDomain  {
+  }

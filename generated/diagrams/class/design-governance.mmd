@@ -1,0 +1,44 @@
+classDiagram
+  direction TB
+
+  class Report ~interface~ {
+    +messageId: string
+    -data: Recordstring, unknown
+  }
+
+  class Report ~interface~ {
+    +messageId: string
+    -data: Recordstring, unknown
+  }
+
+  class TokenSpec ~interface~ {
+    +key: string
+    +value: string
+    +role: 'text' | 'largeText' | 'uiComponent'
+  }
+
+  class BackgroundSpec ~interface~ {
+    +label: 'light' | 'dark'
+    +value: string
+  }
+
+  class ContrastViolation ~interface~ {
+    +token: string
+    +background: string
+    +ratio: number
+    +required: number
+    +role: TokenSpec['role']
+  }
+
+  class ValidationResult ~interface~ {
+    +ok: boolean
+    +violations: ContrastViolation[]
+    +evaluated: number
+  }
+
+  class ValidateOptions ~interface~ {
+    -thresholds: PartialRecordTokenSpec['role'], number
+  }
+
+  %% Relationships
+  ValidationResult --> ContrastViolation : violations

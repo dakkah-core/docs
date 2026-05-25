@@ -1,0 +1,317 @@
+---
+title: "@cityos/cityos-contracts"
+description: "Deep dive into the cityos-contracts package"
+icon: "package"
+---
+
+> **Type:** CityOS Core Infrastructure | **Framework:** Payload CMS | **Version:** 0.1.0
+> **Path:** `packages/cityos-contracts` | **LOC:** 1,844 lines across 27 files
+
+[Back to Generated Packages](/generated/packages)
+## Overview & Design Philosophy
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 27 | — |
+| Lines of Code | 1,844 | — |
+| Test Coverage | 25.9% | 🔴 |
+| Oversized Files | 0 | 🟢 |
+| Components | 0 | — |
+| Hooks | 0 | — |
+| Blocks | 0 | — |
+| Collections | 0 | — |
+| Types & Interfaces | 63 | — |
+| Internal Deps | 0 | — |
+| Dependents | 0 | 🟢 Low impact |
+
+## Architecture
+
+### File Structure
+
+```
+index-contract.test.ts (28L, 0C, 0T)
+index.test.ts (66L, 0C, 0T)
+index.ts (17L, 0C, 0T)
+versioning.test.ts (41L, 0C, 0T)
+versioning.ts (97L, 0C, 1T)
+base/
+  entity.ts (25L, 0C, 1T)
+booking/
+  index.ts (2L, 0C, 0T)
+  types.ts (193L, 0C, 10T)
+commerce/
+  index.ts (2L, 0C, 0T)
+  types.ts (169L, 0C, 9T)
+reviews-disputes/
+  index.ts (2L, 0C, 0T)
+  types.ts (146L, 0C, 8T)
+search/
+  index.ts (2L, 0C, 0T)
+  types.ts (190L, 0C, 8T)
+subscription/
+  index.ts (2L, 0C, 0T)
+  types.ts (181L, 0C, 9T)
+travel/
+  index.ts (2L, 0C, 0T)
+  types.ts (216L, 0C, 10T)
+unified/
+  delivery-state.ts (62L, 0C, 1T)
+  index.test.ts (65L, 0C, 0T)
+  index.ts (8L, 0C, 0T)
+  merchant-finance.ts (58L, 0C, 1T)
+  order-summary.ts (52L, 0C, 1T)
+  poi-commerce.ts (67L, 0C, 1T)
+  product-offer.ts (59L, 0C, 1T)
+  service-request.ts (44L, 0C, 1T)
+  task-item.ts (48L, 0C, 1T)
+```
+
+## Public API Surface
+
+### Components (63)
+
+| Name | Kind | File |
+|---|---|---|
+| CONTRACT_VERSION | const | versioning.ts |
+| BaseCityOSEntitySchema | const | base/entity.ts |
+| BookingStatusSchema | const | booking/types.ts |
+| BookingTypeSchema | const | booking/types.ts |
+| TimeSlotSchema | const | booking/types.ts |
+| BookableServiceSchema | const | booking/types.ts |
+| AttendeeSchema | const | booking/types.ts |
+| BookingSchema | const | booking/types.ts |
+| CreateBookingDtoSchema | const | booking/types.ts |
+| RescheduleBookingDtoSchema | const | booking/types.ts |
+| AvailabilitySlotSchema | const | booking/types.ts |
+| BookingWebhookEventSchema | const | booking/types.ts |
+| SupportedCurrencySchema | const | commerce/types.ts |
+| MoneyAmountSchema | const | commerce/types.ts |
+| CartRuleTypeSchema | const | commerce/types.ts |
+| CartRuleSchema | const | commerce/types.ts |
+| CommissionTypeSchema | const | commerce/types.ts |
+| AffiliateSchema | const | commerce/types.ts |
+| TaxZoneSchema | const | commerce/types.ts |
+| TaxConfigSchema | const | commerce/types.ts |
+| ... | | | (43 more) |
+
+### Functions (4)
+
+| Name | Kind | File |
+|---|---|---|
+| parseContractVersion | function | versioning.ts |
+| isCompatible | function | versioning.ts |
+| describeBump | function | versioning.ts |
+| assertContractCompatibility | function | versioning.ts |
+
+### Types (63)
+
+| Name | Kind | File |
+|---|---|---|
+| ContractVersion | interface | versioning.ts |
+| BaseCityOSEntity | type | base/entity.ts |
+| BookingStatus | type | booking/types.ts |
+| BookingType | type | booking/types.ts |
+| TimeSlot | type | booking/types.ts |
+| BookableService | type | booking/types.ts |
+| Attendee | type | booking/types.ts |
+| Booking | type | booking/types.ts |
+| CreateBookingDto | type | booking/types.ts |
+| RescheduleBookingDto | type | booking/types.ts |
+| AvailabilitySlot | type | booking/types.ts |
+| BookingWebhookEvent | type | booking/types.ts |
+| SupportedCurrency | type | commerce/types.ts |
+| MoneyAmount | type | commerce/types.ts |
+| CartRuleType | type | commerce/types.ts |
+| CartRule | type | commerce/types.ts |
+| CommissionType | type | commerce/types.ts |
+| Affiliate | type | commerce/types.ts |
+| TaxZone | type | commerce/types.ts |
+| TaxConfig | type | commerce/types.ts |
+| ... | | | (43 more) |
+
+## Type System
+
+### ContractVersion
+
+**Kind:** interface | **File:** `versioning.ts`
+> Structured representation of a semver string
+
+| Property | Type | Optional |
+|---|---|---|
+| major | `number` | — |
+| minor | `number` | — |
+| patch | `number` | — |
+| raw | `string` | — |
+
+### BaseCityOSEntity
+
+**Kind:** type | **File:** `base/entity.ts`
+
+```ts
+type BaseCityOSEntity = z.infer<typeof BaseCityOSEntitySchema>;
+```
+
+### BookingStatus
+
+**Kind:** type | **File:** `booking/types.ts`
+
+```ts
+type BookingStatus = z.infer<typeof BookingStatusSchema>;
+```
+
+### BookingType
+
+**Kind:** type | **File:** `booking/types.ts`
+
+```ts
+type BookingType = z.infer<typeof BookingTypeSchema>;
+```
+
+### TimeSlot
+
+**Kind:** type | **File:** `booking/types.ts`
+
+```ts
+type TimeSlot = z.infer<typeof TimeSlotSchema>;
+```
+
+### BookableService
+
+**Kind:** type | **File:** `booking/types.ts`
+
+```ts
+type BookableService = z.infer<typeof BookableServiceSchema>;
+```
+
+### Attendee
+
+**Kind:** type | **File:** `booking/types.ts`
+
+```ts
+type Attendee = z.infer<typeof AttendeeSchema>;
+```
+
+### Booking
+
+**Kind:** type | **File:** `booking/types.ts`
+
+```ts
+type Booking = z.infer<typeof BookingSchema>;
+```
+
+### CreateBookingDto
+
+**Kind:** type | **File:** `booking/types.ts`
+
+```ts
+type CreateBookingDto = z.infer<typeof CreateBookingDtoSchema>;
+```
+
+### RescheduleBookingDto
+
+**Kind:** type | **File:** `booking/types.ts`
+
+```ts
+type RescheduleBookingDto = z.infer<typeof RescheduleBookingDtoSchema>;
+```
+
+### AvailabilitySlot
+
+**Kind:** type | **File:** `booking/types.ts`
+
+```ts
+type AvailabilitySlot = z.infer<typeof AvailabilitySlotSchema>;
+```
+
+### BookingWebhookEvent
+
+**Kind:** type | **File:** `booking/types.ts`
+
+```ts
+type BookingWebhookEvent = z.infer<typeof BookingWebhookEventSchema>;
+```
+
+### SupportedCurrency
+
+**Kind:** type | **File:** `commerce/types.ts`
+
+```ts
+type SupportedCurrency = z.infer<typeof SupportedCurrencySchema>;
+```
+
+### MoneyAmount
+
+**Kind:** type | **File:** `commerce/types.ts`
+
+```ts
+type MoneyAmount = z.infer<typeof MoneyAmountSchema>;
+```
+
+### CartRuleType
+
+**Kind:** type | **File:** `commerce/types.ts`
+
+```ts
+type CartRuleType = z.infer<typeof CartRuleTypeSchema>;
+```
+
+### CartRule
+
+**Kind:** type | **File:** `commerce/types.ts`
+
+```ts
+type CartRule = z.infer<typeof CartRuleSchema>;
+```
+
+### CommissionType
+
+**Kind:** type | **File:** `commerce/types.ts`
+
+```ts
+type CommissionType = z.infer<typeof CommissionTypeSchema>;
+```
+
+### Affiliate
+
+**Kind:** type | **File:** `commerce/types.ts`
+
+```ts
+type Affiliate = z.infer<typeof AffiliateSchema>;
+```
+
+### TaxZone
+
+**Kind:** type | **File:** `commerce/types.ts`
+
+```ts
+type TaxZone = z.infer<typeof TaxZoneSchema>;
+```
+
+### TaxConfig
+
+**Kind:** type | **File:** `commerce/types.ts`
+
+```ts
+type TaxConfig = z.infer<typeof TaxConfigSchema>;
+```
+
+*... and 43 more types*
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Class Diagram | [cityos-contracts.mmd](/generated/diagrams/class/cityos-contracts.mmd) |
+| Dependency Graph | [cityos-contracts-dependencies.mmd](#) |
+
+## Tests
+
+- `index-contract.test.ts` (28 lines)
+- `index.test.ts` (66 lines)
+- `versioning.test.ts` (41 lines)
+- `unified/index.test.ts` (65 lines)
+
+---
+*Generated by scripts/docs/generators/deep/package-deep-dive.mjs*

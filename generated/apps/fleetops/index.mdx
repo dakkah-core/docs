@@ -1,0 +1,435 @@
+---
+title: "Fleetops"
+description: "Deep dive into the fleetops application"
+icon: "smartphone"
+---
+
+> **Type:** Web Application (Next.js) | **Framework:** Vitest | **Version:** 1.0.0
+> **Path:** `apps/fleetops` | **Architectural Role:** Fleet & Logistics
+
+[Back to Generated Apps](/generated/apps)
+> **Dependencies:** [design-system](/generated/packages/design-system), [design-tokens](/generated/packages/design-tokens), [auth](/generated/packages/auth), [sdui-protocol](#)
+
+## Overview & Purpose
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 258 | — |
+| Lines of Code | 26,364 | — |
+| Test Coverage | 100.0% | 🟢 |
+| Oversized Files | 10 | 🔴 |
+| Components | 101 | — |
+| Hooks | 33 | — |
+| Types & Interfaces | 110 | — |
+| API Routes | 0 | — |
+| Page Routes | 0 | — |
+| Internal Deps | 4 | — |
+| Dependents | 0 | — |
+
+### ⚠️ Oversized Files
+
+| File | Lines |
+|---|---|
+| apps/fleetops/src/pages/fleetbase-test.tsx | 4332 |
+| apps/fleetops/src/pages/dashboard/index.tsx | 1117 |
+| apps/fleetops/src/pages/operations/orders/index.tsx | 669 |
+| apps/fleetops/src/lib/mock-data.ts | 615 |
+| apps/fleetops/src/pages/management/vendors/index.tsx | 578 |
+| apps/fleetops/src/pages/operations/order-config/index.tsx | 558 |
+| apps/fleetops/src/pages/developers/index.tsx | 549 |
+| apps/fleetops/src/pages/operations/routes/index.tsx | 534 |
+| apps/fleetops/src/pages/management/contacts/index.tsx | 522 |
+| apps/fleetops/src/components/layout/Sidebar.tsx | 496 |
+
+## Architecture
+
+### File Structure
+
+```
+App.test.tsx (65L, 0C, 0T)
+App.tsx (233L, 6C, 1T)
+main.test.tsx (8L, 0C, 0T)
+main.tsx (6L, 0C, 0T)
+components/
+  CityOSContextSelector.test.tsx (16L, 0C, 0T)
+  CityOSContextSelector.tsx (128L, 2C, 1T)
+  CommandPalette.test.tsx (16L, 0C, 0T)
+  CommandPalette.tsx (97L, 1C, 0T)
+  DataSourceToggle.test.tsx (16L, 0C, 0T)
+  DataSourceToggle.tsx (58L, 1C, 0T)
+  Map.test.tsx (16L, 0C, 0T)
+  Map.tsx (125L, 2C, 2T)
+  NotificationsMenu.test.tsx (16L, 0C, 0T)
+  NotificationsMenu.tsx (68L, 1C, 0T)
+  components/blocks/
+    DataTable.test.tsx (16L, 0C, 0T)
+    DataTable.tsx (189L, 1C, 3T)
+    DetailSheet.test.tsx (16L, 0C, 0T)
+    DetailSheet.tsx (76L, 1C, 2T)
+    EmptyState.test.tsx (16L, 0C, 0T)
+    EmptyState.tsx (28L, 1C, 1T)
+    EntityForm.test.tsx (16L, 0C, 0T)
+    EntityForm.tsx (138L, 1C, 3T)
+    PageHeader.test.tsx (16L, 0C, 0T)
+    PageHeader.tsx (24L, 1C, 1T)
+    StatsCard.test.tsx (16L, 0C, 0T)
+    StatsCard.tsx (32L, 1C, 1T)
+    StatusBadge.test.tsx (16L, 0C, 0T)
+    StatusBadge.tsx (22L, 1C, 1T)
+    index.test.ts (8L, 0C, 0T)
+    index.ts (8L, 0C, 3T)
+  components/layout/
+    MainLayout.test.tsx (16L, 0C, 0T)
+    MainLayout.tsx (43L, 1C, 1T)
+    SettingsLayout.test.tsx (16L, 0C, 0T)
+    SettingsLayout.tsx (131L, 2C, 0T)
+    Sidebar.test.tsx (16L, 0C, 0T)
+    Sidebar.tsx (496L, 6C, 2T)
+  components/ui/
+... and 266 more files
+```
+
+## Dependencies
+
+### Auth / Identity
+
+| Package | Type |
+|---|---|
+| [@cityos/auth](/generated/packages/auth) | prod |
+
+### CityOS Core
+
+| Package | Type |
+|---|---|
+| [@cityos/design-system](/generated/packages/design-system) | prod |
+| [@cityos/design-tokens](/generated/packages/design-tokens) | prod |
+
+### Other
+
+| Package | Type |
+|---|---|
+| [@dakkah/sdui-protocol](#) | prod |
+
+## Component Catalog
+
+| Component | File | Kind | Props |
+|---|---|---|---|
+| FullscreenLoader | App.tsx | function | — |
+| AuthGuard | App.tsx | function | — |
+| AdminGuard | App.tsx | function | — |
+| ProtectedRoutes | App.tsx | function | — |
+| Router | App.tsx | function | — |
+| App | App.tsx | function | — |
+| CityOSContextSelector | components/CityOSContextSelector.tsx | function | — |
+| ContextRow | components/CityOSContextSelector.tsx | function | — |
+| CommandPalette | components/CommandPalette.tsx | function | — |
+| DataSourceToggle | components/DataSourceToggle.tsx | function | — |
+| MapController | components/Map.tsx | function | onBoundsChange: (lat |
+| Map | components/Map.tsx | function | onBoundsChange: (lat |
+| NotificationsMenu | components/NotificationsMenu.tsx | function | — |
+| DataTable | components/blocks/DataTable.tsx | function | — |
+| DetailSheet | components/blocks/DetailSheet.tsx | function | open: boolean, onOpenChange: (open, title: string | ReactNode, description: string, icon: LucideIcon, tabs: DetailSheetTab[], children: ReactNode, size: "default" | "lg" | "xl" |
+| EmptyState | components/blocks/EmptyState.tsx | function | icon: LucideIcon, title: string, description: string, actionLabel: string, onAction: () => void |
+| EntityForm | components/blocks/EntityForm.tsx | function | fields: FieldConfig[], values: Record<string, string | number | boolean | undefined>, onChange: (name, onSubmit: () => void, onCancel: () => void, submitLabel: string, isSubmitting: boolean, layout: "single" | "grid", children: ReactNode |
+| PageHeader | components/blocks/PageHeader.tsx | function | title: string, description: string, actions: ReactNode, children: ReactNode |
+| StatsCard | components/blocks/StatsCard.tsx | function | title: string, value: string | number, icon: LucideIcon, description: string, trend: { value, label: string |
+| StatusBadge | components/blocks/StatusBadge.tsx | function | status: string, className: string, size: "sm" | "default" |
+| MainLayout | components/layout/MainLayout.tsx | function | children: ReactNode |
+| SettingsNavItems | components/layout/SettingsLayout.tsx | function | — |
+| SettingsLayout | components/layout/SettingsLayout.tsx | function | — |
+| SidebarNavExpanded | components/layout/Sidebar.tsx | function | — |
+| SidebarNavCollapsed | components/layout/Sidebar.tsx | function | — |
+| AvatarDropdownMenu | components/layout/Sidebar.tsx | function | — |
+| BottomSection | components/layout/Sidebar.tsx | function | — |
+| Sidebar | components/layout/Sidebar.tsx | function | — |
+| MobileSidebar | components/layout/Sidebar.tsx | function | — |
+| Calendar | components/ui/calendar.tsx | function | — |
+| CalendarDayButton | components/ui/calendar.tsx | function | — |
+| CaptureAuth | lib/auth.test.tsx | function | — |
+| OutsideProvider | lib/auth.test.tsx | function | — |
+| AuthProvider | lib/auth.tsx | function | — |
+| ContextField | pages/fleetbase-test.tsx | function | — |
+| SecurityAuditReport | pages/fleetbase-test.tsx | function | — |
+| ContextTestReport | pages/fleetbase-test.tsx | function | — |
+| FleetbaseTestPage | pages/fleetbase-test.tsx | function | — |
+| ExtraTestCard | pages/fleetbase-test.tsx | function | — |
+| ResourceTestCard | pages/fleetbase-test.tsx | function | — |
+| ... | | | | (61 more) |
+
+## Types & Interfaces
+
+### ReactNode
+
+**Kind:** type | **File:** `App.tsx`
+
+### CityOSContext
+
+**Kind:** interface | **File:** `components/CityOSContextSelector.tsx`
+
+### MapControllerProps
+
+**Kind:** interface | **File:** `components/Map.tsx`
+
+### MapProps
+
+**Kind:** interface | **File:** `components/Map.tsx`
+
+### ColumnDef
+
+**Kind:** interface | **File:** `components/blocks/DataTable.tsx`
+
+### RowAction
+
+**Kind:** interface | **File:** `components/blocks/DataTable.tsx`
+
+### DataTableProps
+
+**Kind:** interface | **File:** `components/blocks/DataTable.tsx`
+
+### DetailSheetTab
+
+**Kind:** interface | **File:** `components/blocks/DetailSheet.tsx`
+
+### DetailSheetProps
+
+**Kind:** interface | **File:** `components/blocks/DetailSheet.tsx`
+
+### EmptyStateProps
+
+**Kind:** interface | **File:** `components/blocks/EmptyState.tsx`
+
+### FieldType
+
+**Kind:** type | **File:** `components/blocks/EntityForm.tsx`
+
+### FieldConfig
+
+**Kind:** interface | **File:** `components/blocks/EntityForm.tsx`
+
+### EntityFormProps
+
+**Kind:** interface | **File:** `components/blocks/EntityForm.tsx`
+
+### PageHeaderProps
+
+**Kind:** interface | **File:** `components/blocks/PageHeader.tsx`
+
+### StatsCardProps
+
+**Kind:** interface | **File:** `components/blocks/StatsCard.tsx`
+
+*... and 95 more types*
+
+## Hooks
+
+| Hook | File | Params | Return |
+|---|---|---|---|
+| useHasRole | App.tsx | — | — |
+| useIsMobile | hooks/use-mobile.tsx | — | — |
+| useQueryMock | lib/api.test.ts | — | — |
+| useMutationMock | lib/api.test.ts | — | — |
+| usePayloadList | lib/api.ts | — | — |
+| usePayloadDoc | lib/api.ts | — | — |
+| usePayloadCreate | lib/api.ts | — | — |
+| usePayloadUpdate | lib/api.ts | — | — |
+| usePayloadDelete | lib/api.ts | — | — |
+| useFleetbaseList | lib/api.ts | — | — |
+| useFleetbaseDoc | lib/api.ts | — | — |
+| useFleetbaseCreate | lib/api.ts | — | — |
+| useFleetbaseUpdate | lib/api.ts | — | — |
+| useFleetbaseDelete | lib/api.ts | — | — |
+| useDashboardStats | lib/api.ts | — | — |
+| ... | | | | (18 more) |
+
+## Public API Surface
+
+| Export | Kind | File |
+|---|---|---|
+| CityOSContextSelector | function | components/CityOSContextSelector.tsx |
+| CommandPalette | function | components/CommandPalette.tsx |
+| DataSourceToggle | function | components/DataSourceToggle.tsx |
+| Map | function | components/Map.tsx |
+| NotificationsMenu | function | components/NotificationsMenu.tsx |
+| ColumnDef | interface | components/blocks/DataTable.tsx |
+| RowAction | interface | components/blocks/DataTable.tsx |
+| DataTable | function | components/blocks/DataTable.tsx |
+| DetailSheet | function | components/blocks/DetailSheet.tsx |
+| EmptyState | function | components/blocks/EmptyState.tsx |
+| FieldType | type | components/blocks/EntityForm.tsx |
+| FieldConfig | interface | components/blocks/EntityForm.tsx |
+| EntityForm | function | components/blocks/EntityForm.tsx |
+| PageHeader | function | components/blocks/PageHeader.tsx |
+| StatsCard | function | components/blocks/StatsCard.tsx |
+| StatusBadge | function | components/blocks/StatusBadge.tsx |
+| MainLayout | function | components/layout/MainLayout.tsx |
+| SettingsLayout | function | components/layout/SettingsLayout.tsx |
+| Sidebar | function | components/layout/Sidebar.tsx |
+| MobileSidebar | function | components/layout/Sidebar.tsx |
+| useIsMobile | function | hooks/use-mobile.tsx |
+| usePayloadList | function | lib/api.ts |
+| usePayloadDoc | function | lib/api.ts |
+| usePayloadCreate | function | lib/api.ts |
+| usePayloadUpdate | function | lib/api.ts |
+| ... | | | (201 more) |
+
+## Related Apps
+
+Apps that share dependencies or serve similar roles:
+
+| App | Shared Dependencies | Relationship |
+|---|---|---|
+| [business-dashboard](/generated/apps/business-dashboard) | @cityos/auth, @cityos/design-system, @cityos/design-tokens +1 more | Same domain |
+| [city-dashboard](/generated/apps/city-dashboard) | @cityos/auth, @cityos/design-system, @cityos/design-tokens +1 more | Same domain |
+| [dev-portal](/generated/apps/dev-portal) | @cityos/auth, @cityos/design-system, @cityos/design-tokens +1 more | Same domain |
+| [smart-city-portal](#) | @cityos/auth, @cityos/design-system, @cityos/design-tokens +1 more | Same domain |
+| [web-platform](#) | @cityos/auth, @cityos/design-system, @cityos/design-tokens +1 more | Same domain |
+| [driver-app](/generated/apps/driver-app) | @cityos/auth, @cityos/design-tokens, @dakkah/sdui-protocol | Same domain |
+| [mobile](/generated/apps/mobile) | @cityos/design-tokens, @cityos/auth, @dakkah/sdui-protocol | Same domain |
+| [mobile-driver](#) | @cityos/design-tokens, @cityos/auth, @dakkah/sdui-protocol | Same domain |
+| [mobile-government](#) | @cityos/auth, @cityos/design-tokens, @dakkah/sdui-protocol | Same domain |
+| [mobile-inspector](#) | @cityos/auth, @cityos/design-tokens, @dakkah/sdui-protocol | Same domain |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Component Hierarchy | [fleetops-hierarchy.mmd](/generated/diagrams/components/fleetops-hierarchy.mmd) |
+| Dependency Graph | [fleetops-dependencies.mmd](/generated/diagrams/dependencies/fleetops-dependencies.mmd) |
+
+## Tests
+
+- `App.test.tsx` (65 lines)
+- `main.test.tsx` (8 lines)
+- `components/CityOSContextSelector.test.tsx` (16 lines)
+- `components/CommandPalette.test.tsx` (16 lines)
+- `components/DataSourceToggle.test.tsx` (16 lines)
+- `components/Map.test.tsx` (16 lines)
+- `components/NotificationsMenu.test.tsx` (16 lines)
+- `components/blocks/DataTable.test.tsx` (16 lines)
+- `components/blocks/DetailSheet.test.tsx` (16 lines)
+- `components/blocks/EmptyState.test.tsx` (16 lines)
+- `components/blocks/EntityForm.test.tsx` (16 lines)
+- `components/blocks/PageHeader.test.tsx` (16 lines)
+- `components/blocks/StatsCard.test.tsx` (16 lines)
+- `components/blocks/StatusBadge.test.tsx` (16 lines)
+- `components/blocks/index.test.ts` (8 lines)
+- `components/layout/MainLayout.test.tsx` (16 lines)
+- `components/layout/SettingsLayout.test.tsx` (16 lines)
+- `components/layout/Sidebar.test.tsx` (16 lines)
+- `components/ui/accordion.test.tsx` (8 lines)
+- `components/ui/alert-dialog.test.tsx` (8 lines)
+- `components/ui/alert.test.tsx` (8 lines)
+- `components/ui/aspect-ratio.test.tsx` (8 lines)
+- `components/ui/avatar.test.tsx` (8 lines)
+- `components/ui/badge.test.tsx` (8 lines)
+- `components/ui/button.test.tsx` (8 lines)
+- `components/ui/calendar.test.tsx` (8 lines)
+- `components/ui/card.test.tsx` (8 lines)
+- `components/ui/carousel.test.tsx` (8 lines)
+- `components/ui/chart.test.tsx` (8 lines)
+- `components/ui/checkbox.test.tsx` (8 lines)
+- `components/ui/collapsible.test.tsx` (8 lines)
+- `components/ui/command.test.tsx` (8 lines)
+- `components/ui/context-menu.test.tsx` (8 lines)
+- `components/ui/dialog.test.tsx` (8 lines)
+- `components/ui/drawer.test.tsx` (8 lines)
+- `components/ui/dropdown-menu.test.tsx` (8 lines)
+- `components/ui/hover-card.test.tsx` (8 lines)
+- `components/ui/input-otp.test.tsx` (8 lines)
+- `components/ui/input.test.tsx` (8 lines)
+- `components/ui/label.test.tsx` (8 lines)
+- `components/ui/menubar.test.tsx` (8 lines)
+- `components/ui/navigation-menu.test.tsx` (8 lines)
+- `components/ui/pagination.test.tsx` (8 lines)
+- `components/ui/popover.test.tsx` (8 lines)
+- `components/ui/progress.test.tsx` (8 lines)
+- `components/ui/radio-group.test.tsx` (8 lines)
+- `components/ui/resizable.test.tsx` (8 lines)
+- `components/ui/scroll-area.test.tsx` (8 lines)
+- `components/ui/select.test.tsx` (8 lines)
+- `components/ui/separator.test.tsx` (8 lines)
+- `components/ui/sheet.test.tsx` (8 lines)
+- `components/ui/skeleton.test.tsx` (8 lines)
+- `components/ui/slider.test.tsx` (8 lines)
+- `components/ui/sonner.test.tsx` (8 lines)
+- `components/ui/spinner.test.tsx` (8 lines)
+- `components/ui/switch.test.tsx` (8 lines)
+- `components/ui/table.test.tsx` (8 lines)
+- `components/ui/tabs.test.tsx` (8 lines)
+- `components/ui/textarea.test.tsx` (8 lines)
+- `components/ui/toast.test.tsx` (8 lines)
+- `components/ui/toaster.test.tsx` (8 lines)
+- `components/ui/toggle-group.test.tsx` (8 lines)
+- `components/ui/toggle.test.tsx` (8 lines)
+- `components/ui/tooltip.test.tsx` (8 lines)
+- `hooks/use-mobile.test.tsx` (16 lines)
+- `hooks/use-toast.test.ts` (10 lines)
+- `lib/api.test.ts` (179 lines)
+- `lib/auth.test.tsx` (133 lines)
+- `lib/cityos-context.test.tsx` (8 lines)
+- `lib/design-tokens.test.ts` (19 lines)
+- `lib/mock-data-orders.test.ts` (22 lines)
+- `lib/mock-data-resources.test.ts` (31 lines)
+- `lib/mock-data.test.ts` (8 lines)
+- `lib/queryClient.test.ts` (20 lines)
+- `lib/types.test.ts` (8 lines)
+- `lib/useAblyRealtime.test.ts` (8 lines)
+- `lib/utils.test.ts` (9 lines)
+- `lib/wikipedia.test.ts` (80 lines)
+- `pages/fleetbase-test.test.tsx` (8 lines)
+- `pages/not-found.test.tsx` (8 lines)
+- `pages/setup.test.tsx` (8 lines)
+- `pages/analytics/index.test.tsx` (8 lines)
+- `pages/auth/callback.test.tsx` (8 lines)
+- `pages/auth/login.test.tsx` (8 lines)
+- `pages/auth/register.test.tsx` (8 lines)
+- `pages/connectivity/devices/index.test.tsx` (8 lines)
+- `pages/connectivity/events/index.test.tsx` (8 lines)
+- `pages/connectivity/sensors/index.test.tsx` (8 lines)
+- `pages/connectivity/telematics/index.test.tsx` (8 lines)
+- `pages/dashboard/index.test.tsx` (8 lines)
+- `pages/dashboard/variation-a.test.tsx` (8 lines)
+- `pages/dashboard/variation-b.test.tsx` (8 lines)
+- `pages/dashboard/variation-c.test.tsx` (8 lines)
+- `pages/dashboard/variation-d.test.tsx` (8 lines)
+- `pages/dashboard/variations-hub.test.tsx` (8 lines)
+- `pages/developers/index.test.tsx` (8 lines)
+- `pages/finance/transactions/index.test.tsx` (8 lines)
+- `pages/integrations/index.test.tsx` (8 lines)
+- `pages/maintenance/parts/index.test.tsx` (8 lines)
+- `pages/maintenance/work-orders/index.test.tsx` (8 lines)
+- `pages/management/contacts/index.test.tsx` (8 lines)
+- `pages/management/drivers/availability.test.tsx` (8 lines)
+- `pages/management/drivers/index.test.tsx` (8 lines)
+- `pages/management/fleets/index.test.tsx` (8 lines)
+- `pages/management/places/index.test.tsx` (8 lines)
+- `pages/management/vehicles/index.test.tsx` (8 lines)
+- `pages/management/vendors/index.test.tsx` (8 lines)
+- `pages/onboarding/index.test.tsx` (8 lines)
+- `pages/operations/LiveTracking.test.tsx` (16 lines)
+- `pages/operations/order-config/index.test.tsx` (8 lines)
+- `pages/operations/orders/import.test.tsx` (8 lines)
+- `pages/operations/orders/index.test.tsx` (8 lines)
+- `pages/operations/orders/new.test.tsx` (8 lines)
+- `pages/operations/routes/index.test.tsx` (8 lines)
+- `pages/operations/scheduler/index.test.tsx` (8 lines)
+- `pages/operations/service-rates/index.test.tsx` (8 lines)
+- `pages/operations/service-zones/index.test.tsx` (8 lines)
+- `pages/operations/tracking/index.test.tsx` (8 lines)
+- `pages/resources/fuel-reports/index.test.tsx` (8 lines)
+- `pages/resources/issues/index.test.tsx` (8 lines)
+- `pages/settings/index.test.tsx` (8 lines)
+- `pages/settings/organization.test.tsx` (8 lines)
+- `pages/settings/profile.test.tsx` (8 lines)
+- `pages/settings/servers.test.tsx` (8 lines)
+- `pages/settings/custom-fields/index.test.tsx` (8 lines)
+- `pages/settings/navigator-app/index.test.tsx` (8 lines)
+- `pages/settings/notifications/index.test.tsx` (8 lines)
+- `pages/settings/payments/index.test.tsx` (8 lines)
+- `pages/settings/routing/index.test.tsx` (8 lines)
+- `pages/settings/team/index.test.tsx` (8 lines)
+
+---
+*Generated by scripts/docs/generators/deep/app-deep-dive.mjs*

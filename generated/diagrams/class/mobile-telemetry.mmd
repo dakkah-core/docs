@@ -1,0 +1,96 @@
+classDiagram
+  direction TB
+
+  class HeaderSupplier  {
+  }
+
+  class TelemetryContextValue ~interface~ {
+    +telemetry: DeviceTelemetry | null
+    +headers: TelemetryHeaders | null
+    +refresh: () = Promisevoid
+  }
+
+  class TelemetryProviderProps ~interface~ {
+    +children: ReactNode
+    +appVersion: string
+    -surfaceOverride: SurfaceType
+    -analyticsFlush: AnalyticsFlushFn
+    -analyticsFlushIntervalMs: number
+  }
+
+  class ScreenInfo ~interface~ {
+    +width: number
+    +height: number
+    +scale: number
+  }
+
+  class DeviceTelemetry ~interface~ {
+    +surface: SurfaceType
+    +os: OperatingSystem
+    +osVersion: string
+    +appVersion: string
+    +capabilities: DeviceCapability[]
+    +locale: string
+    +timezone: string
+    +connection: ConnectionType
+    +screen: ScreenInfo
+  }
+
+  class TelemetryHeaders ~interface~ {
+    +'x-cityos-surface': SurfaceType
+    +'x-cityos-os': OperatingSystem
+    +'x-cityos-os-version': string
+    +'x-cityos-app-version': string
+    +'x-cityos-capability': string
+    +'x-cityos-locale': string
+    +'x-cityos-timezone': string
+    +'x-cityos-connection': ConnectionType
+    +'x-cityos-screen': string
+  }
+
+  class ScreenEvent ~interface~ {
+    +kind: 'screen'
+    +screenId: string
+    +renderMs: number
+    +timestamp: number
+  }
+
+  class ActionEvent ~interface~ {
+    +kind: 'action'
+    +actionType: string
+    +durationMs: number
+    +success: boolean
+    +timestamp: number
+  }
+
+  class ErrorEvent ~interface~ {
+    +kind: 'error'
+    +message: string
+    +stack: string | undefined
+    +context: Recordstring, unknown
+    +timestamp: number
+  }
+
+  class DeviceCapability  {
+  }
+
+  class SurfaceType  {
+  }
+
+  class OperatingSystem  {
+  }
+
+  class ConnectionType  {
+  }
+
+  class AnalyticsEventKind  {
+  }
+
+  class AnalyticsEvent  {
+  }
+
+  class AnalyticsFlushFn  {
+  }
+
+  %% Relationships
+  DeviceTelemetry --> ScreenInfo : screen

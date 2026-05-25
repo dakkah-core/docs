@@ -1,0 +1,448 @@
+---
+title: "Business Dashboard"
+description: "Deep dive into the business-dashboard application"
+icon: "layout-dashboard"
+---
+
+> **Type:** Admin Dashboard (Next.js) | **Framework:** Next.js | **Version:** 0.1.0
+> **Path:** `apps/business-dashboard` | **Architectural Role:** Merchant Portal
+
+[Back to Generated Apps](/generated/apps)
+> **Dependencies:** [api-client-react](/generated/packages/api-client-react), [auth](/generated/packages/auth), [design-system](/generated/packages/design-system), [design-tokens](/generated/packages/design-tokens), [i18n](/generated/packages/i18n), [sdui-renderer-web](#), [sdui-protocol](#)
+
+## Overview & Purpose
+
+**Health Snapshot**
+
+| Metric | Value | Status |
+|---|---|---|
+| Source Files | 267 | — |
+| Lines of Code | 8,943 | — |
+| Test Coverage | 95.9% | 🟢 |
+| Oversized Files | 4 | 🟡 |
+| Components | 40 | — |
+| Hooks | 6 | — |
+| Types & Interfaces | 30 | — |
+| API Routes | 0 | — |
+| Page Routes | 89 | — |
+| Internal Deps | 7 | — |
+| Dependents | 0 | — |
+
+### ⚠️ Oversized Files
+
+| File | Lines |
+|---|---|
+| apps/business-dashboard/src/config/verticals.ts | 984 |
+| apps/business-dashboard/src/hooks/use-merchant-data.ts | 491 |
+| apps/business-dashboard/src/components/layout/DashboardLayout.tsx | 467 |
+| apps/business-dashboard/src/lib/enterprise/mock-data.ts | 416 |
+
+## Architecture
+
+### File Structure
+
+```
+__tests__/
+  __tests__/pages/
+    LegacyPlaceholderPage.test.tsx (19L, 0C, 0T)
+    NotAuthorisedPage.test.tsx (13L, 0C, 0T)
+app/
+  error.test.tsx (13L, 0C, 0T)
+  error.tsx (8L, 1C, 0T)
+  layout.test.tsx (8L, 0C, 0T)
+  layout.tsx (26L, 1C, 0T)
+  loading.test.tsx (8L, 0C, 0T)
+  loading.tsx (13L, 1C, 0T)
+  not-found.test.tsx (12L, 0C, 0T)
+  not-found.tsx (26L, 1C, 0T)
+  page.test.tsx (8L, 0C, 0T)
+  page.tsx (67L, 1C, 0T)
+  providers.test.tsx (8L, 0C, 0T)
+  providers.tsx (31L, 1C, 0T)
+  app/(enterprise)/
+    EnterpriseLayoutClient.test.tsx (16L, 0C, 0T)
+    EnterpriseLayoutClient.tsx (133L, 2C, 2T)
+    layout.test.tsx (8L, 0C, 0T)
+    layout.tsx (6L, 1C, 0T)
+    app/(enterprise)/finance/
+      app/(enterprise)/finance/ledger/
+        page.test.tsx (8L, 0C, 0T)
+        page.tsx (184L, 1C, 0T)
+      app/(enterprise)/finance/payables/
+        page.test.tsx (8L, 0C, 0T)
+        page.tsx (155L, 1C, 0T)
+      app/(enterprise)/finance/receivables/
+        page.test.tsx (8L, 0C, 0T)
+        page.tsx (179L, 1C, 0T)
+    app/(enterprise)/operations/
+      app/(enterprise)/operations/tasks/
+        page.test.tsx (8L, 0C, 0T)
+        page.tsx (241L, 1C, 0T)
+    app/(enterprise)/procurement/
+      app/(enterprise)/procurement/orders/
+        page.test.tsx (8L, 0C, 0T)
+        page.tsx (166L, 1C, 0T)
+... and 303 more files
+```
+
+## Page Routes
+
+| Route | Pattern |
+|---|---|
+| /(enterprise)/finance/ledger | Static |
+| /(enterprise)/finance/payables | Static |
+| /(enterprise)/finance/receivables | Static |
+| /(enterprise)/operations/tasks | Static |
+| /(enterprise)/procurement/orders | Static |
+| /(enterprise)/procurement/suppliers | Static |
+| /advertising/campaigns | Static |
+| /advertising/placements | Static |
+| /agents | Static |
+| /analytics | Static |
+| /appointments | Static |
+| /auth/callback | Static |
+| /automotive/listings | Static |
+| /automotive/repairs | Static |
+| /automotive/services | Static |
+| /beauty/bookings | Static |
+| /beauty/providers | Static |
+| /bookings | Static |
+| /business-profile | Static |
+| /campaigns | Static |
+| /categories | Static |
+| /customers | Static |
+| /documents | Static |
+| /events | Static |
+| /events/registrations | Static |
+| /events/sponsorships | Static |
+| /events/ticketing | Static |
+| /events/venues | Static |
+| /finances | Static |
+| /fitness/classes | Static |
+| ... | | (59 more) |
+
+## Dependencies
+
+### UI / Framework
+
+| Package | Type |
+|---|---|
+| [@cityos/api-client-react](/generated/packages/api-client-react) | prod |
+
+### Auth / Identity
+
+| Package | Type |
+|---|---|
+| [@cityos/auth](/generated/packages/auth) | prod |
+
+### CityOS Core
+
+| Package | Type |
+|---|---|
+| [@cityos/design-system](/generated/packages/design-system) | prod |
+| [@cityos/design-tokens](/generated/packages/design-tokens) | prod |
+| [@cityos/i18n](/generated/packages/i18n) | prod |
+| [@cityos/sdui-renderer-web](#) | prod |
+
+### Other
+
+| Package | Type |
+|---|---|
+| [@dakkah/sdui-protocol](#) | prod |
+
+## Component Catalog
+
+| Component | File | Kind | Props |
+|---|---|---|---|
+| Error | app/error.tsx | function | — |
+| RootLayout | app/layout.tsx | function | — |
+| Loading | app/loading.tsx | function | — |
+| NotFound | app/not-found.tsx | function | — |
+| BusinessDashboardHome | app/page.tsx | function | — |
+| Providers | app/providers.tsx | function | — |
+| EnterpriseLayoutClient | app/(enterprise)/EnterpriseLayoutClient.tsx | function | — |
+| DualPaneShell | app/(enterprise)/EnterpriseLayoutClient.tsx | function | — |
+| EnterpriseLayout | app/(enterprise)/layout.tsx | function | — |
+| LedgerPage | app/(enterprise)/finance/ledger/page.tsx | function | — |
+| PayablesPage | app/(enterprise)/finance/payables/page.tsx | function | — |
+| ReceivablesPage | app/(enterprise)/finance/receivables/page.tsx | function | — |
+| TasksPage | app/(enterprise)/operations/tasks/page.tsx | function | — |
+| PurchaseOrdersPage | app/(enterprise)/procurement/orders/page.tsx | function | — |
+| SuppliersPage | app/(enterprise)/procurement/suppliers/page.tsx | function | — |
+| Page | app/advertising/campaigns/page.tsx | function | — |
+| Page | app/agents/page.tsx | function | — |
+| GET | app/api/health/route.ts | function | — |
+| AuthCallbackPage | app/auth/callback/page.tsx | function | — |
+| Page | app/practitioners/page.tsx | function | — |
+| AuthGuard | components/AuthGuard.tsx | function | — |
+| BulkInventoryUpload | components/BulkInventoryUpload.tsx | function | onComplete: () => void, onCancel: () => void |
+| ChatPanel | components/ChatPanel.tsx | function | — |
+| CommandPalette | components/CommandPalette.tsx | function | — |
+| IntegrationErrorBanner | components/IntegrationErrorBanner.tsx | function | service: "erpnext" | "fleetbase" | "keycloak", message: string, onRetry: () => void |
+| KuzzleProvider | components/KuzzleProvider.tsx | function | — |
+| LiveTenantActivity | components/LiveTenantActivity.tsx | function | — |
+| RoleGate | components/RoleGate.tsx | function | requiredRole: AppRole, children: ReactNode, allowRoles: AppRole[] |
+| AuthClientProvider | components/auth-provider.tsx | function | — |
+| LiveMetricsWidget | components/live-metrics-widget.tsx | function | — |
+| MetricCard | components/live-metrics-widget.tsx | function | label: string, value: number | null | undefined, unit: string, color: string, prefix: boolean, suffix: boolean |
+| DashboardLayout | components/layout/DashboardLayout.tsx | function | — |
+| NavItem | components/layout/DashboardLayout.tsx | function | — |
+| NavGroup | components/layout/DashboardLayout.tsx | function | — |
+| MobileNavItem | components/layout/DashboardLayout.tsx | function | — |
+| StatRenderer | components/sdui/SDUIRenderer.tsx | function | — |
+| ListRenderer | components/sdui/SDUIRenderer.tsx | function | — |
+| SDUIRenderer | components/sdui/SDUIRenderer.tsx | function | — |
+| RowColor | components/webhooks/WebhookDeliveryLog.tsx | function | — |
+| WebhookDeliveryLog | components/webhooks/WebhookDeliveryLog.tsx | function | — |
+
+## Types & Interfaces
+
+### NavItem
+
+**Kind:** interface | **File:** `app/(enterprise)/EnterpriseLayoutClient.tsx`
+
+### NavSection
+
+**Kind:** interface | **File:** `app/(enterprise)/EnterpriseLayoutClient.tsx`
+
+### InventoryRow
+
+**Kind:** interface | **File:** `components/BulkInventoryUpload.tsx`
+
+### BulkInventoryUploadProps
+
+**Kind:** interface | **File:** `components/BulkInventoryUpload.tsx`
+
+### SearchResult
+
+**Kind:** interface | **File:** `components/CommandPalette.tsx`
+
+### SearchGrouped
+
+**Kind:** interface | **File:** `components/CommandPalette.tsx`
+
+### IntegrationErrorBannerProps
+
+**Kind:** interface | **File:** `components/IntegrationErrorBanner.tsx`
+
+### KuzzleClient
+
+**Kind:** type | **File:** `components/KuzzleProvider.tsx`
+
+### KuzzleContextType
+
+**Kind:** interface | **File:** `components/KuzzleProvider.tsx`
+
+### AuthUser
+
+**Kind:** type | **File:** `components/KuzzleProvider.tsx`
+
+### ActivityEvent
+
+**Kind:** interface | **File:** `components/LiveTenantActivity.tsx`
+
+### AppRole
+
+**Kind:** type | **File:** `components/RoleGate.tsx`
+
+### RoleGateProps
+
+**Kind:** interface | **File:** `components/RoleGate.tsx`
+
+### SdNode
+
+**Kind:** type | **File:** `components/SduiRenderer.tsx`
+
+### SdAction
+
+**Kind:** type | **File:** `components/SduiRenderer.tsx`
+
+*... and 15 more types*
+
+## Hooks
+
+| Hook | File | Params | Return |
+|---|---|---|---|
+| useChatMock | components/ChatPanel.test.tsx | — | — |
+| useTMock | components/ChatPanel.test.tsx | — | — |
+| useDebounce | components/CommandPalette.tsx | — | — |
+| useTMock | components/IntegrationErrorBanner.test.tsx | — | — |
+| useKuzzle | components/KuzzleProvider.tsx | — | — |
+| useAuthMock | components/RoleGate.test.tsx | — | — |
+
+## Public API Surface
+
+| Export | Kind | File |
+|---|---|---|
+| Error | function | app/error.tsx |
+| metadata | const | app/layout.tsx |
+| RootLayout | function | app/layout.tsx |
+| Loading | function | app/loading.tsx |
+| NotFound | function | app/not-found.tsx |
+| BusinessDashboardHome | function | app/page.tsx |
+| Providers | function | app/providers.tsx |
+| EnterpriseLayoutClient | function | app/(enterprise)/EnterpriseLayoutClient.tsx |
+| EnterpriseLayout | function | app/(enterprise)/layout.tsx |
+| LedgerPage | function | app/(enterprise)/finance/ledger/page.tsx |
+| PayablesPage | function | app/(enterprise)/finance/payables/page.tsx |
+| ReceivablesPage | function | app/(enterprise)/finance/receivables/page.tsx |
+| TasksPage | function | app/(enterprise)/operations/tasks/page.tsx |
+| PurchaseOrdersPage | function | app/(enterprise)/procurement/orders/page.tsx |
+| SuppliersPage | function | app/(enterprise)/procurement/suppliers/page.tsx |
+| Page | function | app/advertising/campaigns/page.tsx |
+| Page | function | app/agents/page.tsx |
+| GET | function | app/api/health/route.ts |
+| AuthCallbackPage | function | app/auth/callback/page.tsx |
+| Page | function | app/practitioners/page.tsx |
+| AuthGuard | function | components/AuthGuard.tsx |
+| BulkInventoryUpload | function | components/BulkInventoryUpload.tsx |
+| ChatPanel | function | components/ChatPanel.tsx |
+| CommandPalette | function | components/CommandPalette.tsx |
+| IntegrationErrorBanner | const | components/IntegrationErrorBanner.tsx |
+| ... | | | (11 more) |
+
+## Related Apps
+
+Apps that share dependencies or serve similar roles:
+
+| App | Shared Dependencies | Relationship |
+|---|---|---|
+| [city-dashboard](/generated/apps/city-dashboard) | @cityos/api-client-react, @cityos/auth, @cityos/design-system +4 more | Same domain |
+| [dev-portal](/generated/apps/dev-portal) | @cityos/api-client-react, @cityos/auth, @cityos/design-system +4 more | Same domain |
+| [smart-city-portal](#) | @cityos/api-client-react, @cityos/auth, @cityos/design-system +4 more | Same domain |
+| [web-platform](#) | @cityos/api-client-react, @cityos/auth, @cityos/design-system +4 more | Same domain |
+| [superapp](#) | @cityos/design-tokens, @cityos/api-client-react, @cityos/auth +2 more | Same domain |
+| [ai-assistant](/generated/packages/ai-assistant) | @cityos/i18n, @cityos/api-client-react, @cityos/design-system +1 more | Same domain |
+| [fleetops](/generated/apps/fleetops) | @cityos/design-system, @cityos/design-tokens, @cityos/auth +1 more | Same domain |
+| [merchant-app](/generated/apps/merchant-app) | @cityos/api-client-react, @cityos/auth, @cityos/i18n +1 more | Same domain |
+| [merchant-app-mobile](/generated/apps/merchant-app-mobile) | @cityos/api-client-react, @cityos/auth, @cityos/i18n +1 more | Same domain |
+| [mobile](/generated/apps/mobile) | @cityos/design-tokens, @cityos/api-client-react, @cityos/auth +1 more | Same domain |
+
+## Diagrams
+
+| Diagram | Source |
+|---|---|
+| Component Hierarchy | [business-dashboard-hierarchy.mmd](/generated/diagrams/components/business-dashboard-hierarchy.mmd) |
+| Dependency Graph | [business-dashboard-dependencies.mmd](/generated/diagrams/dependencies/business-dashboard-dependencies.mmd) |
+
+## Tests
+
+- `__tests__/pages/LegacyPlaceholderPage.test.tsx` (19 lines)
+- `__tests__/pages/NotAuthorisedPage.test.tsx` (13 lines)
+- `app/error.test.tsx` (13 lines)
+- `app/layout.test.tsx` (8 lines)
+- `app/loading.test.tsx` (8 lines)
+- `app/not-found.test.tsx` (12 lines)
+- `app/page.test.tsx` (8 lines)
+- `app/providers.test.tsx` (8 lines)
+- `app/(enterprise)/EnterpriseLayoutClient.test.tsx` (16 lines)
+- `app/(enterprise)/layout.test.tsx` (8 lines)
+- `app/(enterprise)/finance/ledger/page.test.tsx` (8 lines)
+- `app/(enterprise)/finance/payables/page.test.tsx` (8 lines)
+- `app/(enterprise)/finance/receivables/page.test.tsx` (8 lines)
+- `app/(enterprise)/operations/tasks/page.test.tsx` (8 lines)
+- `app/(enterprise)/procurement/orders/page.test.tsx` (8 lines)
+- `app/(enterprise)/procurement/suppliers/page.test.tsx` (8 lines)
+- `app/advertising/campaigns/page.test.tsx` (8 lines)
+- `app/advertising/placements/page.test.tsx` (8 lines)
+- `app/agents/page.test.tsx` (8 lines)
+- `app/analytics/page.test.tsx` (8 lines)
+- `app/api/health/route.test.ts` (12 lines)
+- `app/appointments/page.test.tsx` (8 lines)
+- `app/auth/callback/page.test.tsx` (8 lines)
+- `app/automotive/listings/page.test.tsx` (8 lines)
+- `app/automotive/repairs/page.test.tsx` (8 lines)
+- `app/automotive/services/page.test.tsx` (8 lines)
+- `app/beauty/bookings/page.test.tsx` (8 lines)
+- `app/beauty/providers/page.test.tsx` (8 lines)
+- `app/bookings/page.test.tsx` (8 lines)
+- `app/business-profile/page.test.tsx` (8 lines)
+- `app/campaigns/page.test.tsx` (8 lines)
+- `app/categories/page.test.tsx` (8 lines)
+- `app/customers/page.test.tsx` (8 lines)
+- `app/documents/page.test.tsx` (8 lines)
+- `app/events/page.test.tsx` (8 lines)
+- `app/events/registrations/page.test.tsx` (8 lines)
+- `app/events/sponsorships/page.test.tsx` (8 lines)
+- `app/events/ticketing/page.test.tsx` (8 lines)
+- `app/events/venues/page.test.tsx` (8 lines)
+- `app/finances/page.test.tsx` (8 lines)
+- `app/fitness/classes/page.test.tsx` (8 lines)
+- `app/fitness/memberships/page.test.tsx` (8 lines)
+- `app/fitness/trainers/page.test.tsx` (8 lines)
+- `app/fleet/page.test.tsx` (8 lines)
+- `app/fleet/drivers/page.test.tsx` (8 lines)
+- `app/fleet/fuel/page.test.tsx` (8 lines)
+- `app/fleet/geofences/page.test.tsx` (8 lines)
+- `app/fleet/incidents/page.test.tsx` (8 lines)
+- `app/fleet/inspections/page.test.tsx` (8 lines)
+- `app/fleet/iot/page.test.tsx` (8 lines)
+- `app/fleet/shipments/page.test.tsx` (8 lines)
+- `app/fleet/vehicles/page.test.tsx` (8 lines)
+- `app/floor-plan/page.test.tsx` (8 lines)
+- `app/healthcare/billing/page.test.tsx` (8 lines)
+- `app/healthcare/eldercare/page.test.tsx` (8 lines)
+- `app/healthcare/lab-results/page.test.tsx` (8 lines)
+- `app/healthcare/services/page.test.tsx` (8 lines)
+- `app/inbox/page.test.tsx` (8 lines)
+- `app/insurance/claims/page.test.tsx` (8 lines)
+- `app/insurance/plans/page.test.tsx` (8 lines)
+- `app/insurance/products/page.test.tsx` (8 lines)
+- `app/inventory/page.test.tsx` (8 lines)
+- `app/inventory/adjustments/page.test.tsx` (8 lines)
+- `app/invoices/page.test.tsx` (8 lines)
+- `app/jobs/page.test.tsx` (8 lines)
+- `app/jobs/applications/page.test.tsx` (8 lines)
+- `app/kitchen/page.test.tsx` (8 lines)
+- `app/legal/consultations/page.test.tsx` (8 lines)
+- `app/legal/licenses/page.test.tsx` (8 lines)
+- `app/legal/services/page.test.tsx` (8 lines)
+- `app/locations/page.test.tsx` (8 lines)
+- `app/locations/branches/page.test.tsx` (8 lines)
+- `app/login/page.test.tsx` (8 lines)
+- `app/loyalty/page.test.tsx` (8 lines)
+- `app/medical-records/page.test.tsx` (8 lines)
+- `app/menu/page.test.tsx` (8 lines)
+- `app/notifications/page.test.tsx` (8 lines)
+- `app/orders/page.test.tsx` (8 lines)
+- `app/pharmacy/prescriptions/page.test.tsx` (8 lines)
+- `app/pharmacy/products/page.test.tsx` (8 lines)
+- `app/pos/page.test.tsx` (8 lines)
+- `app/practitioners/page.test.tsx` (8 lines)
+- `app/price-lists/page.test.tsx` (8 lines)
+- `app/products/page.test.tsx` (8 lines)
+- `app/properties/page.test.tsx` (8 lines)
+- `app/rentals/page.test.tsx` (8 lines)
+- `app/returns/page.test.tsx` (8 lines)
+- `app/reviews/page.test.tsx` (8 lines)
+- `app/settings/page.test.tsx` (8 lines)
+- `app/settings/api-keys/page.test.tsx` (8 lines)
+- `app/settings/audit-log/page.test.tsx` (8 lines)
+- `app/settings/export/page.test.tsx` (8 lines)
+- `app/settings/features/page.test.tsx` (8 lines)
+- `app/settings/webhooks/page.test.tsx` (8 lines)
+- `app/social/posts/page.test.tsx` (8 lines)
+- `app/social/products/page.test.tsx` (8 lines)
+- `app/staff/page.test.tsx` (8 lines)
+- `app/subscriptions/page.test.tsx` (8 lines)
+- `app/tax/records/page.test.tsx` (8 lines)
+- `components/BulkInventoryUpload.test.tsx` (16 lines)
+- `components/ChatPanel.test.tsx` (83 lines)
+- `components/IntegrationErrorBanner.test.tsx` (49 lines)
+- `components/RoleGate.test.tsx` (48 lines)
+- `components/live-metrics-widget.test.tsx` (8 lines)
+- `components/__tests__/AuthGuard.test.tsx` (53 lines)
+- `components/__tests__/ChatPanel.test.tsx` (11 lines)
+- `components/__tests__/CommandPalette.test.tsx` (24 lines)
+- `components/__tests__/IntegrationErrorBanner.test.tsx` (11 lines)
+- `components/__tests__/KuzzleProvider.test.tsx` (11 lines)
+- `components/__tests__/LiveTenantActivity.test.tsx` (11 lines)
+- `components/__tests__/RoleGate.test.tsx` (11 lines)
+- `components/__tests__/SduiRenderer.test.tsx` (11 lines)
+- `components/__tests__/auth-provider.test.tsx` (20 lines)
+- `components/layout/__tests__/DashboardLayout.test.tsx` (11 lines)
+- `components/sdui/__tests__/SDUIRenderer.test.tsx` (50 lines)
+- `components/webhooks/__tests__/WebhookDeliveryLog.test.tsx` (11 lines)
+
+---
+*Generated by scripts/docs/generators/deep/app-deep-dive.mjs*
