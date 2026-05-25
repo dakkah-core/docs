@@ -1,0 +1,216 @@
+---
+title: "Manage service bookings in CityOS"
+description: "Create, list, and cancel service bookings via the CityOS BFF. Covers the Booking schema, status lifecycle (pending to no_show), and idempotency keys."
+---
+
+The CityOS booking module gives citizens a unified way to reserve time slots across any service type — from beauty and healthcare to government offices and fitness facilities. All booking operations go through `/api/bff/booking` and require an authenticated session.
+
+## The Booking schema
+
+Every booking object returned by the API has the following shape:
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | `string (uuid)` | Unique booking identifier |
+| `userId` | `string` | ID of the citizen who made the booking |
+| `tenantSlug` | `string` | Tenant the booking belongs to |
+| `serviceType` | `string` | Arbitrary service category (e.g. `beauty`, `healthcare`) |
+| `serviceId` | `string` | ID of the specific service within that type |
+| `providerId` | `string` | ID of the provider delivering the service |
+| `timeSlot.start` | `string (date-time)` | ISO 8601 slot start |
+| `timeSlot.end` | `string (date-time)` | ISO 8601 slot end |
+| `location` | `object \| null` | Optional `{ address, lat, lng }` |
+| `status` | `string (enum)` | See status lifecycle below |
+| `attendeeCount` | `integer` | Number of attendees |
+| `notes` | `string \| null` | Free-text notes from the citizen |
+| `createdAt` | `string (date-time)` | Creation timestamp |
+| `updatedAt` | `string (date-time)` | Last update timestamp |
+
+### Status lifecycle
+
+A booking moves through the following states:
+
+```
+pending → confirmed → completed
+              ↓
+          cancelled
+              ↓
+           no_show
+```
+
+| Status | Meaning |
+|---|---|
+| `pending` | Created but awaiting provider confirmation |
+| `confirmed` | Provider has accepted the slot |
+| `cancelled` | Cancelled by the citizen or provider |
+| `completed` | Service was delivered |
+| `no_show` | Citizen did not attend the confirmed booking |
+
+---
+
+## List bookings
+
+`GET /api/bff/booking` returns bookings for the authenticated citizen. Admin roles see all bookings in the tenant.
+
+```bash cURL
+curl "https://cityos.dakkah.city/api/bff/booking?status=confirmed&from=2026-05-01&to=2026-05-31&limit=20" \
+  -H "Authorization: Bearer <token>" \
+  -H "x-tenant-slug: riyadh-downtown"
+```
+
+### Query parameters
+
+<ParamField query="status" type="string">
+  Filter by status: `pending`, `confirmed`, `cancelled`, `completed`, `no_show`.
+</ParamField>
+
+<ParamField query="from" type="string">
+  Start date in `YYYY-MM-DD` format. Filters on `timeSlot.start`.
+</ParamField>
+
+<ParamField query="to" type="string">
+  End date in `YYYY-MM-DD` format.
+</ParamField>
+
+<ParamField query="serviceType" type="string">
+  Filter to a specific service category.
+</ParamField>
+
+<ParamField query="providerId" type="string">
+  Filter to a specific provider.
+</ParamField>
+
+<ParamField query="limit" type="integer" default="20">
+  Number of results to return. Maximum 100.
+</ParamField>
+
+<ParamField query="offset" type="integer" default="0">
+  Pagination offset.
+</ParamField>
+
+---
+
+## Create a booking
+
+`POST /api/bff/booking` creates a new booking. The four required fields are `serviceType`, `serviceId`, `providerId`, and `timeSlot`.
+
+### Idempotency
+
+Booking creation is a mutation — if your network request times out, you do not know whether it succeeded. Pass an `X-Idempotency-Key` header with a unique string (e.g. a UUID you generate client-side). The server stores the key and returns the original response if it receives the same key again, preventing double-bookings.
+
+```typescript TypeScript
+import { randomUUID } from "crypto"; // or crypto.randomUUID() in browsers
+
+const idempotencyKey = `ik_${randomUUID()}`;
+
+const res = await fetch("https://cityos.dakkah.city/api/bff/booking", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${token}`,
+    "x-tenant-slug": "riyadh-downtown",
+    "x-idempotency-key": idempotencyKey,
+  },
+  body: JSON.stringify({
+    serviceType: "beauty",
+    serviceId: "svc_haircut_women",
+    providerId: "prv_salon_al_noor",
+    timeSlot: {
+      start: "2026-06-01T10:00:00.000Z",
+      end: "2026-06-01T11:00:00.000Z",
+    },
+    attendeeCount: 1,
+    notes: "Please use organic products.",
+    location: {
+      address: "Al Noor Salon, Al Olaya, Riyadh",
+      lat: 24.6973,
+      lng: 46.6851,
+    },
+    customerName: "Nora Al-Saud",
+    customerEmail: "nora@example.com",
+    customerPhone: "+966501234567",
+  }),
+});
+
+const { data } = await res.json();
+// data — Booking object with status: "pending"
+```
+
+### Response — 201 Created
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "bkg_01H...",
+    "userId": "usr_123",
+    "tenantSlug": "riyadh-downtown",
+    "serviceType": "beauty",
+    "serviceId": "svc_haircut_women",
+    "providerId": "prv_salon_al_noor",
+    "timeSlot": {
+      "start": "2026-06-01T10:00:00.000Z",
+      "end": "2026-06-01T11:00:00.000Z"
+    },
+    "status": "pending",
+    "attendeeCount": 1,
+    "notes": "Please use organic products.",
+    "createdAt": "2026-05-25T08:30:00.000Z",
+    "updatedAt": "2026-05-25T08:30:00.000Z"
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+---
+
+## Cancel a booking
+
+`DELETE /api/bff/booking/:id` cancels a booking by its ID. The booking must belong to the authenticated citizen, or you must hold an admin role.
+
+```typescript TypeScript
+const res = await fetch(
+  `https://cityos.dakkah.city/api/bff/booking/bkg_01H...`,
+  {
+    method: "DELETE",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "x-tenant-slug": "riyadh-downtown",
+      "x-correlation-id": crypto.randomUUID(),
+    },
+  }
+);
+
+const { data } = await res.json();
+// data.status === "cancelled"
+```
+
+---
+
+## End-to-end example
+
+<Steps>
+  <Step title="Authenticate">
+    Log in via `POST /api/bff/auth/login` to obtain a session token. See the [authentication guide](/guides/authentication).
+  </Step>
+
+  <Step title="Discover available slots">
+    Query the specific service's slot endpoint (varies by `serviceType`) to find open time windows before creating a booking.
+  </Step>
+
+  <Step title="Create the booking">
+    POST to `/api/bff/booking` with `serviceType`, `serviceId`, `providerId`, `timeSlot`, and your idempotency key.
+  </Step>
+
+  <Step title="Poll or listen for confirmation">
+    Poll `GET /api/bff/booking?status=confirmed` or subscribe to the tenant's Ably channel to receive a real-time `booking.confirmed` event.
+  </Step>
+
+  <Step title="Cancel if needed">
+    DELETE `/api/bff/booking/:id` before the slot starts to free the time for another citizen.
+  </Step>
+</Steps>
+
+<Warning>
+  Always store the idempotency key alongside the booking reference in your local state. If you lose it and the network request fails, you risk creating a duplicate booking. Generate a fresh key for each new booking attempt.
+</Warning>

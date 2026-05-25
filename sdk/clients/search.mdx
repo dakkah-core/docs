@@ -1,0 +1,68 @@
+---
+title: "SearchClient"
+sidebarTitle: "Search"
+description: "Typed SDK client for CityOS Meilisearch-backed full-text search, autocomplete, and health."
+icon: "search"
+---
+
+`SearchClient` wraps `/api/bff/search/*`. Public endpoints — no auth required for default indexes; authenticated callers see role-gated indexes.
+
+## Methods
+
+| Method | HTTP | Endpoint |
+| --- | --- | --- |
+| `multiSearch(params)` | GET | `/api/bff/search` |
+| `suggest(params)` | GET | `/api/bff/search/suggest` |
+| `health()` | GET | `/api/bff/search/health` |
+
+## multiSearch
+
+```typescript
+const result = await search.multiSearch({
+  q: "coffee shop Riyadh",
+  surface: "citizen",
+  scope: "all",
+  types: "pois,products",
+  facets: "category",
+  limit: 20,
+  offset: 0,
+});
+
+result.hits.forEach((hit) => console.log(hit.type, hit.id, hit.title));
+console.log(result.totalHits, result.processingTimeMs);
+console.log(result.facets); // { category: { restaurant: 15, cafe: 27 } }
+```
+
+| Param | Type | Notes |
+| --- | --- | --- |
+| `q` | string | Required, 1–200 chars |
+| `surface` | string | Default `citizen` |
+| `scope` | string | Default `all` |
+| `types` | csv | `pois`, `products`, `services`, `events`, `businesses`, `documents`, `users`, `citizen-services`, `orders` |
+| `facets` | csv | Facet attributes |
+| `sort` | csv | Sort fields |
+| `filters` | string | JSON-encoded filter object |
+| `limit` / `offset` | number | Max limit 100 |
+
+## suggest
+
+```typescript
+const { suggestions } = await search.suggest({ q: "cof", limit: 5 });
+// ["coffee", "coffee shop", "coffee bean", ...]
+```
+
+## health
+
+```typescript
+const { status, indexes } = await search.health();
+console.log(status); // "available" or "unavailable"
+```
+
+## Errors
+
+`VALIDATION_ERROR` (missing `q`, invalid `types`), `AUTH_ERROR` (surface requires auth).
+
+## Related
+
+- [Search integration](/integrations/search)
+- [Search API](/api/search)

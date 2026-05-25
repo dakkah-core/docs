@@ -1,0 +1,262 @@
+---
+title: "Build commerce experiences with CityOS"
+description: "Integrate CityOS commerce to browse products, manage a cart, and place orders. Covers catalog endpoints, cart actions, and the 12 offer archetypes."
+---
+
+The CityOS commerce layer is built on Medusa v2 and scoped per tenant through sales channels. Every product list, cart mutation, and order creation flows through the BFF under `/api/bff/commerce/`, giving you a single authenticated surface for the full purchase lifecycle.
+
+## Offer archetypes
+
+Before you start integrating, familiarise yourself with the 12 offer archetypes the platform supports:
+
+| Archetype | Description |
+|---|---|
+| `PRODUCT` | Physical or digital item sold once |
+| `SERVICE` | One-time service (e.g. cleaning, consultation) |
+| `BOOKING` | Time-slot reservation for a service or venue |
+| `SUBSCRIPTION` | Recurring product or service |
+| `MEMBERSHIP` | Ongoing access to benefits or a club |
+| `DIGITAL` | Download or licence key |
+| `TICKET` | Entry to an event |
+| `RENTAL` | Temporary use of a physical asset |
+| `AUCTION` | Highest-bid purchase |
+| `EXPERIENCE` | Curated multi-step activity |
+| `BUNDLE` | Grouped items sold together |
+| `CUSTOM` | Tenant-defined offer type |
+
+---
+
+## Browse the product catalog
+
+`GET /api/bff/commerce/products` is a public endpoint — no `Authorization` header is required, though you should always supply `x-tenant-slug` to scope results to the right sales channel.
+
+```bash cURL
+curl "https://cityos.dakkah.city/api/bff/commerce/products?q=coffee&limit=10" \
+  -H "x-tenant-slug: riyadh-downtown"
+```
+
+### Query parameters
+
+<ParamField query="q" type="string">
+  Full-text search query applied to product titles and descriptions.
+</ParamField>
+
+<ParamField query="category" type="string">
+  Filter by product category.
+</ParamField>
+
+<ParamField query="status" type="string">
+  Filter by status — typically `published` for customer-facing requests.
+</ParamField>
+
+<ParamField query="page" type="integer" default="1">
+  Page number (1-indexed).
+</ParamField>
+
+<ParamField query="limit" type="integer" default="20">
+  Items per page. Maximum 100.
+</ParamField>
+
+### Response
+
+```json Response — 200 OK
+{
+  "success": true,
+  "data": [
+    {
+      "id": "prod_01H...",
+      "title": "Arabic Coffee Set",
+      "handle": "arabic-coffee-set",
+      "description": "Traditional dallah with six porcelain cups.",
+      "status": "published",
+      "variants": [
+        { "id": "variant_01H...", "title": "Default Variant", "prices": [] }
+      ],
+      "images": [{ "url": "https://cdn.dakkah.city/products/coffee-set.jpg" }]
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 156,
+    "totalPages": 8
+  },
+  "meta": {
+    "tenantSlug": "riyadh-downtown",
+    "timestamp": "2026-04-13T10:00:00.000Z"
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+<Note>
+  Results are cached for 30 seconds on the server. For real-time inventory checks (e.g. flash sales), poll at the variant level via the Medusa storefront API instead.
+</Note>
+
+---
+
+## Manage the cart
+
+All cart operations go through a single endpoint — `POST /api/bff/commerce/cart` — using an `action` field to dispatch the right operation.
+
+### Actions
+
+<Tabs>
+  <Tab title="Create cart">
+    ```typescript TypeScript
+    const res = await fetch("https://cityos.dakkah.city/api/bff/commerce/cart", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-tenant-slug": "riyadh-downtown",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify({ action: "create" }),
+    });
+
+    const { data } = await res.json();
+    const cartId = data.id; // "cart_01H..."
+    ```
+  </Tab>
+
+  <Tab title="Add item">
+    ```typescript TypeScript
+    await fetch("https://cityos.dakkah.city/api/bff/commerce/cart", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-tenant-slug": "riyadh-downtown",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        action: "addItem",
+        cartId: "cart_01H...",
+        variantId: "variant_01H...",
+        quantity: 2,
+      }),
+    });
+    ```
+  </Tab>
+
+  <Tab title="Remove item">
+    ```typescript TypeScript
+    await fetch("https://cityos.dakkah.city/api/bff/commerce/cart", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-tenant-slug": "riyadh-downtown",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        action: "removeItem",
+        cartId: "cart_01H...",
+        lineId: "li_01H...",
+      }),
+    });
+    ```
+  </Tab>
+
+  <Tab title="Retrieve cart">
+    ```typescript TypeScript
+    await fetch("https://cityos.dakkah.city/api/bff/commerce/cart", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-tenant-slug": "riyadh-downtown",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        action: "retrieve",
+        cartId: "cart_01H...",
+      }),
+    });
+    ```
+  </Tab>
+</Tabs>
+
+The full set of valid `action` values is: `create`, `retrieve`, `addItem`, `removeItem`, `updateItem`.
+
+---
+
+## Place an order
+
+`POST /api/bff/commerce/orders` creates a cart, adds line items, and completes it to produce an order in a single call. This endpoint requires authentication.
+
+```typescript TypeScript
+const res = await fetch("https://cityos.dakkah.city/api/bff/commerce/orders", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "x-tenant-slug": "riyadh-downtown",
+    "Authorization": `Bearer ${token}`,
+  },
+  body: JSON.stringify({
+    email: "citizen@example.com",
+    items: [
+      { variant_id: "variant_01H...", quantity: 1 },
+      { variant_id: "variant_02H...", quantity: 2 },
+    ],
+    shipping_address: {
+      first_name: "Ahmed",
+      last_name: "Al-Qahtani",
+      address_1: "123 King Fahd Road",
+      city: "Riyadh",
+      country_code: "sa",
+    },
+  }),
+});
+
+const { data, correlationId } = await res.json();
+```
+
+---
+
+## List orders
+
+```typescript TypeScript
+const res = await fetch(
+  "https://cityos.dakkah.city/api/bff/commerce/orders?page=1&limit=10",
+  {
+    headers: {
+      "x-tenant-slug": "riyadh-downtown",
+      "Authorization": `Bearer ${token}`,
+    },
+  }
+);
+
+const { data, pagination } = await res.json();
+// data — array of order objects
+// pagination.total — total order count
+```
+
+<Warning>
+  The orders endpoint enforces ownership. Passing a `customerId` that does not match the authenticated session returns `403 CONFLICT`. Do not forward arbitrary customer IDs from client-side input.
+</Warning>
+
+---
+
+## Using the CommerceClient SDK
+
+The `@cityos/api-client` package ships a `CommerceClient` that wraps all product and order calls with automatic header injection.
+
+```typescript TypeScript
+import { CityOSClient, createBffClients } from "@cityos/api-client";
+
+const cityos = new CityOSClient({
+  baseUrl: process.env.EXPO_PUBLIC_BFF_URL!,
+  tenantId: "riyadh-downtown",
+  surface: "mobile",
+  getToken: async () => yourTokenStore.get(),
+});
+
+const { commerce } = createBffClients(cityos);
+
+// Browse products
+const catalog = await commerce.listProducts({ page: 1, pageSize: 20 });
+const product = await commerce.getProduct("prod_01H...");
+
+// Place an order
+const order = await commerce.createOrder([
+  { productId: "prod_01H...", quantity: 1 },
+]);
+```

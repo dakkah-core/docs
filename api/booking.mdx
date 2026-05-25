@@ -1,0 +1,340 @@
+---
+title: "Booking API endpoints"
+description: "Create, list, and cancel service bookings via the CityOS BFF. Covers the Booking schema, status lifecycle, query filters, and idempotency keys."
+---
+
+The booking endpoints let your application manage the full lifecycle of a service reservation — from creating a slot with a provider to cancelling a confirmed appointment. All routes sit under `/api/bff/booking` and require an authenticated session. Admin roles see all bookings in the tenant; citizens see only their own.
+
+Mutation endpoints accept an `X-Idempotency-Key` header so that retries caused by network failures never produce duplicate bookings.
+
+---
+
+## GET /api/bff/booking
+
+Returns bookings for the authenticated user. Filter by status, date range, service type, or provider. Supports offset-based pagination.
+
+### Request headers
+
+<ParamField path="Authorization" type="string" required>
+  `Bearer <jwt>` — Keycloak or Payload-issued JWT.
+</ParamField>
+
+<ParamField path="x-tenant-slug" type="string">
+  Tenant slug. Resolved from the domain if omitted.
+</ParamField>
+
+### Query parameters
+
+<ParamField query="status" type="string">
+  Filter by booking status. One of `pending`, `confirmed`, `cancelled`, `completed`, `no_show`.
+</ParamField>
+
+<ParamField query="from" type="string">
+  Start date filter in `YYYY-MM-DD` format (e.g. `2026-04-01`).
+</ParamField>
+
+<ParamField query="to" type="string">
+  End date filter in `YYYY-MM-DD` format (e.g. `2026-04-30`).
+</ParamField>
+
+<ParamField query="serviceType" type="string">
+  Filter by service type string (e.g. `beauty`, `government`, `health`).
+</ParamField>
+
+<ParamField query="providerId" type="string">
+  Filter by provider ID.
+</ParamField>
+
+<ParamField query="limit" type="number" default="20">
+  Maximum results to return. 1–100.
+</ParamField>
+
+<ParamField query="offset" type="number" default="0">
+  Number of records to skip for pagination. Minimum 0.
+</ParamField>
+
+### Response fields
+
+<ResponseField name="data" type="Booking[]">
+  Array of booking records.
+  <Expandable title="Booking properties">
+    <ResponseField name="id" type="string">UUID booking identifier.</ResponseField>
+    <ResponseField name="userId" type="string">ID of the citizen who made the booking.</ResponseField>
+    <ResponseField name="tenantSlug" type="string">Tenant the booking belongs to.</ResponseField>
+    <ResponseField name="serviceType" type="string">Service category (e.g. `beauty`).</ResponseField>
+    <ResponseField name="serviceId" type="string">ID of the specific service being booked.</ResponseField>
+    <ResponseField name="providerId" type="string">ID of the service provider.</ResponseField>
+    <ResponseField name="timeSlot" type="object">
+      <Expandable title="timeSlot properties">
+        <ResponseField name="start" type="string">ISO 8601 start datetime.</ResponseField>
+        <ResponseField name="end" type="string">ISO 8601 end datetime.</ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="location" type="object">
+      Optional location. `null` for virtual services.
+      <Expandable title="location properties">
+        <ResponseField name="address" type="string">Street address.</ResponseField>
+        <ResponseField name="lat" type="number">Latitude.</ResponseField>
+        <ResponseField name="lng" type="number">Longitude.</ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="status" type="string">Booking status — `pending`, `confirmed`, `cancelled`, `completed`, or `no_show`.</ResponseField>
+    <ResponseField name="attendeeCount" type="number">Number of attendees.</ResponseField>
+    <ResponseField name="notes" type="string">Optional notes. `null` if absent.</ResponseField>
+    <ResponseField name="createdAt" type="string">ISO 8601 creation timestamp.</ResponseField>
+    <ResponseField name="updatedAt" type="string">ISO 8601 last-updated timestamp.</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+curl --request GET \
+  --url 'https://cityos.dakkah.city/api/bff/booking?status=confirmed&from=2026-04-01&to=2026-04-30&limit=20' \
+  --header 'Authorization: Bearer <token>' \
+  --header 'x-tenant-slug: riyadh-downtown'
+```
+
+```typescript TypeScript
+const params = new URLSearchParams({
+  status: "confirmed",
+  from: "2026-04-01",
+  to: "2026-04-30",
+  limit: "20",
+  offset: "0",
+});
+
+const response = await fetch(`/api/bff/booking?${params}`, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "x-tenant-slug": "riyadh-downtown",
+  },
+});
+
+const { data } = await response.json();
+// data — array of Booking objects
+```
+
+</CodeGroup>
+
+**200 response example**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440010",
+      "userId": "usr_123",
+      "tenantSlug": "riyadh-downtown",
+      "serviceType": "beauty",
+      "serviceId": "svc_haircut_01",
+      "providerId": "prov_salon_01",
+      "timeSlot": {
+        "start": "2026-04-15T10:00:00.000Z",
+        "end": "2026-04-15T11:00:00.000Z"
+      },
+      "location": {
+        "address": "Al Olaya District, Riyadh",
+        "lat": 24.6877,
+        "lng": 46.7219
+      },
+      "status": "confirmed",
+      "attendeeCount": 1,
+      "notes": null,
+      "createdAt": "2026-04-10T08:00:00.000Z",
+      "updatedAt": "2026-04-10T08:05:00.000Z"
+    }
+  ],
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+| Status | Meaning |
+|--------|---------|
+| `200` | Booking list returned. |
+| `400` | Invalid query parameters. |
+| `401` | Authentication required. |
+
+---
+
+## POST /api/bff/booking
+
+Creates a new booking. Supply an `X-Idempotency-Key` header to make the request safe to retry — duplicate submissions with the same key return the original response without creating a second booking.
+
+### Request headers
+
+<ParamField path="Authorization" type="string" required>
+  `Bearer <jwt>`.
+</ParamField>
+
+<ParamField path="x-tenant-slug" type="string">
+  Tenant slug.
+</ParamField>
+
+<ParamField path="x-idempotency-key" type="string">
+  Idempotency key for safe retries (e.g. `ik_abc123def456`). Highly recommended for booking creation.
+</ParamField>
+
+### Request body
+
+<ParamField body="serviceType" type="string" required>
+  Service category string. Maximum 128 characters.
+</ParamField>
+
+<ParamField body="serviceId" type="string" required>
+  ID of the service being booked. Maximum 256 characters.
+</ParamField>
+
+<ParamField body="providerId" type="string" required>
+  ID of the service provider. Maximum 256 characters.
+</ParamField>
+
+<ParamField body="timeSlot" type="object" required>
+  Requested time slot.
+  <Expandable title="timeSlot properties">
+    <ResponseField name="start" type="string" required>ISO 8601 start datetime.</ResponseField>
+    <ResponseField name="end" type="string" required>ISO 8601 end datetime.</ResponseField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="location" type="object">
+  Service location.
+  <Expandable title="location properties">
+    <ResponseField name="address" type="string">Street address. Maximum 500 characters.</ResponseField>
+    <ResponseField name="lat" type="number">Latitude (-90 to 90).</ResponseField>
+    <ResponseField name="lng" type="number">Longitude (-180 to 180).</ResponseField>
+    <ResponseField name="placeId" type="string">Optional Google Maps place ID.</ResponseField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="customerName" type="string">
+  Attendee name. Maximum 255 characters.
+</ParamField>
+
+<ParamField body="customerEmail" type="string">
+  Attendee email address.
+</ParamField>
+
+<ParamField body="customerPhone" type="string">
+  Attendee phone number. Pattern: `+?[0-9]{7,15}`.
+</ParamField>
+
+<ParamField body="attendeeCount" type="number" default="1">
+  Number of attendees. 1–1000.
+</ParamField>
+
+<ParamField body="notes" type="string">
+  Additional notes for the provider. Maximum 2000 characters.
+</ParamField>
+
+<ParamField body="metadata" type="object">
+  Arbitrary key-value metadata to attach to the booking.
+</ParamField>
+
+<CodeGroup>
+
+```bash curl
+curl --request POST \
+  --url https://cityos.dakkah.city/api/bff/booking \
+  --header 'Authorization: Bearer <token>' \
+  --header 'Content-Type: application/json' \
+  --header 'x-tenant-slug: riyadh-downtown' \
+  --header 'x-idempotency-key: ik_abc123def456' \
+  --data '{
+    "serviceType": "beauty",
+    "serviceId": "svc_haircut_01",
+    "providerId": "prov_salon_01",
+    "timeSlot": {
+      "start": "2026-04-15T10:00:00.000Z",
+      "end": "2026-04-15T11:00:00.000Z"
+    },
+    "location": {
+      "address": "Al Olaya District, Riyadh",
+      "lat": 24.6877,
+      "lng": 46.7219
+    },
+    "customerName": "Ahmed Al-Qahtani",
+    "customerEmail": "ahmed@example.com",
+    "customerPhone": "+966501234567",
+    "attendeeCount": 1,
+    "notes": "Prefer morning slot if possible."
+  }'
+```
+
+```typescript TypeScript
+const response = await fetch("/api/bff/booking", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+    "x-tenant-slug": "riyadh-downtown",
+    "x-idempotency-key": "ik_abc123def456",
+  },
+  body: JSON.stringify({
+    serviceType: "beauty",
+    serviceId: "svc_haircut_01",
+    providerId: "prov_salon_01",
+    timeSlot: {
+      start: "2026-04-15T10:00:00.000Z",
+      end: "2026-04-15T11:00:00.000Z",
+    },
+    location: {
+      address: "Al Olaya District, Riyadh",
+      lat: 24.6877,
+      lng: 46.7219,
+    },
+    customerName: "Ahmed Al-Qahtani",
+    customerEmail: "ahmed@example.com",
+    customerPhone: "+966501234567",
+    attendeeCount: 1,
+    notes: "Prefer morning slot if possible.",
+  }),
+});
+
+const { data } = await response.json();
+// data — created Booking object
+```
+
+</CodeGroup>
+
+**201 response example**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440010",
+    "userId": "usr_123",
+    "tenantSlug": "riyadh-downtown",
+    "serviceType": "beauty",
+    "serviceId": "svc_haircut_01",
+    "providerId": "prov_salon_01",
+    "timeSlot": {
+      "start": "2026-04-15T10:00:00.000Z",
+      "end": "2026-04-15T11:00:00.000Z"
+    },
+    "location": {
+      "address": "Al Olaya District, Riyadh",
+      "lat": 24.6877,
+      "lng": 46.7219
+    },
+    "status": "pending",
+    "attendeeCount": 1,
+    "notes": "Prefer morning slot if possible.",
+    "createdAt": "2026-04-13T10:00:00.000Z",
+    "updatedAt": "2026-04-13T10:00:00.000Z"
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+| Status | Meaning |
+|--------|---------|
+| `201` | Booking created. Status begins as `pending`. |
+| `400` | Validation error — check `error.details.fieldErrors`. |
+| `401` | Authentication required. |
+
+<Note>
+  When you provide an `X-Idempotency-Key` and a booking with that key already exists, the server returns the original `201` response without creating a duplicate. Use a per-request UUID or a deterministic key such as `ik_{userId}_{serviceId}_{slotStart}`.
+</Note>

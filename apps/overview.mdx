@@ -1,0 +1,62 @@
+---
+title: "CityOS apps overview"
+sidebarTitle: "Overview"
+description: "The 12 Expo apps and web surfaces that ship on top of Dakkah CityOS — superapp, driver, merchant, POS, government, inspector, kiosk, TV, watch, car."
+icon: "layout-grid"
+---
+
+CityOS targets 8 SDK-declared surfaces and ships 12 production Expo apps built through Expo Application Services (EAS), plus the Payload \+ Next.js web shell.
+
+## Mobile apps (12)
+
+| App | Purpose | Platforms |
+| --- | --- | --- |
+| `superapp` | Main citizen app | iOS, Android |
+| `mobile` | Base mobile shell | iOS, Android |
+| `mobile-driver` | Fleet driver companion | iOS, Android |
+| `mobile-merchant` | Merchant POS companion | iOS, Android |
+| `mobile-pos` | Point-of-sale terminal | iOS, Android |
+| `mobile-government` | Government officer app | iOS, Android |
+| `mobile-inspector` | Field inspector app | iOS, Android |
+| `merchant-app-mobile` | Merchant management | iOS, Android |
+| `kiosk` | Interactive kiosk | Android |
+| `tv-app` | Smart TV app | tvOS, Android TV |
+| `watch-app` | Smartwatch app | watchOS |
+| `car-app` | In-vehicle app | Android Automotive |
+
+## Build pipeline
+
+All apps build through **EAS** with environment variables injected from GitHub repo variables:
+
+| Variable | Purpose |
+| --- | --- |
+| `EXPO_PUBLIC_BFF_URL` | BFF base URL |
+| `EXPO_PUBLIC_SENTRY_DSN` | Error tracking |
+| `EXPO_PUBLIC_ABLY_KEY` | Realtime messaging |
+| `EXPO_PUBLIC_MAPBOX_TOKEN` | Maps |
+| `EXPO_PUBLIC_MEDUSA_BACKEND_URL` | Commerce API |
+| `EXPO_PUBLIC_FLEETBASE_KEY` | Fleet logistics |
+| `EXPO_PUBLIC_MOYASAR_KEY` | Payments (Saudi) |
+| `EXPO_PUBLIC_STRIPE_KEY` | Payments (intl) |
+
+CI workflows:
+
+- `.github/workflows/mobile-build.yml` — EAS builds for all 12 apps
+- `.github/workflows/mobile-ota-update.yml` — OTA via `eas update`
+
+## Web surfaces
+
+<CardGroup cols={2}>
+     
+</CardGroup>
+
+## Surface to app mapping
+
+| SDK surface | Typical app |
+| --- | --- |
+| `mobile` / `mobile_large` | `superapp`, `mobile`, `mobile-driver`, etc. |
+| `tablet` | `mobile-pos`, `merchant-app-mobile` (iPad) |
+| `desktop` / `desktop_wide` | Web shell |
+| `kiosk` | `kiosk` |
+| `tv_1080p` | `tv-app` |
+| `carplay` | `car-app` |

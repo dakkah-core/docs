@@ -1,0 +1,176 @@
+---
+title: "BffClient"
+sidebarTitle: "BffClient"
+description: "Low-level transport beneath every CityOS domain client — typed request<T>() primitive, header propagation, and error normalization."
+icon: "plug"
+---
+
+`BffClient` is the low-level transport beneath every domain client. It owns the `request<T>()` primitive, normalises the standard envelope into typed responses, and surfaces the canonical `ApiError`. You usually don't construct one yourself — `createBffClients(cityos)` wires one up automatically — but the methods below are useful when you need to call an endpoint that doesn't have a typed wrapper yet, or when you're writing your own domain helper.
+
+## Construct
+
+```typescript
+import { BffClient } from "@cityos/api-client";
+
+const bff = new BffClient(cityos);
+```
+
+The constructor takes a `CityOSClient` and inherits its headers, retry policy, interceptors, and logger.
+
+## `request<T>(spec)`
+
+```typescript
+type RequestSpec = {
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  path: string;                 // e.g. "/api/bff/commerce/products"
+  query?: Record<string, unknown>;
+  body?: unknown;               // JSON-serialised
+  headers?: Record<string, string>;
+  idempotencyKey?: string;
+  signal?: AbortSignal;
+  retry?: Partial<RetryConfig>;
+};
+```
+
+Returns:
+
+```typescript
+type BffSuccess<T> = {
+  success: true;
+  data: T;
+  meta?: { tenantSlug?: string; timestamp?: string };
+  pagination?: { page: number; limit: number; total: number; totalPages: number };
+  correlationId: string;
+};
+```
+
+On a failure response, `request<T>()` throws `ApiError` (see [Common types](/sdk/types/common)).
+
+### Example: call an undocumented route
+
+```typescript
+type Permit = { id: string; status: string; expiresAt: string };
+
+const { data } = await bff.request<Permit[]>({
+  method: "GET",
+  path: "/api/bff/citizen/permits",
+  query: { status: "active", limit: 20 },
+});
+```
+
+### Example: idempotent mutation
+
+```typescript
+await bff.request({
+  method: "POST",
+  path: "/api/bff/booking",
+  body: payload,
+  idempotencyKey: `booking_${crypto.randomUUID()}`,
+});
+```
+
+## Headers propagated automatically
+
+`BffClient` merges these headers onto every request from the parent `CityOSClient`:
+
+| Header | Source |
+| --- | --- |
+| `Authorization: Bearer <jwt>` | `getToken()` |
+| `X-S2S-Key` | `s2sKey` |
+| `x-tenant-slug` | `tenantId` |
+| `x-cityos-surface` | `surface` |
+| `x-correlation-id` | `correlationIdProvider()` |
+| `x-idempotency-key` | `idempotencyKey` (mutations) |
+| `Content-Type: application/json` | When `body` is set |
+| `Accept: application/json` | Always |
+
+Per-request `headers` override any of these.
+
+## Query builder
+
+Query values are serialised with predictable rules:
+
+| JS value | Encoded as |
+| --- | --- |
+| `string` / `number` / `boolean` | as-is |
+| `Date` | ISO 8601 |
+| `null` / `undefined` | omitted |
+| `string[]` | repeated key (`?types=a&types=b`) |
+| object | JSON-encoded (rare; used for `filters`) |
+
+## Path builder
+
+Use template tags for typed path params:
+
+```typescript
+await bff.request({
+  method: "GET",
+  path: bff.path`/api/bff/booking/${bookingId}`,
+});
+```
+
+The tag URL-encodes every interpolated value.
+
+## Convenience methods
+
+Shortcuts that call `request<T>()` under the hood:
+
+```typescript
+await bff.get<Product[]>("/api/bff/commerce/products", { query: { limit: 20 } });
+await bff.post<Booking>("/api/bff/booking", { body: payload });
+await bff.delete("/api/bff/storage/{id}", { query: {} });
+```
+
+## Error normalisation
+
+Every non-2xx response is converted to an `ApiError` with the OpenAPI envelope:
+
+```typescript
+try {
+  await bff.get("/api/bff/commerce/orders");
+} catch (err) {
+  if (err instanceof ApiError) {
+    console.log(err.code, err.message, err.httpStatus, err.correlationId);
+  }
+}
+```
+
+Transport failures (DNS, TLS, abort) throw `ApiError` with `code: "NETWORK_ERROR"`.
+
+## Cancellation
+
+```typescript
+const ac = new AbortController();
+setTimeout(() => ac.abort(), 5000);
+
+await bff.get("/api/bff/commerce/products", { signal: ac.signal });
+```
+
+A cancelled request rejects with `ApiError({ code: "NETWORK_ERROR", cause: "aborted" })`.
+
+## Writing a custom domain client
+
+Wrap `BffClient` to keep typings tight:
+
+```typescript
+import { BffClient } from "@cityos/api-client";
+
+export class PermitsClient {
+  constructor(private readonly bff: BffClient) {}
+
+  list(params: { status?: "active" | "expired"; limit?: number }) {
+    return this.bff.get<Permit[]>("/api/bff/citizen/permits", { query: params });
+  }
+
+  get(id: string) {
+    return this.bff.get<Permit>(this.bff.path`/api/bff/citizen/permits/${id}`);
+  }
+}
+```
+
+## Related
+
+- [SDK overview](/sdk/overview)
+- [CityOSClient](/sdk/cityos-client)
+- [Common types](/sdk/types/common)
+- [API conventions](/api/conventions)

@@ -1,0 +1,49 @@
+---
+title: "EventsClient"
+sidebarTitle: "Events"
+description: "Typed SDK client for CityOS events and ticketing — list tickets, purchase with idempotency."
+icon: "ticket"
+---
+
+`EventsClient` wraps `/api/bff/commerce/events-tickets`.
+
+## Methods
+
+| Method | HTTP | Endpoint |
+| --- | --- | --- |
+| `list(params?)` | GET | `/api/bff/commerce/events-tickets` |
+| `purchase(body, opts?)` | POST | `/api/bff/commerce/events-tickets` |
+
+## list
+
+```typescript
+const { data } = await events.list({
+  customerId: "cust_01H...",
+  eventId: "evt_riyadh_season_2026",
+  status: "active",
+  limit: 20,
+  offset: 0,
+});
+```
+
+## purchase
+
+```typescript
+const { data: ticket } = await events.purchase({
+  eventId: "evt_riyadh_season_2026",
+  ticketTypeId: "tt_general_admission",
+  quantity: 2,
+}, { idempotencyKey: `tkt_${crypto.randomUUID()}` });
+```
+
+Required: `eventId`, `ticketTypeId`. Optional: `quantity` (default 1).
+
+## Errors
+
+`EVENTS_ERROR`, `VALIDATION_ERROR`, `CONFLICT` (sold out), `AUTH_ERROR`.
+
+## Related
+
+- [Events vertical](/verticals/events)
+- [Events API](/api/events)
+- [Events guide](/guides/events)

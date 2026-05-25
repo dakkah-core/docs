@@ -1,0 +1,183 @@
+---
+title: "Sell event tickets with CityOS"
+sidebarTitle: "Events"
+description: "Browse events, purchase tickets through Medusa, render QR codes on mobile, and reconcile scans via webhooks on Dakkah CityOS."
+icon: "ticket"
+---
+
+Events and ticketing in CityOS are powered by **Medusa v2** through the `events-culture` and `event-ticketing` domain packages. Tickets are first-class commerce products: customers buy them, render QR entitlements on mobile, and event gates scan them at entry.
+
+## What you'll build
+
+- Browse upcoming events from the search index
+- Purchase tickets through `/api/bff/commerce/events-tickets`
+- Render a QR-coded ticket in the `superapp`
+- Reconcile scans via the `event.ticket.scanned` webhook
+
+## Prerequisites
+
+- An authenticated `CityOSClient`
+- A payment provider configured (Stripe or Moyasar)
+- `ticketingEnabled: true` on the tenant
+
+```typescript
+import { CityOSClient, createBffClients } from "@cityos/api-client";
+
+const cityos = new CityOSClient({
+  baseUrl: process.env.EXPO_PUBLIC_BFF_URL!,
+  tenantId: "riyadh-downtown",
+  surface: "mobile",
+  getToken: async () => tokenStore.get(),
+});
+
+const { events, tenant, search } = createBffClients(cityos);
+```
+
+## 1. Discover events
+
+Events are indexed in Meilisearch under the `events` index. Use the search client:
+
+```typescript
+const { hits } = await search.multiSearch({
+  q: "Riyadh Season 2026",
+  types: "events",
+  limit: 20,
+});
+
+hits.forEach((event) => {
+  console.log(event.id, event.title, event.startsAt, event.venue);
+});
+```
+
+Each event document carries available `ticketTypes` with id, name, and price.
+
+## 2. Purchase a ticket
+
+```typescript
+const { data: ticket } = await events.purchase({
+  eventId: "evt_riyadh_season_2026",
+  ticketTypeId: "tt_general_admission",
+  quantity: 2,
+}, { idempotencyKey: `tkt_${crypto.randomUUID()}` });
+
+console.log(ticket.id, ticket.qrCode);
+```
+
+The purchase endpoint internally creates a cart, adds the ticket variant, completes the order, and returns the issued ticket(s).
+
+```bash cURL
+curl -X POST https://cityos.dakkah.city/api/bff/commerce/events-tickets \
+  -H "Authorization: Bearer <token>" \
+  -H "x-tenant-slug: riyadh-downtown" \
+  -H "x-idempotency-key: tkt_$(uuidgen)" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "eventId": "evt_riyadh_season_2026",
+    "ticketTypeId": "tt_general_admission",
+    "quantity": 2
+  }'
+```
+
+## 3. List the customer's tickets
+
+```typescript
+const { data, pagination } = await events.list({
+  status: "active",
+  limit: 20,
+});
+
+data.forEach((t) => {
+  console.log(t.id, t.event.title, t.seat, t.scannedAt);
+});
+```
+
+Query params: `customerId`, `eventId`, `status`, `limit`, `offset`.
+
+## 4. Render a QR ticket on mobile
+
+In the `superapp`, the ticket payload contains a signed QR string that the gate scanner can verify offline:
+
+```typescript
+import QRCode from "react-native-qrcode-svg";
+
+export function TicketCard({ ticket }: { ticket: EventTicket }) {
+  return (
+    <View>
+      <Text>{ticket.event.title}</Text>
+      <Text>{new Date(ticket.event.startsAt).toLocaleString()}</Text>
+      <QRCode value={ticket.qrCode} size={220} />
+      <Text>{ticket.seat ?? "General admission"}</Text>
+    </View>
+  );
+}
+```
+
+The `qrCode` string is a JWT signed by the BFF with the tenant key. Gate scanners verify offline using the public key bundled at install time.
+
+## 5. Reconcile scans
+
+When a gate scans a ticket, the BFF emits `event.ticket.scanned`. Subscribe via [Webhooks](/configuration/webhooks):
+
+```typescript
+export async function POST(req: Request) {
+  const event = await verifyAndParse(req);
+
+  switch (event.type) {
+    case "event.ticket.scanned":
+      await markTicketUsed(event.data.ticketId, event.data.scannedAt);
+      break;
+    case "event.cancelled":
+      await refundAllTicketsForEvent(event.data.eventId);
+      break;
+  }
+
+  return new Response("ok");
+}
+```
+
+Webhook events:
+
+| Event | When |
+| --- | --- |
+| `event.ticket.issued` | Purchase completed |
+| `event.ticket.scanned` | Gate scan accepted |
+| `event.ticket.refunded` | Refund processed |
+| `event.cancelled` | Event cancelled |
+
+## 6. Live attendance feed
+
+For venue dashboards, subscribe to scan events over Ably:
+
+```typescript
+const scans = ably.channels.get(
+  "cityos:riyadh-downtown:events:scans"
+);
+
+scans.subscribe("scan", (message) => {
+  incrementGateCounter(message.data.gateId);
+});
+```
+
+## Error handling
+
+| Code | Cause |
+| --- | --- |
+| `EVENTS_ERROR` | Domain-specific failure |
+| `VALIDATION_ERROR` | Bad `eventId` / `ticketTypeId` |
+| `CONFLICT` | Ticket type sold out |
+| `AUTH_ERROR` | Token missing / expired |
+
+## Capability flags
+
+| Flag | What it gates |
+| --- | --- |
+| `ticketingEnabled` | Purchase \+ list endpoints |
+| `searchEnabled` | Event discovery via Meilisearch |
+
+## Related
+
+- [Events vertical overview](/verticals/events)
+- [Events API reference](/api/events)
+- [EventsClient SDK](/sdk/clients/events)
+- [Payments](/integrations/payments) — Stripe & Moyasar checkout
+- [Webhooks](/configuration/webhooks)

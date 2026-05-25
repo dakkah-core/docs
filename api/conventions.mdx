@@ -1,0 +1,111 @@
+---
+title: "CityOS API conventions"
+sidebarTitle: "Conventions"
+description: "Envelope, headers, pagination, idempotency, and the middleware pipeline applied to every CityOS BFF route."
+icon: "list-ordered"
+---
+
+Every `/api/bff/*` route in CityOS shares the same conventions. Master these once and every endpoint feels familiar.
+
+## Base URL
+
+| Environment | URL |
+| --- | --- |
+| Production | `https://cityos.dakkah.city` |
+| Local development | `http://localhost:3000` |
+
+## Middleware pipeline
+
+Every BFF route is wrapped by `withBff()`, which executes:
+
+1. **Correlation ID** assignment
+2. **Rate limiting**
+3. **JWT / S2S authentication**
+4. **CSRF double-submit cookie validation** (mutations only)
+5. **RBAC role verification** when configured
+6. **Tenant resolution \+ capability gating**
+7. **NodeContext extraction and propagation**
+
+## Standard envelope
+
+```json
+{
+  "success": true,
+  "data": { },
+  "meta": { "tenantSlug": "riyadh-downtown", "timestamp": "2026-04-13T10:00:00.000Z" },
+  "pagination": { "page": 1, "limit": 20, "total": 156, "totalPages": 8 },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+On failure:
+
+```json
+{
+  "success": false,
+  "error": { "code": "VALIDATION_ERROR", "message": "…", "details": {} },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+## Required headers
+
+| Header | When | Notes |
+| --- | --- | --- |
+| `Authorization: Bearer <jwt>` | Authenticated routes | Keycloak OIDC or Medusa store-auth |
+| `X-S2S-Key: <key>` | Machine-to-machine | Alternative to JWT |
+| `x-tenant-slug: <slug>` | Always recommended | Auto-resolved from origin if omitted |
+| `x-cityos-surface: <surface>` | SDUI / surface-aware routes | One of 8 SDK surfaces |
+| `x-correlation-id: <uuid>` | Optional | Auto-generated if omitted |
+| `x-idempotency-key: <key>` | Mutations | Required for safe retries |
+| `Content-Type: application/json` | Mutations with body | — |
+
+## Pagination
+
+Two patterns appear across the API:
+
+**Page-based** (most list endpoints):
+
+```text
+?page=1&limit=20
+```
+
+Response `pagination`: `{ page, limit, total, totalPages }`.
+
+**Offset-based** (booking, event tickets):
+
+```text
+?limit=20&offset=0
+```
+
+## Idempotency
+
+Mutating endpoints accept `X-Idempotency-Key`. The server detects duplicates and returns the original response. Generate one fresh key per logical operation — a UUID v4 works.
+
+## Authentication
+
+Obtain a JWT via `POST /api/bff/auth/login` (Medusa store-auth) or through Keycloak OIDC. The login endpoint also sets an httpOnly `medusa_session` cookie. See [API authentication](/api/authentication).
+
+## Tenant resolution
+
+The BFF resolves the active tenant from (in order):
+
+1. `x-tenant-slug` header
+2. Origin domain mapping
+3. Default tenant on the operator account
+
+Mobile apps and cross-tenant admin tools should always send `x-tenant-slug`.
+
+## Surfaces
+
+Surface-aware endpoints (SDUI, search) honor `x-cityos-surface`. See [Surfaces](/concepts/surfaces).
+
+## Rate limits & retries
+
+`RATE_LIMIT` errors include `retryAfterSeconds`. Implement exponential backoff for transient failures — see [Error codes](/resources/error-codes) for a TypeScript helper.
+
+## See also
+
+- [Errors](/api/errors)
+- [Authentication](/api/authentication)
+- [Architecture](/architecture)

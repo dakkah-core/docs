@@ -1,0 +1,232 @@
+---
+title: "Events and ticketing API endpoints"
+description: "List event tickets for the current customer and purchase new tickets through the Dakkah CityOS events and ticketing BFF endpoints backed by Medusa commerce."
+---
+
+The events and ticketing endpoints let your application retrieve a customer's purchased tickets and process new ticket purchases for city events. All routes sit under `/api/bff/commerce/events-tickets` and require an authenticated session.
+
+Ticket listings support filtering by event and status, and use offset-based pagination. Ticket purchases are backed by Medusa's order flow.
+
+---
+
+## GET /api/bff/commerce/events-tickets
+
+Returns event tickets for the authenticated customer. You can filter by event ID or ticket status to narrow results.
+
+### Request headers
+
+<ParamField path="Authorization" type="string" required>
+  `Bearer <jwt>` — Keycloak or Payload-issued JWT.
+</ParamField>
+
+<ParamField path="x-tenant-slug" type="string">
+  Tenant slug for multi-tenant routing. Resolved from the domain if omitted.
+</ParamField>
+
+### Query parameters
+
+<ParamField query="customerId" type="string">
+  Customer ID to filter by. Defaults to the authenticated customer.
+</ParamField>
+
+<ParamField query="eventId" type="string">
+  Filter tickets for a specific event.
+</ParamField>
+
+<ParamField query="status" type="string">
+  Filter by ticket status (e.g. `active`, `used`, `cancelled`).
+</ParamField>
+
+<ParamField query="limit" type="number" default="20">
+  Maximum number of results to return.
+</ParamField>
+
+<ParamField query="offset" type="number" default="0">
+  Number of records to skip for pagination.
+</ParamField>
+
+### Response fields
+
+<ResponseField name="data" type="object[]">
+  Array of ticket objects. Each ticket includes event details, ticket type, status, and purchase reference.
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+curl --request GET \
+  --url 'https://cityos.dakkah.city/api/bff/commerce/events-tickets?limit=20&offset=0' \
+  --header 'Authorization: Bearer <token>' \
+  --header 'x-tenant-slug: riyadh-downtown'
+```
+
+```typescript TypeScript
+import { EventsClient, CityOSClient } from "@cityos/api-client";
+
+const client = new CityOSClient({ baseUrl: "https://cityos.dakkah.city" });
+const events = new EventsClient(client);
+
+// List all registrations for the authenticated user
+const { data } = await events.listRegistrations();
+```
+
+</CodeGroup>
+
+**200 response example**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "ticket_01H...",
+      "eventId": "evt_riyadh_season_2026",
+      "ticketTypeId": "ttype_vip",
+      "customerId": "cust_01H...",
+      "status": "active",
+      "quantity": 2,
+      "purchasedAt": "2026-04-10T09:00:00.000Z"
+    }
+  ],
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+| Status | Meaning |
+|--------|---------|
+| `200` | Ticket list returned. |
+| `401` | Authentication required. |
+
+---
+
+## POST /api/bff/commerce/events-tickets
+
+Purchases one or more tickets for an event. The endpoint creates a Medusa order for the ticket purchase.
+
+### Request headers
+
+<ParamField path="Authorization" type="string" required>
+  `Bearer <jwt>`.
+</ParamField>
+
+<ParamField path="x-tenant-slug" type="string">
+  Tenant slug.
+</ParamField>
+
+### Request body
+
+<ParamField body="eventId" type="string" required>
+  ID of the event to purchase tickets for. Maximum 256 characters.
+</ParamField>
+
+<ParamField body="ticketTypeId" type="string" required>
+  ID of the ticket type (e.g. general admission, VIP). Maximum 256 characters.
+</ParamField>
+
+<ParamField body="quantity" type="number" default="1">
+  Number of tickets to purchase. Minimum 1.
+</ParamField>
+
+### Response fields
+
+<ResponseField name="success" type="boolean" required>
+  `true` when the purchase is completed.
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Ticket purchase confirmation including ticket IDs and order reference.
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+curl --request POST \
+  --url https://cityos.dakkah.city/api/bff/commerce/events-tickets \
+  --header 'Authorization: Bearer <token>' \
+  --header 'Content-Type: application/json' \
+  --header 'x-tenant-slug: riyadh-downtown' \
+  --data '{
+    "eventId": "evt_riyadh_season_2026",
+    "ticketTypeId": "ttype_vip",
+    "quantity": 2
+  }'
+```
+
+```typescript TypeScript
+import { EventsClient, CityOSClient } from "@cityos/api-client";
+
+const client = new CityOSClient({ baseUrl: "https://cityos.dakkah.city" });
+const events = new EventsClient(client);
+
+// Purchase 2 VIP tickets for the event
+const { data } = await events.register("evt_riyadh_season_2026", 2);
+// data.registration — EventRegistration object
+```
+
+</CodeGroup>
+
+**201 response example**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "ticket_01H...",
+    "eventId": "evt_riyadh_season_2026",
+    "ticketTypeId": "ttype_vip",
+    "quantity": 2,
+    "status": "confirmed",
+    "purchasedAt": "2026-04-13T10:00:00.000Z"
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+| Status | Meaning |
+|--------|---------|
+| `201` | Ticket purchase completed. |
+| `400` | Validation error — missing `eventId` or `ticketTypeId`. |
+| `401` | Authentication required. |
+
+---
+
+## Working with event listings
+
+To retrieve the event catalog before purchasing tickets, use the `EventsClient` from the API client package. The client points to `/api/events-culture/events` which provides full event metadata including venue, dates, capacity, and pricing.
+
+<CodeGroup>
+
+```typescript TypeScript
+import { EventsClient, CityOSClient } from "@cityos/api-client";
+
+const client = new CityOSClient({ baseUrl: "https://cityos.dakkah.city" });
+const events = new EventsClient(client);
+
+// List all upcoming events
+const { data } = await events.listEvents({ category: "music" });
+for (const event of data.events) {
+  console.log(event.title, event.startDate, event.venue);
+}
+
+// Get a single event
+const { data: detail } = await events.getEvent("evt_riyadh_season_2026");
+console.log(detail.event.capacity, detail.event.price);
+```
+
+```bash curl
+# List events
+curl --request GET \
+  --url 'https://cityos.dakkah.city/api/events-culture/events?category=music' \
+  --header 'Authorization: Bearer <token>'
+
+# Get a single event
+curl --request GET \
+  --url 'https://cityos.dakkah.city/api/events-culture/events/evt_riyadh_season_2026' \
+  --header 'Authorization: Bearer <token>'
+```
+
+</CodeGroup>
+
+<Note>
+  Event listing data (titles, venues, dates) comes from the `EventsClient` at `/api/events-culture/`. Ticket purchase and retrieval use the BFF endpoint at `/api/bff/commerce/events-tickets`. Always look up the event and confirm availability before initiating a purchase.
+</Note>

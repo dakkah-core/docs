@@ -1,0 +1,212 @@
+---
+title: "CityOSClient"
+sidebarTitle: "CityOSClient"
+description: "Configure the root SDK client that owns auth, headers, tenant, surface, and request interceptors for every CityOS domain client."
+icon: "settings"
+---
+
+`CityOSClient` is the root of `@cityos/api-client`. It owns the base URL, auth strategy, tenant slug, surface, correlation IDs, retries, and interceptors. Every domain client (`CommerceClient`, `BookingClient`, etc.) shares one `CityOSClient` instance.
+
+## Construct
+
+```typescript
+import { CityOSClient } from "@cityos/api-client";
+
+const cityos = new CityOSClient({
+  baseUrl: process.env.BFF_URL!,
+  tenantId: "riyadh-downtown",
+  surface: "web",
+  getToken: async () => sessionStore.getToken(),
+});
+```
+
+## Options
+
+| Option | Type | Required | Default | Notes |
+| --- | --- | --- | --- | --- |
+| `baseUrl` | string | yes | — | BFF base URL (no trailing slash) |
+| `tenantId` | string | yes | — | Tenant slug sent as `x-tenant-slug` |
+| `surface` | `Surface` | no | `"web"` | One of 8 SDK surfaces |
+| `getToken` | `() => Promise<string | null>` | no | — | Returns bearer token; called per request |
+| `s2sKey` | string | no | — | Alternative to `getToken` for machine-to-machine |
+| `correlationIdProvider` | `() => string` | no | UUID v4 | Override correlation ID strategy |
+| `idempotencyKeyProvider` | `() => string` | no | UUID v4 | Default key generator for mutations |
+| `retry` | `RetryConfig` | no | see below | Retry/backoff policy |
+| `timeoutMs` | number | no | `30_000` | Per-request timeout |
+| `fetch` | typeof fetch | no | global fetch | Override transport |
+| `logger` | `Logger` | no | no-op | Receives request/response/error events |
+
+### `Surface`
+
+```typescript
+type Surface =
+  | "mobile" | "mobile_large"
+  | "tablet"
+  | "desktop" | "desktop_wide"
+  | "kiosk" | "tv_1080p" | "carplay";
+```
+
+### `RetryConfig`
+
+```typescript
+type RetryConfig = {
+  maxAttempts: number;          // default 3
+  initialDelayMs: number;       // default 500
+  maxDelayMs: number;           // default 8000
+  retryOn: string[];            // default ["NETWORK_ERROR", "SERVICE_ERROR", "RATE_LIMIT"]
+};
+```
+
+## Lifecycle methods
+
+| Method | Purpose |
+| --- | --- |
+| `setToken(token | null)` | Set a token directly (replaces `getToken` for the current call). |
+| `setTenant(slug)` | Switch tenants at runtime. |
+| `setSurface(surface)` | Switch surfaces (e.g. `kiosk` ↔ `tablet`). |
+| `getHeaders()` | Returns the current header set used by domain clients. |
+| `dispose()` | Cancels in-flight requests and clears interceptors. |
+
+```typescript
+cityos.setSurface("kiosk");
+cityos.setTenant("jeddah-downtown");
+await cityos.setToken(newToken);
+```
+
+## Auth strategies
+
+### Bearer token (most common)
+
+```typescript
+new CityOSClient({
+  baseUrl,
+  tenantId,
+  getToken: async () => tokenStore.get(),
+});
+```
+
+### Static token (test / scripts)
+
+```typescript
+new CityOSClient({ baseUrl, tenantId, getToken: async () => "ey..." });
+```
+
+### S2S key (machine-to-machine)
+
+```typescript
+new CityOSClient({ baseUrl, tenantId, s2sKey: process.env.S2S_SECRET! });
+```
+
+## Interceptors
+
+Interceptors mutate a request or response. Register multiple; they run in order.
+
+```typescript
+cityos.addRequestInterceptor((req) => {
+  req.headers.set("x-app-version", appVersion);
+  return req;
+});
+
+cityos.addResponseInterceptor(async (res, req) => {
+  if (res.status === 401 && (await res.clone().json()).error?.tokenExpired) {
+    const fresh = await refresh();
+    cityos.setToken(fresh);
+    return cityos.retry(req);
+  }
+  return res;
+});
+```
+
+Remove with the returned disposer:
+
+```typescript
+const off = cityos.addRequestInterceptor(addAppVersion);
+off();
+```
+
+## Retry & backoff
+
+The default policy retries on `NETWORK_ERROR`, `SERVICE_ERROR`, and `RATE_LIMIT` with exponential backoff capped at 8 s. `RATE_LIMIT` honours `retryAfterSeconds` from the error payload.
+
+Disable retries:
+
+```typescript
+new CityOSClient({ baseUrl, tenantId, retry: { maxAttempts: 1 } });
+```
+
+Custom policy per call:
+
+```typescript
+await commerce.listProducts({}, { retry: { maxAttempts: 5 } });
+```
+
+## Correlation IDs
+
+Every request carries `x-correlation-id`. The SDK auto-generates a UUID v4 unless `correlationIdProvider` returns one. The server echoes the value in every response — forward it to your logger and to user-facing support widgets.
+
+```typescript
+new CityOSClient({
+  baseUrl,
+  tenantId,
+  correlationIdProvider: () => requestStorage.get("requestId") ?? crypto.randomUUID(),
+});
+```
+
+## Logging hooks
+
+```typescript
+new CityOSClient({
+  baseUrl,
+  tenantId,
+  logger: {
+    onRequest: (req) => console.log("→", req.method, req.url),
+    onResponse: (res, req) => console.log("←", res.status, req.url),
+    onError: (err, req) => Sentry.captureException(err, { extra: { url: req.url } }),
+  },
+});
+```
+
+## Capability gating helper
+
+```typescript
+import { whenCapability } from "@cityos/api-client";
+
+await whenCapability(cityos, "iotEnabled", async () => {
+  const { iot } = createBffClients(cityos);
+  await iot.listDevices({ limit: 50 });
+});
+```
+
+Returns `null` if the flag is `false`; otherwise runs the callback.
+
+## React / React Native
+
+Wrap once at the app root and share via context:
+
+```tsx
+import { CityOSProvider } from "@cityos/api-client/react";
+
+function App() {
+  return (
+    <CityOSProvider client={cityos}>
+      <Routes />
+    </CityOSProvider>
+  );
+}
+
+// in a component
+import { useCityOS } from "@cityos/api-client/react";
+
+function ProductList() {
+  const { commerce } = useCityOS();
+  // …
+}
+```
+
+## Related
+
+- [SDK overview](/sdk/overview)
+- [BffClient](/sdk/bff-client)
+- [Common types](/sdk/types/common)
+- [Error codes](/resources/error-codes)
+- [Architecture](/architecture)

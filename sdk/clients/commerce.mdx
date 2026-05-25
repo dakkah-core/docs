@@ -1,0 +1,103 @@
+---
+title: "CommerceClient"
+sidebarTitle: "Commerce"
+description: "Typed SDK client for the CityOS Medusa v2 commerce vertical — list products, manage carts, and create orders."
+icon: "shopping-cart"
+---
+
+`CommerceClient` wraps `/api/bff/commerce/*` and inherits auth, tenant, surface, and correlation handling from `CityOSClient`.
+
+## Get it
+
+```typescript
+import { CityOSClient, createBffClients } from "@cityos/api-client";
+
+const cityos = new CityOSClient({ baseUrl, tenantId, getToken });
+const { commerce } = createBffClients(cityos);
+```
+
+## Methods
+
+| Method | HTTP | Endpoint |
+| --- | --- | --- |
+| `listProducts(params?)` | GET | `/api/bff/commerce/products` |
+| `createProduct(body)` | POST | `/api/bff/commerce/products` |
+| `cart(action)` | POST | `/api/bff/commerce/cart` |
+| `createCart()` | POST | `/cart` with `action: "create"` |
+| `getCart(cartId)` | POST | `/cart` with `action: "retrieve"` |
+| `addItem(cartId, variantId, qty)` | POST | `/cart` with `action: "addItem"` |
+| `updateItem(cartId, lineId, qty)` | POST | `/cart` with `action: "updateItem"` |
+| `removeItem(cartId, lineId)` | POST | `/cart` with `action: "removeItem"` |
+| `listOrders(params?)` | GET | `/api/bff/commerce/orders` |
+| `createOrder(body)` | POST | `/api/bff/commerce/orders` |
+
+## listProducts
+
+```typescript
+const { data, pagination } = await commerce.listProducts({
+  q: "coffee",
+  category: "beverages",
+  page: 1,
+  limit: 20,
+});
+```
+
+| Param | Type | Notes |
+| --- | --- | --- |
+| `q` | string | Full-text query |
+| `category` | string | Category handle |
+| `status` | string | e.g. `published` |
+| `page` | number | Default 1 |
+| `limit` | number | 1–100, default 20 |
+
+Public endpoint — no auth required. Cached 30s.
+
+## Cart actions
+
+The single `/cart` endpoint dispatches on `action`. The SDK exposes helpers:
+
+```typescript
+const { data: cart } = await commerce.createCart();
+
+await commerce.addItem(cart.id, "variant_01H...", 2);
+await commerce.updateItem(cart.id, "li_01H...", 3);
+await commerce.removeItem(cart.id, "li_01H...");
+
+const { data: latest } = await commerce.getCart(cart.id);
+```
+
+## createOrder
+
+One-shot cart-completion:
+
+```typescript
+const { data: order } = await commerce.createOrder({
+  email: "citizen@example.com",
+  items: [{ variant_id: "variant_01H...", quantity: 1 }],
+  shipping_address: {
+    first_name: "Ahmed",
+    last_name: "Al-Qahtani",
+    address_1: "King Fahd Road",
+    city: "Riyadh",
+    country_code: "sa",
+  },
+}, { idempotencyKey: `order_${crypto.randomUUID()}` });
+```
+
+## listOrders
+
+Ownership-enforced — returns only the authenticated customer's orders unless the caller has an admin role.
+
+```typescript
+const { data } = await commerce.listOrders({ status: "completed", page: 1, limit: 20 });
+```
+
+## Errors
+
+`COMMERCE_ERROR`, `VALIDATION_ERROR`, `AUTH_ERROR` (401 — token), `AUTH_ERROR` (403 — ownership), `NOT_FOUND`, `CONFLICT`. See [Error codes](/resources/error-codes).
+
+## Related
+
+- [Commerce vertical](/verticals/commerce)
+- [Commerce API](/api/commerce)
+- [Commerce guide](/guides/commerce)

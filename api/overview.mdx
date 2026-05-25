@@ -1,0 +1,137 @@
+---
+title: "CityOS BFF API overview"
+description: "Overview of the Backend-for-Frontend API: base URL, the standard response envelope, required and optional headers, pagination, and rate limiting conventions."
+---
+
+The Dakkah CityOS Backend-for-Frontend (BFF) API is a unified HTTP/JSON API that sits between your client applications and the platform's internal services — Payload CMS, Medusa commerce, Meilisearch, Fleetbase, and others. All BFF routes are served under a single base URL and follow a consistent middleware pipeline, making it straightforward to integrate from web apps, mobile clients, or server-side services.
+
+## Base URL
+
+All BFF routes are served under the following base path:
+
+```
+https://cityos.dakkah.city/api/bff/
+```
+
+For local development, replace the host with `http://localhost:3000`. Every BFF request automatically handles correlation ID assignment, rate limiting, authentication, and tenant resolution — you do not need to configure any of this in your client code.
+
+## Standard response envelope
+
+Every response from the BFF API — success or error — is wrapped in a consistent JSON envelope. This makes it straightforward to write a single response handler in your client code.
+
+### Success response
+
+```json
+{
+  "success": true,
+  "data": { ... },
+  "meta": {
+    "tenantSlug": "riyadh-downtown",
+    "timestamp": "2026-04-13T10:00:00.000Z"
+  },
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 156,
+    "totalPages": 8
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+<ResponseField name="success" type="boolean" required>
+  Always `true` for successful responses.
+</ResponseField>
+
+<ResponseField name="data" type="object | array">
+  The response payload. The shape varies per endpoint and is documented on each endpoint's reference page.
+</ResponseField>
+
+<ResponseField name="meta" type="object">
+  <Expandable title="properties">
+    <ResponseField name="tenantSlug" type="string">
+      The tenant slug resolved for this request.
+    </ResponseField>
+    <ResponseField name="timestamp" type="string">
+      ISO 8601 timestamp of when the response was generated.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="pagination" type="object">
+  Present on list endpoints. Contains `page`, `limit`, `total`, and `totalPages`. Some endpoints use `offset` instead of `page` — check the individual endpoint reference for the exact shape.
+</ResponseField>
+
+<ResponseField name="correlationId" type="string">
+  UUID assigned to this request for distributed tracing. Include this value in any bug reports or support requests. You can supply your own value via the `x-correlation-id` request header; if you omit it, the platform generates one automatically.
+</ResponseField>
+
+### Error response
+
+When a request fails, `success` is `false` and the envelope contains an `error` object. See [Error codes and handling](/api/errors) for the full list of error codes and retry guidance.
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Validation failed",
+    "details": {
+      "fieldErrors": {
+        "email": ["Invalid email address"]
+      }
+    }
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+## Standard request headers
+
+| Header | Required | Description |
+|---|---|---|
+| `Authorization` | Required (most endpoints) | Bearer JWT obtained from `POST /api/bff/auth/login` or via Keycloak OIDC. Format: `Bearer <token>`. |
+| `x-tenant-slug` | Conditional | Tenant slug for multi-tenant routing. Required when calling from a mobile app or any origin not already mapped to a tenant domain. Resolved from the request domain when omitted. |
+| `x-correlation-id` | Optional | UUID for distributed tracing. Auto-generated if not provided. Returned in every response. |
+| `x-idempotency-key` | Optional | Idempotency key for safe mutation retries. When you supply this header on a POST or PATCH request, the platform detects duplicate requests and returns the original response instead of processing the operation again. |
+| `Content-Type` | Required for mutations | Must be `application/json` for all request bodies. |
+
+## Pagination
+
+List endpoints return a `pagination` object in the response envelope. Use the `page` and `limit` query parameters to paginate results.
+
+```bash
+GET /api/bff/commerce/products?page=2&limit=20
+GET /api/bff/booking?offset=40&limit=20
+```
+
+Some endpoints (booking, search) use `offset`-based pagination instead of `page`. The response envelope always reflects the pagination strategy the endpoint uses.
+
+## Rate limiting
+
+The BFF middleware applies rate limiting before authentication. When you exceed the rate limit, the platform returns a `429` status with an error code of `RATE_LIMIT` and a `retryAfterSeconds` field in the error detail:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "RATE_LIMIT",
+    "message": "Too many requests",
+    "retryAfterSeconds": 30
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+Wait the number of seconds specified in `retryAfterSeconds` before retrying. See [Error codes and handling](/api/errors) for a retry strategy example.
+
+## Next steps
+
+<Columns cols={2}>
+  <Card title="Authentication" icon="key" href="/api/authentication">
+    Obtain a JWT and authenticate your API requests.
+  </Card>
+  <Card title="Error handling" icon="triangle-alert" href="/api/errors">
+    Understand error codes and build a retry strategy.
+  </Card>
+</Columns>

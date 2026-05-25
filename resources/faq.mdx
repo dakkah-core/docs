@@ -1,0 +1,191 @@
+---
+title: "Frequently asked questions"
+sidebarTitle: "FAQ"
+description: "Common questions about integrating with Dakkah CityOS — auth, tenancy, surfaces, realtime, webhooks, commerce, bookings, errors, mobile, and support."
+icon: "circle-help"
+---
+
+## Getting started
+
+<AccordionGroup>
+  <Accordion title="Where do I start?">
+    Read [Introduction](/introduction) and then run through [Quickstart](/quickstart). The quickstart installs `@cityos/api-client`, initialises `CityOSClient`, logs in, and makes a live API call in under five minutes.
+  </Accordion>
+
+  <Accordion title="Do I need to install anything besides the SDK?">
+    For most integrations, no — `@cityos/api-client` is sufficient. For realtime features you also install `ably`; for mobile you install `expo`, `react-native-qrcode-svg`, etc. as documented per guide.
+  </Accordion>
+
+  <Accordion title="Is there a sandbox tenant?">
+    Yes. Your account manager provisions a sandbox tenant with seeded products, citizens, and devices. Use it freely — it is reset weekly.
+  </Accordion>
+</AccordionGroup>
+
+## Tenancy
+
+<AccordionGroup>
+  <Accordion title="Do I need a tenant slug on every request?">
+    Yes — effectively. The BFF auto-resolves the slug from the request origin when possible, but mobile apps and cross-tenant tools must send `x-tenant-slug` explicitly. The SDK does this automatically when you set `tenantId` on `CityOSClient`. See [Tenant setup](/configuration/tenant-setup).
+  </Accordion>
+
+  <Accordion title="Can a single client switch tenants?">
+    Yes. Call `cityos.setTenant("jeddah-downtown")` at runtime. All subsequent requests use the new slug.
+  </Accordion>
+
+  <Accordion title="Which tier does my tenant belong to?">
+    Check `GET /api/bff/tenant/config`. The response includes the `tier` field (`MASTER`, `GLOBAL`, `REGIONAL`, `COUNTRY`, or `CITY`). See [Multi-tenancy](/concepts/multi-tenancy).
+  </Accordion>
+</AccordionGroup>
+
+## Authentication
+
+<AccordionGroup>
+  <Accordion title="How do I authenticate machine-to-machine?">
+    Use an S2S key sent as `X-S2S-Key`. Configure it once on `CityOSClient`:
+
+    ```typescript
+    new CityOSClient({ baseUrl, tenantId, s2sKey: process.env.S2S_SECRET });
+    ```
+
+    See [API authentication](/api/authentication).
+  </Accordion>
+
+  <Accordion title="Do I have to refresh tokens manually?">
+    No. The SDK detects `AUTH_ERROR` with `tokenExpired: true` and calls `getToken()` again before retrying. Make `getToken` return a fresh token when the cached one is near expiry.
+  </Accordion>
+
+  <Accordion title="Does CityOS support SSO?">
+    Yes — via Keycloak OIDC. See [Identity and SSO](/integrations/identity).
+  </Accordion>
+
+  <Accordion title="How do I verify a citizen's identity (KYC)?">
+    Use Walt.id Verifiable Credentials, exposed through the identity integration. KYC is gated by the `kycEnabled` capability flag.
+  </Accordion>
+</AccordionGroup>
+
+## Surfaces & SDUI
+
+<AccordionGroup>
+  <Accordion title="Which surface should I send?">
+    Match the physical form factor of your client: `mobile`, `tablet`, `desktop`, `kiosk`, `tv_1080p`, or `carplay`. See the table on the [Surfaces](/concepts/surfaces) page.
+  </Accordion>
+
+  <Accordion title="What happens if I omit x-cityos-surface?">
+    The SDUI Composer falls back to `desktop`. Always set the correct surface for client-facing requests.
+  </Accordion>
+
+  <Accordion title="Can I render SDUI payloads myself, without the renderer package?">
+    Yes. The payload is plain JSON described by `SdPayload`. The official renderer packages (`@cityos/sdui-renderer-web`, `@cityos/sdui-renderer-native`) are optional.
+  </Accordion>
+</AccordionGroup>
+
+## Realtime
+
+<AccordionGroup>
+  <Accordion title="How do I authenticate against Ably?">
+    Use the token endpoint `/api/bff/tenant/ably-token` as `authUrl` on the Ably client. The BFF mints a short-lived tenant-scoped token. See [Realtime integration](/integrations/realtime).
+  </Accordion>
+
+  <Accordion title="Why do I get no messages on a channel I subscribed to?">
+    Check three things:
+
+    1. `ablyEnabled: true` on `GET /api/bff/tenant/capabilities`.
+    2. The channel name uses your tenant slug exactly: `cityos:{tenantSlug}:{domain}:{topic}`.
+    3. The user role granted by the BFF token includes the channel's required permission.
+  </Accordion>
+</AccordionGroup>
+
+## Webhooks
+
+<AccordionGroup>
+  <Accordion title="How do I verify a webhook signature?">
+    Compute HMAC-SHA256 of the raw request body with your webhook secret and compare to the `x-cityos-signature` header. Code sample in [Webhooks](/configuration/webhooks).
+  </Accordion>
+
+  <Accordion title="Will a webhook be retried if my endpoint is down?">
+    Yes. The BFF retries with exponential backoff up to 24 hours. Persistent failures are surfaced in the admin console.
+  </Accordion>
+
+  <Accordion title="Can I subscribe to webhooks for a specific tenant only?">
+    Yes — webhooks are tenant-scoped. Register one endpoint per tenant or filter on `data.tenantSlug` server-side.
+  </Accordion>
+</AccordionGroup>
+
+## Commerce
+
+<AccordionGroup>
+  <Accordion title="Why do my product responses look cached?">
+    `GET /api/bff/commerce/products` is cached for 30 seconds. Mutations bust the cache for the affected tenant.
+  </Accordion>
+
+  <Accordion title="How do I add a product to an existing cart?">
+    Use the unified cart endpoint with `action: "addItem"`. See [Commerce guide](/guides/commerce) or [CommerceClient](/sdk/clients/commerce).
+  </Accordion>
+
+  <Accordion title="Which payment providers are supported?">
+    Stripe and Moyasar by default. ZATCA e-invoicing is automatically wired for Saudi tenants. See [Payments](/integrations/payments).
+  </Accordion>
+</AccordionGroup>
+
+## Bookings
+
+<AccordionGroup>
+  <Accordion title="Why do I get CONFLICT when creating a booking?">
+    Another booking overlaps the requested `timeSlot` for the same provider. List existing bookings for the day to find an open slot.
+  </Accordion>
+
+  <Accordion title="Should I always send an idempotency key?">
+    Yes — on every mutation. Use a fresh UUID per logical operation. The server deduplicates retries within a 24-hour window.
+  </Accordion>
+</AccordionGroup>
+
+## Errors & debugging
+
+<AccordionGroup>
+  <Accordion title="Where can I find the correlationId for a failed request?">
+    Every response — success or failure — includes `correlationId`. The SDK attaches it to thrown `ApiError` instances and to logger callbacks. Forward it to your monitoring tool and to user-facing error UIs.
+  </Accordion>
+
+  <Accordion title="What does VALIDATION_ERROR.details look like?">
+    It mirrors Zod's `flatten()`:
+
+    ```json
+    {
+      "formErrors": ["At least one of email or phone is required"],
+      "fieldErrors": { "email": ["Invalid email"] }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="How do I detect rate limiting?">
+    `code === "RATE_LIMIT"` and `retryAfterSeconds` is set. The SDK's default retry policy backs off automatically; you only need custom handling if you've disabled retries.
+  </Accordion>
+</AccordionGroup>
+
+## Mobile
+
+<AccordionGroup>
+  <Accordion title="How do I run the superapp locally?">
+    See the [Mobile guide](/guides/mobile-apps). You need `EXPO_TOKEN` and the `EXPO_PUBLIC_*` variables set in your local env.
+  </Accordion>
+
+  <Accordion title="Can I ship OTA updates without going through the App Store?">
+    Yes, for JS-only changes via `eas update`. Native changes still require a new build. See [Deployment](/configuration/deployment).
+  </Accordion>
+</AccordionGroup>
+
+## Support
+
+<AccordionGroup>
+  <Accordion title="Where do I report a bug?">
+    Open an issue in your tenant's support channel. Always include the `correlationId` from the failing response.
+  </Accordion>
+
+  <Accordion title="Where do I report a security issue?">
+    Email `security@dakkah.city`. Please do not file public issues for vulnerabilities.
+  </Accordion>
+
+  <Accordion title="Where is the platform status page?">
+    `https://cityos.dakkah.city`.
+  </Accordion>
+</AccordionGroup>

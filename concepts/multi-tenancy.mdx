@@ -1,0 +1,121 @@
+---
+title: "Multi-tenancy in Dakkah CityOS"
+description: "Understand the CityOS 5-tier tenant hierarchy, data isolation model, and how to send your tenant slug in every API request to scope data correctly."
+---
+
+Every deployment of Dakkah CityOS is organized around a strict tenant hierarchy. Whether you are a platform operator, a national franchise, or a city-level merchant, your tenant tier determines which features you can access, which ERP backend processes your transactions, and how your data is isolated from every other tenant on the platform.
+
+## The 5-tier tenant hierarchy
+
+CityOS models ownership and access through five tiers that nest inside each other. Each tier inherits the configuration of its parent and can override it at its own level.
+
+```
+MASTER   (Platform owner — Dakkah)
+  └── GLOBAL     (Regional operator)
+        └── REGIONAL   (Country-level franchise)
+              └── COUNTRY    (National operator)
+                    └── CITY       (City-level operator / SME merchant)
+```
+
+| Tier | Who it represents | ERP backend | Key capabilities |
+|---|---|---|---|
+| `MASTER` | Dakkah (platform owner) | ERPNext | Full platform control, all modules, cross-tenant analytics |
+| `GLOBAL` | Regional super-operators | ERPNext | Multi-country management, global reporting |
+| `REGIONAL` | Country-level franchises | ERPNext | National operations, multi-city management |
+| `COUNTRY` | National operators | Tryton | Country-scoped catalog, compliance, city oversight |
+| `CITY` | City operators and SME merchants | Tryton | City-scoped services, local catalog, citizen-facing features |
+
+<Note>
+The ERP backend is chosen automatically based on your tier. `MASTER`, `GLOBAL`, and `REGIONAL` tenants route financial operations through ERPNext. `COUNTRY` and `CITY` tenants use Tryton.
+</Note>
+
+## The node hierarchy
+
+Within a tenant, physical geography is modeled as a ten-level node tree. Every piece of content, every product listing, and every service offering is anchored to a node.
+
+```
+Country
+  └── Region
+        └── City
+              └── Zone
+                    └── POI (Point of Interest)
+```
+
+<Tip>
+The full spatial model has ten levels — Country → Region → District → Zone → Sector → Facility → Building → Floor → Unit → POI — but the five listed above are the levels you interact with most often when scoping catalog content, fleet zones, and SDUI screens.
+</Tip>
+
+A POI is the fundamental unit of CityOS. Restaurants, hospitals, government offices, parking bays, kiosks, and transit stops are all modeled as POIs. Every API query can be scoped to a specific node in the hierarchy, letting you retrieve "all products within Zone 3 of Riyadh" or "all permits filed in the Eastern Region" without cross-tenant data leaking in.
+
+## Identifying your tenant: the `x-tenant-slug` header
+
+Every API request that reaches a CityOS BFF route must carry your tenant identifier. The platform resolves tenant context from the `x-tenant-slug` request header.
+
+```http
+GET /api/bff/commerce/products HTTP/1.1
+Host: cityos.example.com
+Authorization: Bearer <your-jwt>
+x-tenant-slug: riyadh-municipality
+x-cityos-surface: web
+```
+
+If you use the `CityOSClient` SDK, pass your tenant identifier in the client config and the header is added to every request automatically:
+
+```typescript
+import { CityOSClient } from "@cityos/api-client";
+
+const client = new CityOSClient({
+  baseUrl: "https://cityos.example.com",
+  getToken: () => authSession.getToken(),
+  tenantId: "riyadh-municipality",
+});
+
+// Every subsequent request carries x-cityos-tenant-id and x-tenant-id
+const products = await client.get("/api/bff/commerce/products");
+```
+
+<Note>
+The SDK sends both `x-cityos-tenant-id` and `x-tenant-id` for backward compatibility with older BFF routes. You only need to configure `tenantId` once.
+</Note>
+
+## How data isolation works
+
+CityOS enforces tenant isolation at the database layer using Row-Level Security (RLS) and tenant-scoped queries. From your perspective as an API caller, this means:
+
+- A request authenticated with the `riyadh-municipality` tenant slug will **never** return records belonging to `jeddah-municipality`, even if those records exist in the same collection.
+- Tenant-scoped queries are enforced automatically by the Payload CMS multi-tenant plugin. You do not need to add filters to your queries.
+- Policy inheritance resolves from the top of the hierarchy down. A `CITY` tenant inherits compliance settings from its `COUNTRY` parent, which in turn inherits from `REGIONAL`, and so on. You can override inherited settings at any level.
+
+## How to find your tenant slug
+
+<Steps>
+  <Step title="Log in to the admin console">
+    Navigate to your CityOS admin panel and sign in with your operator credentials.
+  </Step>
+  <Step title="Open Tenant Settings">
+    Go to **Settings → Tenant** in the sidebar. Your slug is displayed at the top of the settings page.
+  </Step>
+  <Step title="Use the slug in API requests">
+    Copy the slug value and set it as the `tenantId` in your `CityOSClient` config, or pass it directly as the `x-tenant-slug` header.
+  </Step>
+</Steps>
+
+## What each tier unlocks
+
+<AccordionGroup>
+  <Accordion title="MASTER">
+    Full platform access. You can manage all tenants, all domains, and all node hierarchy levels. You have access to cross-tenant analytics, global audit logs, and platform-wide configuration. Only Dakkah operates at this tier.
+  </Accordion>
+  <Accordion title="GLOBAL">
+    Multi-country management. You can create and configure `REGIONAL` and lower tenants, define regional catalogs, and access aggregated reporting across countries. ERPNext handles all financial operations.
+  </Accordion>
+  <Accordion title="REGIONAL">
+    Country-level franchise operations. You can manage `COUNTRY` tenants, configure national compliance rules, and access country-scoped analytics. ERPNext handles financial operations.
+  </Accordion>
+  <Accordion title="COUNTRY">
+    National operator access. You can manage `CITY` tenants, define country-scoped product catalogs, configure regional pricing, and access Tryton for SME financial workflows.
+  </Accordion>
+  <Accordion title="CITY">
+    City-level operator and merchant access. You manage local POIs, publish city-scoped content, run citizen-facing services, and access Tryton for local financial operations. This is the entry point for most merchants and municipal operators.
+  </Accordion>
+</AccordionGroup>

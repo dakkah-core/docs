@@ -1,0 +1,79 @@
+---
+title: "Loyalty on CityOS"
+sidebarTitle: "Loyalty"
+description: "Issue points, manage tiers, and redeem rewards through the cross-domain CityOS loyalty vertical."
+icon: "award"
+---
+
+Loyalty is a cross-domain primitive in CityOS: points accrued in grocery, fitness, pharmacy, or any participating merchant can be redeemed across the platform. The vertical is served by the `loyalty` domain package and exposed at `/api/bff/commerce/loyalty`.
+
+## Get started
+
+<CardGroup cols={2}>
+  <Card title="Guide" icon="book-open" href="/guides/loyalty">
+  </Card>
+
+  <Card title="API reference" icon="code" href="/api/loyalty">
+  </Card>
+
+  <Card title="SDK client" icon="package" href="/sdk/clients/loyalty">
+  </Card>
+
+  <Card title="Commerce" icon="shopping-cart" href="/verticals/commerce">
+  </Card>
+</CardGroup>
+
+## Endpoints
+
+| Method | Path | Auth | Purpose |
+| --- | --- | --- | --- |
+| `GET` | `/api/bff/commerce/loyalty` | Required | Balance, tier, programId |
+| `POST` | `/api/bff/commerce/loyalty` | Required | Action-based: `redeem`, `history`, `enroll` |
+
+## Actions
+
+| Action | Required fields | Notes |
+| --- | --- | --- |
+| `enroll` | `programId` | Join a loyalty program |
+| `redeem` | `points` (≥ 1) | Spend points |
+| `history` | — | Return transaction list |
+
+### Enroll
+
+```bash
+curl -X POST https://cityos.dakkah.city/api/bff/commerce/loyalty \
+  -H "Authorization: Bearer <token>" \
+  -H "x-tenant-slug: riyadh-downtown" \
+  -H "Content-Type: application/json" \
+  -d '{ "action": "enroll", "programId": "pgm_gold_rewards" }'
+```
+
+### Redeem
+
+```bash
+curl -X POST https://cityos.dakkah.city/api/bff/commerce/loyalty \
+  -H "Authorization: Bearer <token>" \
+  -H "x-tenant-slug: riyadh-downtown" \
+  -H "Content-Type: application/json" \
+  -d '{ "action": "redeem", "points": 500 }'
+```
+
+## Account shape
+
+```json
+{
+  "customerId": "cust_01H...",
+  "pointsBalance": 1280,
+  "tier": "gold",
+  "programId": "pgm_gold_rewards"
+}
+```
+
+## Errors
+
+`LOYALTY_ERROR`, `VALIDATION_ERROR`, `AUTH_ERROR`. See [Error codes](/resources/error-codes).
+
+## Related
+
+- [Commerce](/verticals/commerce) — accrue on order completion
+- [Events](/verticals/events) — earn on ticket purchases

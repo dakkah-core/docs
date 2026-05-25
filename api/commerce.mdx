@@ -1,0 +1,434 @@
+---
+title: "Commerce API endpoints"
+description: "Browse the Medusa product catalog, manage cart state with action-based mutations, and create orders through the CityOS commerce BFF."
+---
+
+The commerce endpoints expose a tenant-scoped product catalog and the full cart-to-order lifecycle backed by Medusa v2. Product listings are public and cached for 30 seconds. Cart operations use a unified action-based endpoint. Order endpoints enforce ownership so customers can only read their own data. All routes sit under `/api/bff/commerce/`.
+
+---
+
+## GET /api/bff/commerce/products
+
+Returns products from the Medusa catalog scoped to the tenant's sales channel. No authentication is required. Results include pagination metadata.
+
+### Request headers
+
+<ParamField path="x-tenant-slug" type="string">
+  Tenant slug. Resolved from the domain if omitted.
+</ParamField>
+
+### Query parameters
+
+<ParamField query="q" type="string">
+  Full-text search query applied across product titles and descriptions.
+</ParamField>
+
+<ParamField query="category" type="string">
+  Filter by product category handle.
+</ParamField>
+
+<ParamField query="status" type="string">
+  Filter by product status (e.g. `published`).
+</ParamField>
+
+<ParamField query="page" type="number" default="1">
+  Page number. Minimum 1.
+</ParamField>
+
+<ParamField query="limit" type="number" default="20">
+  Results per page. 1–100.
+</ParamField>
+
+### Response fields
+
+<ResponseField name="data" type="Product[]">
+  Array of product objects.
+  <Expandable title="Product properties">
+    <ResponseField name="id" type="string">Medusa product ID.</ResponseField>
+    <ResponseField name="title" type="string">Product title.</ResponseField>
+    <ResponseField name="handle" type="string">URL-safe product handle.</ResponseField>
+    <ResponseField name="description" type="string">Product description.</ResponseField>
+    <ResponseField name="status" type="string">Publication status.</ResponseField>
+    <ResponseField name="variants" type="object[]">Product variants (price, SKU, options).</ResponseField>
+    <ResponseField name="images" type="object[]">Image objects with a `url` field.</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="pagination" type="object">
+  <Expandable title="properties">
+    <ResponseField name="page" type="number">Current page.</ResponseField>
+    <ResponseField name="limit" type="number">Results per page.</ResponseField>
+    <ResponseField name="total" type="number">Total matching products.</ResponseField>
+    <ResponseField name="totalPages" type="number">Total pages.</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+curl --request GET \
+  --url 'https://cityos.dakkah.city/api/bff/commerce/products?q=coffee&limit=10' \
+  --header 'x-tenant-slug: riyadh-downtown'
+```
+
+```typescript TypeScript
+import { CommerceClient, CityOSClient } from "@cityos/api-client";
+
+const client = new CityOSClient({ baseUrl: "https://cityos.dakkah.city" });
+const commerce = new CommerceClient(client);
+
+const { data } = await commerce.listProducts({ page: 1, pageSize: 10 });
+// data.products — array of CommerceProduct
+```
+
+</CodeGroup>
+
+**200 response example**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "prod_01H...",
+      "title": "Arabic Coffee Set",
+      "handle": "arabic-coffee-set",
+      "status": "published",
+      "variants": [],
+      "images": [{ "url": "https://cdn.dakkah.city/arabic-coffee-set.jpg" }]
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 156,
+    "totalPages": 8
+  },
+  "meta": {
+    "tenantSlug": "riyadh-downtown",
+    "timestamp": "2026-04-13T10:00:00.000Z"
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+---
+
+## POST /api/bff/commerce/products
+
+Creates a product in Medusa via the admin API. Requires an authenticated staff or admin session.
+
+### Request body
+
+<ParamField body="title" type="string" required>
+  Product title. 1–500 characters.
+</ParamField>
+
+Additional Medusa product fields (e.g. `description`, `handle`, `status`, `variants`) are accepted as pass-through properties.
+
+<CodeGroup>
+
+```bash curl
+curl --request POST \
+  --url https://cityos.dakkah.city/api/bff/commerce/products \
+  --header 'Authorization: Bearer <admin-token>' \
+  --header 'Content-Type: application/json' \
+  --header 'x-tenant-slug: riyadh-downtown' \
+  --data '{
+    "title": "Arabic Coffee Set",
+    "status": "published",
+    "description": "Handcrafted dallah and cup set."
+  }'
+```
+
+```typescript TypeScript
+const response = await fetch("/api/bff/commerce/products", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${adminToken}`,
+    "Content-Type": "application/json",
+    "x-tenant-slug": "riyadh-downtown",
+  },
+  body: JSON.stringify({
+    title: "Arabic Coffee Set",
+    status: "published",
+    description: "Handcrafted dallah and cup set.",
+  }),
+});
+
+const { data } = await response.json();
+// data — created Product object
+```
+
+</CodeGroup>
+
+| Status | Meaning |
+|--------|---------|
+| `201` | Product created. |
+| `400` | Validation error. |
+
+---
+
+## POST /api/bff/commerce/cart
+
+Unified cart endpoint. You pass an `action` field to specify the operation: `create`, `retrieve`, `addItem`, `removeItem`, or `updateItem`. Authentication is optional for cart creation but recommended for user-scoped carts.
+
+### Request headers
+
+<ParamField path="x-tenant-slug" type="string">
+  Tenant slug.
+</ParamField>
+
+### Request body
+
+<ParamField body="action" type="string" required>
+  Cart operation. One of `create`, `retrieve`, `addItem`, `removeItem`, `updateItem`.
+</ParamField>
+
+<ParamField body="cartId" type="string">
+  Cart ID. Required for all operations except `create`.
+</ParamField>
+
+<ParamField body="variantId" type="string">
+  Variant ID to add. Required for `addItem`.
+</ParamField>
+
+<ParamField body="quantity" type="number">
+  Quantity to add. Required for `addItem`. Minimum 1.
+</ParamField>
+
+<ParamField body="lineId" type="string">
+  Line item ID to remove. Required for `removeItem`.
+</ParamField>
+
+### Response fields
+
+<ResponseField name="data" type="object">
+  The Medusa cart object reflecting the current state after the operation.
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+# Create a cart
+curl --request POST \
+  --url https://cityos.dakkah.city/api/bff/commerce/cart \
+  --header 'Content-Type: application/json' \
+  --header 'x-tenant-slug: riyadh-downtown' \
+  --data '{ "action": "create" }'
+
+# Add an item
+curl --request POST \
+  --url https://cityos.dakkah.city/api/bff/commerce/cart \
+  --header 'Content-Type: application/json' \
+  --header 'x-tenant-slug: riyadh-downtown' \
+  --data '{
+    "action": "addItem",
+    "cartId": "cart_01H...",
+    "variantId": "variant_01H...",
+    "quantity": 2
+  }'
+
+# Remove an item
+curl --request POST \
+  --url https://cityos.dakkah.city/api/bff/commerce/cart \
+  --header 'Content-Type: application/json' \
+  --header 'x-tenant-slug: riyadh-downtown' \
+  --data '{
+    "action": "removeItem",
+    "cartId": "cart_01H...",
+    "lineId": "li_01H..."
+  }'
+```
+
+```typescript TypeScript
+// Create a new cart
+const createRes = await fetch("/api/bff/commerce/cart", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ action: "create" }),
+});
+const { data: cart } = await createRes.json();
+
+// Add an item
+await fetch("/api/bff/commerce/cart", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    action: "addItem",
+    cartId: cart.id,
+    variantId: "variant_01H...",
+    quantity: 2,
+  }),
+});
+
+// Remove an item
+await fetch("/api/bff/commerce/cart", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    action: "removeItem",
+    cartId: cart.id,
+    lineId: "li_01H...",
+  }),
+});
+```
+
+</CodeGroup>
+
+| Status | Meaning |
+|--------|---------|
+| `200` | Cart operation completed. |
+| `400` | Validation error or missing parameters for the chosen action. |
+
+---
+
+## GET /api/bff/commerce/orders
+
+Returns orders for the authenticated customer. The server enforces ownership — customers cannot see orders belonging to other accounts.
+
+### Request headers
+
+<ParamField path="Authorization" type="string" required>
+  `Bearer <jwt>`.
+</ParamField>
+
+<ParamField path="x-tenant-slug" type="string">
+  Tenant slug.
+</ParamField>
+
+### Query parameters
+
+<ParamField query="customerId" type="string">
+  Customer ID filter. Defaults to the authenticated customer.
+</ParamField>
+
+<ParamField query="status" type="string">
+  Filter by order status.
+</ParamField>
+
+<ParamField query="page" type="number" default="1">
+  Page number.
+</ParamField>
+
+<ParamField query="limit" type="number" default="20">
+  Results per page. Maximum 100.
+</ParamField>
+
+### Response fields
+
+<ResponseField name="data" type="object[]">
+  Array of Medusa order objects.
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+curl --request GET \
+  --url 'https://cityos.dakkah.city/api/bff/commerce/orders?page=1&limit=20' \
+  --header 'Authorization: Bearer <token>' \
+  --header 'x-tenant-slug: riyadh-downtown'
+```
+
+```typescript TypeScript
+import { CommerceClient, CityOSClient } from "@cityos/api-client";
+
+const client = new CityOSClient({ baseUrl: "https://cityos.dakkah.city" });
+const commerce = new CommerceClient(client);
+
+const { data } = await commerce.listOrders({ page: 1, pageSize: 20 });
+```
+
+</CodeGroup>
+
+| Status | Meaning |
+|--------|---------|
+| `200` | Order list returned. |
+| `401` | Authentication required. |
+| `403` | Ownership violation — cannot view another customer's orders. |
+
+---
+
+## POST /api/bff/commerce/orders
+
+Creates a cart, adds the specified line items, and completes it to produce an order in a single request.
+
+### Request body
+
+<ParamField body="email" type="string" required>
+  Customer email address. Maximum 255 characters.
+</ParamField>
+
+<ParamField body="items" type="object[]" required>
+  Line items. Minimum 1 item.
+  <Expandable title="item properties">
+    <ResponseField name="variant_id" type="string" required>Medusa variant ID.</ResponseField>
+    <ResponseField name="quantity" type="number">Quantity. Minimum 1. Defaults to 1.</ResponseField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="shipping_address" type="object">
+  Shipping address object. Passed through to Medusa — see Medusa address schema for field names.
+</ParamField>
+
+<CodeGroup>
+
+```bash curl
+curl --request POST \
+  --url https://cityos.dakkah.city/api/bff/commerce/orders \
+  --header 'Authorization: Bearer <token>' \
+  --header 'Content-Type: application/json' \
+  --header 'x-tenant-slug: riyadh-downtown' \
+  --data '{
+    "email": "citizen@example.com",
+    "items": [
+      { "variant_id": "variant_01H...", "quantity": 1 }
+    ],
+    "shipping_address": {
+      "first_name": "Ahmed",
+      "last_name": "Al-Qahtani",
+      "address_1": "King Fahd Road",
+      "city": "Riyadh",
+      "country_code": "sa"
+    }
+  }'
+```
+
+```typescript TypeScript
+import { CommerceClient, CityOSClient } from "@cityos/api-client";
+
+const client = new CityOSClient({ baseUrl: "https://cityos.dakkah.city" });
+const commerce = new CommerceClient(client);
+
+const { data } = await commerce.createOrder([
+  { productId: "variant_01H...", quantity: 1 },
+]);
+```
+
+</CodeGroup>
+
+**201 response example**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "order_01H...",
+    "status": "pending",
+    "email": "citizen@example.com",
+    "items": [
+      {
+        "variant_id": "variant_01H...",
+        "quantity": 1,
+        "unit_price": 12000
+      }
+    ]
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+| Status | Meaning |
+|--------|---------|
+| `201` | Order created. |
+| `400` | Validation error — missing `email` or `items`. |

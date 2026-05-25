@@ -1,0 +1,84 @@
+---
+title: "Feature flags and capabilities"
+sidebarTitle: "Feature flags"
+description: "Read tenant capability flags from the CityOS BFF and gate client features against the canonical flag list."
+icon: "flag"
+---
+
+CityOS exposes per-tenant capability flags through `GET /api/bff/tenant/capabilities`. Use them to gate UI, skip subscriptions, and degrade gracefully when a service is disabled for the active tenant.
+
+## Read capabilities
+
+```typescript
+const { data: caps } = await tenant.getCapabilities();
+
+if (!caps.iotEnabled) hideIotDashboard();
+if (!caps.ablyEnabled) fallbackToPolling();
+if (!caps.loyaltyEnabled) hideLoyaltyCard();
+```
+
+## Canonical flags
+
+| Flag | Gates |
+| --- | --- |
+| `commerceEnabled` | All `/api/bff/commerce/*` |
+| `bookingEnabled` | `/api/bff/booking` |
+| `ticketingEnabled` | `/api/bff/commerce/events-tickets` |
+| `loyaltyEnabled` | `/api/bff/commerce/loyalty` |
+| `searchEnabled` | `/api/bff/search/*` |
+| `iotEnabled` | `/api/bff/iot/*` |
+| `ablyEnabled` | Realtime streaming |
+| `fleetEnabled` | `/api/bff/fleet/*` |
+| `webhooksEnabled` | Outbound webhook delivery |
+| `kycEnabled` | Walt.id verifiable credentials |
+| `erpEnabled` | ERPNext / Tryton sync |
+
+## React hook pattern
+
+```typescript
+import { useEffect, useState } from "react";
+import type { Capabilities } from "@cityos/api-client";
+
+export function useCapabilities() {
+  const [caps, setCaps] = useState<Capabilities | null>(null);
+  useEffect(() => {
+    tenant.getCapabilities().then(({ data }) => setCaps(data));
+  }, []);
+  return caps;
+}
+
+export function useCapability<K extends keyof Capabilities>(flag: K) {
+  const caps = useCapabilities();
+  return caps?.[flag] ?? false;
+}
+```
+
+Use in components:
+
+```tsx
+function LoyaltyCard() {
+  const enabled = useCapability("loyaltyEnabled");
+  if (!enabled) return null;
+  return <LoyaltyBalance />;
+}
+```
+
+## Server-side gating
+
+Domain BFF routes additionally enforce capabilities through `withBff()`. A call to a disabled domain returns `404 NOT_FOUND` rather than leaking the existence of the route.
+
+## Rollout strategy
+
+When enabling a new capability:
+
+1. Set the flag to `true` on a single pilot tenant
+2. Smoke-test the gated UI and BFF routes
+3. Gradually flip the flag on additional tenants
+4. After 100% rollout, remove the gating code if the feature becomes mandatory
+
+## Related
+
+- [Tenant API](/api/tenant)
+- [TenantClient SDK](/sdk/clients/tenant)
+- [Tenant setup](/configuration/tenant-setup)
+- [Architecture](/architecture) — capability gating is part of `withBff()`

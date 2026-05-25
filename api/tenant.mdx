@@ -1,0 +1,342 @@
+---
+title: "Tenant configuration API endpoints"
+description: "Read tenant configuration and capability flags, trigger and monitor workflows, and probe platform health via the CityOS tenant BFF endpoints."
+---
+
+The tenant endpoints give your application a reliable way to discover what the current deployment supports before rendering features or routing traffic. You can read the full tenant configuration, inspect individual capability flags, and probe the system health — all without requiring authentication.
+
+Tenant routes sit under `/api/bff/tenant/`. System and workflow health routes sit under `/api/bff/workflows/`.
+
+---
+
+## GET /api/bff/tenant
+
+Returns the full resolved tenant configuration for the domain or `x-tenant-slug` in the request. Use this endpoint to load branding, enabled domains, and top-level tenant metadata on application start.
+
+### Request headers
+
+<ParamField path="x-tenant-slug" type="string">
+  Tenant slug. Resolved from the request domain if omitted.
+</ParamField>
+
+<ParamField path="x-correlation-id" type="string">
+  Distributed tracing UUID. Auto-generated if not provided.
+</ParamField>
+
+<CodeGroup>
+
+```bash curl
+curl --request GET \
+  --url https://cityos.dakkah.city/api/bff/tenant \
+  --header 'x-tenant-slug: riyadh-downtown'
+```
+
+```typescript TypeScript
+const response = await fetch("/api/bff/tenant", {
+  headers: { "x-tenant-slug": "riyadh-downtown" },
+});
+
+const { data } = await response.json();
+// data — full tenant configuration object
+```
+
+</CodeGroup>
+
+**200 response example**
+
+```json
+{
+  "success": true,
+  "data": {
+    "slug": "riyadh-downtown",
+    "name": "Riyadh Downtown District",
+    "locale": "ar-SA",
+    "branding": {
+      "primaryColor": "#1B5E3C",
+      "logoUrl": "https://cdn.dakkah.city/tenants/riyadh-downtown/logo.svg"
+    },
+    "enabledDomains": ["commerce", "citizen", "events", "loyalty", "booking"]
+  },
+  "meta": {
+    "tenantSlug": "riyadh-downtown",
+    "timestamp": "2026-04-13T10:00:00.000Z"
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+---
+
+## GET /api/bff/tenant/capabilities
+
+Returns the resolved feature capability flags for the tenant. Use the response to gate UI features and prevent calls to endpoints that are not enabled for the current tenant.
+
+This endpoint is public and does not require authentication.
+
+### Request headers
+
+<ParamField path="x-tenant-slug" type="string">
+  Tenant slug. Resolved from the domain if omitted.
+</ParamField>
+
+### Response fields
+
+<ResponseField name="data" type="object">
+  <Expandable title="properties">
+    <ResponseField name="commerceEnabled" type="boolean">
+      Whether Medusa commerce (products, cart, orders) is active for this tenant.
+    </ResponseField>
+    <ResponseField name="logisticsProvider" type="string">
+      Active logistics provider slug (e.g. `fleetbase`). Empty string if logistics is disabled.
+    </ResponseField>
+    <ResponseField name="aiEnabled" type="boolean">
+      Whether AI features (chat, execution, transcription) are available.
+    </ResponseField>
+    <ResponseField name="iotEnabled" type="boolean">
+      Whether IoT telemetry endpoints are active.
+    </ResponseField>
+    <ResponseField name="workflowEnabled" type="boolean">
+      Whether Temporal workflow endpoints are available.
+    </ResponseField>
+    <ResponseField name="pushEnabled" type="boolean">
+      Whether push notification delivery is active.
+    </ResponseField>
+    <ResponseField name="ablyEnabled" type="boolean">
+      Whether Ably real-time channels are provisioned for this tenant.
+    </ResponseField>
+    <ResponseField name="erpProvider" type="string">
+      Active ERP provider slug (e.g. `erpnext`, `tryton`). Empty string if ERP is disabled.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+curl --request GET \
+  --url https://cityos.dakkah.city/api/bff/tenant/capabilities \
+  --header 'x-tenant-slug: riyadh-downtown'
+```
+
+```typescript TypeScript
+const response = await fetch("/api/bff/tenant/capabilities", {
+  headers: { "x-tenant-slug": "riyadh-downtown" },
+});
+
+const { data } = await response.json();
+
+if (data.commerceEnabled) {
+  // Render shop button
+}
+
+if (data.aiEnabled) {
+  // Render AI assistant widget
+}
+```
+
+</CodeGroup>
+
+**200 response example**
+
+```json
+{
+  "success": true,
+  "data": {
+    "commerceEnabled": true,
+    "logisticsProvider": "fleetbase",
+    "aiEnabled": true,
+    "iotEnabled": false,
+    "workflowEnabled": true,
+    "pushEnabled": true,
+    "ablyEnabled": true,
+    "erpProvider": "erpnext"
+  },
+  "meta": {
+    "tenantSlug": "riyadh-downtown",
+    "timestamp": "2026-04-13T10:00:00.000Z"
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+---
+
+## GET /api/bff/workflows/health
+
+Checks whether the Temporal workflow engine is reachable and healthy. Returns `200` when healthy and `503` when the engine is unavailable. Useful for startup probes and monitoring dashboards.
+
+### Request headers
+
+<ParamField path="x-correlation-id" type="string">
+  Distributed tracing UUID. Auto-generated if not provided.
+</ParamField>
+
+<CodeGroup>
+
+```bash curl
+curl --request GET \
+  --url https://cityos.dakkah.city/api/bff/workflows/health
+```
+
+```typescript TypeScript
+const response = await fetch("/api/bff/workflows/health");
+
+if (!response.ok) {
+  console.error("Temporal workflow engine unavailable");
+}
+
+const { data } = await response.json();
+```
+
+</CodeGroup>
+
+**200 response example**
+
+```json
+{
+  "success": true,
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+| Status | Meaning |
+|--------|---------|
+| `200` | Workflow engine is healthy. |
+| `503` | Workflow engine is unavailable. |
+
+---
+
+## POST /api/bff/workflows/trigger
+
+Triggers a named Temporal workflow. Provide an `X-Idempotency-Key` to make the trigger safe to retry without starting duplicate workflow runs.
+
+### Request headers
+
+<ParamField path="Authorization" type="string" required>
+  `Bearer <jwt>`.
+</ParamField>
+
+<ParamField path="x-tenant-slug" type="string">
+  Tenant slug.
+</ParamField>
+
+<ParamField path="x-idempotency-key" type="string">
+  Idempotency key for safe retries.
+</ParamField>
+
+### Request body
+
+<ParamField body="workflowType" type="string" required>
+  The registered Temporal workflow type name.
+</ParamField>
+
+<ParamField body="workflowId" type="string">
+  Custom workflow ID. Auto-generated if omitted.
+</ParamField>
+
+<ParamField body="input" type="object">
+  Arbitrary JSON input payload forwarded to the workflow as its start argument.
+</ParamField>
+
+<ParamField body="taskQueue" type="string">
+  Temporal task queue name. Uses the platform default if omitted.
+</ParamField>
+
+<CodeGroup>
+
+```bash curl
+curl --request POST \
+  --url https://cityos.dakkah.city/api/bff/workflows/trigger \
+  --header 'Authorization: Bearer <token>' \
+  --header 'Content-Type: application/json' \
+  --header 'x-tenant-slug: riyadh-downtown' \
+  --header 'x-idempotency-key: ik_wf_order_notify_01H' \
+  --data '{
+    "workflowType": "OrderNotificationWorkflow",
+    "input": {
+      "orderId": "order_01H...",
+      "customerId": "cust_01H..."
+    }
+  }'
+```
+
+```typescript TypeScript
+import { WorkflowsClient, CityOSClient } from "@cityos/api-client";
+
+const client = new CityOSClient({ baseUrl: "https://cityos.dakkah.city" });
+const workflows = new WorkflowsClient(client);
+
+const { data } = await workflows.trigger("OrderNotificationWorkflow", {
+  orderId: "order_01H...",
+  customerId: "cust_01H...",
+});
+// data.execution — WorkflowExecution object
+```
+
+</CodeGroup>
+
+**200 response example**
+
+```json
+{
+  "success": true,
+  "data": {
+    "workflowId": "wf_order_notify_01H...",
+    "runId": "run_abc123",
+    "status": "started"
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+---
+
+## GET /api/bff/workflows/status
+
+Queries the execution status of a running or completed Temporal workflow.
+
+### Query parameters
+
+<ParamField query="workflowId" type="string" required>
+  The workflow execution ID to query.
+</ParamField>
+
+<ParamField query="runId" type="string">
+  Optional Temporal run ID for a specific execution of the workflow.
+</ParamField>
+
+<CodeGroup>
+
+```bash curl
+curl --request GET \
+  --url 'https://cityos.dakkah.city/api/bff/workflows/status?workflowId=wf_order_notify_01H...' \
+  --header 'Authorization: Bearer <token>'
+```
+
+```typescript TypeScript
+import { WorkflowsClient, CityOSClient } from "@cityos/api-client";
+
+const client = new CityOSClient({ baseUrl: "https://cityos.dakkah.city" });
+const workflows = new WorkflowsClient(client);
+
+const { data } = await workflows.getExecution("wf_order_notify_01H...");
+console.log(data.execution.status);
+```
+
+</CodeGroup>
+
+**200 response example**
+
+```json
+{
+  "success": true,
+  "data": {
+    "workflowId": "wf_order_notify_01H...",
+    "runId": "run_abc123",
+    "status": "completed",
+    "startedAt": "2026-04-13T10:00:00.000Z",
+    "completedAt": "2026-04-13T10:00:05.000Z"
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```

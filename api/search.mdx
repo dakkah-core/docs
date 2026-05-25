@@ -1,0 +1,260 @@
+---
+title: "Search API endpoints"
+description: "Run full-text multi-index searches and retrieve autocomplete suggestions across tenant-scoped Meilisearch indexes for products, events, services, and more."
+---
+
+The search endpoints provide full-text search across all content indexed for a tenant — points of interest, products, services, events, businesses, government documents, and more. The platform uses Meilisearch under the hood, with each tenant's data isolated to its own index set. Unauthenticated users can only access public indexes; authenticated users gain access to role-permitted indexes automatically.
+
+All search routes sit under `/api/bff/search/`. No authentication is required for public surface searches.
+
+---
+
+## GET /api/bff/search
+
+Runs a full-text search across one or more Meilisearch indexes. You can scope the search to a specific surface (e.g. `citizen`, `merchant`, `kiosk`), filter by content types, request facet counts, and apply arbitrary filter expressions.
+
+Results are always tenant-scoped — you only see content belonging to the resolved tenant.
+
+### Request headers
+
+<ParamField path="x-tenant-slug" type="string">
+  Tenant slug. Resolved from the domain if omitted. Determines which indexes are searched.
+</ParamField>
+
+<ParamField path="x-correlation-id" type="string">
+  Distributed tracing UUID.
+</ParamField>
+
+### Query parameters
+
+<ParamField query="q" type="string" required>
+  Search query string. 1–200 characters.
+</ParamField>
+
+<ParamField query="limit" type="number" default="20">
+  Maximum number of hits to return. 1–100.
+</ParamField>
+
+<ParamField query="offset" type="number" default="0">
+  Number of hits to skip for pagination. Minimum 0.
+</ParamField>
+
+<ParamField query="surface" type="string" default="citizen">
+  Surface context that determines which indexes are eligible. Common values: `citizen`, `merchant`, `kiosk`.
+</ParamField>
+
+<ParamField query="scope" type="string" default="all">
+  Search scope within the surface. Defaults to `all`.
+</ParamField>
+
+<ParamField query="types" type="string">
+  Comma-separated list of index types to search. Available types: `pois`, `products`, `services`, `events`, `businesses`, `documents`, `users`, `citizen-services`, `orders`. Omit to search all eligible types.
+</ParamField>
+
+<ParamField query="facets" type="string">
+  Comma-separated list of facet attributes to include in the response (e.g. `category,city`).
+</ParamField>
+
+<ParamField query="sort" type="string">
+  Comma-separated sort fields supported by Meilisearch (e.g. `rating:desc`).
+</ParamField>
+
+<ParamField query="filters" type="string">
+  JSON-encoded filter object applied to the search (e.g. `{"category":"cafe"}`).
+</ParamField>
+
+### Response fields
+
+<ResponseField name="query" type="string">
+  The search query string echoed back.
+</ResponseField>
+
+<ResponseField name="hits" type="object[]">
+  Array of matching documents. Each hit's shape depends on the index type.
+</ResponseField>
+
+<ResponseField name="totalHits" type="number">
+  Total number of matching documents across all searched indexes.
+</ResponseField>
+
+<ResponseField name="processingTimeMs" type="number">
+  Query execution time in milliseconds as reported by Meilisearch.
+</ResponseField>
+
+<ResponseField name="facets" type="object">
+  Facet distribution object. Keys are facet attribute names; values are objects mapping facet values to their document counts.
+</ResponseField>
+
+<ResponseField name="meta" type="object">
+  <Expandable title="properties">
+    <ResponseField name="surface" type="string">Surface context used for the search.</ResponseField>
+    <ResponseField name="scope" type="string">Scope used for the search.</ResponseField>
+    <ResponseField name="tenant" type="string">Resolved tenant slug.</ResponseField>
+    <ResponseField name="indices" type="string[]">List of Meilisearch indexes that were queried.</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="correlationId" type="string">
+  Distributed tracing UUID.
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+# Search for coffee shops in Riyadh, requesting facets by category
+curl --request GET \
+  --url 'https://cityos.dakkah.city/api/bff/search?q=coffee%20shop%20Riyadh&types=pois,businesses&facets=category&limit=10' \
+  --header 'x-tenant-slug: riyadh-downtown'
+
+# Search with a JSON filter expression
+curl --request GET \
+  --url 'https://cityos.dakkah.city/api/bff/search?q=abaya&types=products&filters=%7B%22status%22%3A%22published%22%7D&limit=20' \
+  --header 'x-tenant-slug: riyadh-downtown' \
+  --header 'Authorization: Bearer <token>'
+```
+
+```typescript TypeScript
+// Basic search
+const params = new URLSearchParams({
+  q: "coffee shop Riyadh",
+  types: "pois,businesses",
+  facets: "category",
+  limit: "10",
+  surface: "citizen",
+});
+
+const response = await fetch(`/api/bff/search?${params}`, {
+  headers: { "x-tenant-slug": "riyadh-downtown" },
+});
+
+const results = await response.json();
+console.log(`${results.totalHits} hits in ${results.processingTimeMs}ms`);
+for (const hit of results.hits) {
+  console.log(hit.title, hit.type);
+}
+console.log("Facets:", results.facets);
+
+// Search with filters (JSON-encoded)
+const filteredParams = new URLSearchParams({
+  q: "abaya",
+  types: "products",
+  filters: JSON.stringify({ status: "published" }),
+  limit: "20",
+});
+
+const filteredResponse = await fetch(`/api/bff/search?${filteredParams}`, {
+  headers: {
+    "x-tenant-slug": "riyadh-downtown",
+    Authorization: `Bearer ${token}`,
+  },
+});
+```
+
+</CodeGroup>
+
+**200 response example**
+
+```json
+{
+  "query": "coffee shop Riyadh",
+  "hits": [
+    {
+      "id": "poi_123",
+      "title": "Al-Faisal Coffee House",
+      "type": "pois",
+      "category": "cafe",
+      "address": "Tahlia Street, Riyadh",
+      "rating": 4.7
+    },
+    {
+      "id": "poi_456",
+      "title": "Najd Coffee Roasters",
+      "type": "pois",
+      "category": "cafe",
+      "address": "Al Olaya District, Riyadh",
+      "rating": 4.5
+    }
+  ],
+  "totalHits": 42,
+  "processingTimeMs": 12,
+  "facets": {
+    "category": {
+      "cafe": 27,
+      "restaurant": 15
+    }
+  },
+  "meta": {
+    "surface": "citizen",
+    "scope": "all",
+    "tenant": "riyadh-downtown",
+    "indices": ["pois", "businesses"]
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+| Status | Meaning |
+|--------|---------|
+| `200` | Search results returned. |
+| `400` | Validation error — `q` is missing or `types` contains an unrecognised index name. |
+| `401` | Authentication required for the requested surface or index types. |
+
+---
+
+## GET /api/bff/search/suggest
+
+Returns autocomplete suggestions for a partial query string. Intended for typeahead UI components. No authentication required.
+
+### Query parameters
+
+<ParamField query="q" type="string" required>
+  Partial query string to complete.
+</ParamField>
+
+<ParamField query="limit" type="number" default="5">
+  Maximum number of suggestions to return. Maximum 10.
+</ParamField>
+
+### Response fields
+
+<ResponseField name="suggestions" type="string[]">
+  Array of suggestion strings ranked by relevance.
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+curl --request GET \
+  --url 'https://cityos.dakkah.city/api/bff/search/suggest?q=coff&limit=5' \
+  --header 'x-tenant-slug: riyadh-downtown'
+```
+
+```typescript TypeScript
+const response = await fetch(
+  "/api/bff/search/suggest?q=coff&limit=5",
+  { headers: { "x-tenant-slug": "riyadh-downtown" } }
+);
+
+const { suggestions } = await response.json();
+// ["coffee", "coffee shop", "coffee beans", ...]
+```
+
+</CodeGroup>
+
+**200 response example**
+
+```json
+{
+  "suggestions": [
+    "coffee",
+    "coffee shop",
+    "coffee beans",
+    "coffee roasters",
+    "coffee mugs"
+  ]
+}
+```
+
+<Tip>
+  Use `GET /api/bff/search/suggest` to power typeahead inputs and only call `GET /api/bff/search` on explicit submission to avoid excessive index queries.
+</Tip>

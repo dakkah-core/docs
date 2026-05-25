@@ -1,0 +1,377 @@
+---
+title: "Citizen services API endpoints"
+description: "Submit and track complaints, list permits, browse available services, view payment history, and query transit data via the Dakkah CityOS citizen BFF endpoints."
+---
+
+The citizen service endpoints give residents programmatic access to the core functions of the city portal: filing complaints with a reference number, listing permits, browsing the service catalog, reviewing payment history, and querying transit information. All routes sit under `/api/bff/citizen/` and require an authenticated session except `GET /api/bff/citizen/services`, which is public.
+
+Mutations accept an `X-Idempotency-Key` header so retries after network failures do not produce duplicate submissions.
+
+---
+
+## GET /api/bff/citizen/complaints
+
+Returns complaints filed by the authenticated citizen. Admin roles see all tenant complaints; citizen roles see only their own records. Results are ordered by submission date descending.
+
+### Request headers
+
+<ParamField path="Authorization" type="string" required>
+  `Bearer <jwt>` — Keycloak or Payload-issued JWT.
+</ParamField>
+
+<ParamField path="x-tenant-slug" type="string">
+  Tenant slug. Resolved from the request domain if omitted.
+</ParamField>
+
+### Query parameters
+
+<ParamField query="status" type="string" default="all">
+  Filter by complaint status. One of `all`, `submitted`, `in-progress`, `resolved`, `rejected`.
+</ParamField>
+
+<ParamField query="limit" type="number" default="20">
+  Maximum number of records to return. Maximum 50.
+</ParamField>
+
+### Response fields
+
+<ResponseField name="data" type="object">
+  <Expandable title="properties">
+    <ResponseField name="docs" type="Complaint[]">
+      Array of complaint records.
+      <Expandable title="Complaint properties">
+        <ResponseField name="id" type="string">Complaint ID.</ResponseField>
+        <ResponseField name="category" type="string">Category — one of `infrastructure`, `public-safety`, `sanitation`, `noise`, `illegal-dumping`, `road-damage`, `utilities`, `other`.</ResponseField>
+        <ResponseField name="title" type="string">Short complaint title.</ResponseField>
+        <ResponseField name="description" type="string">Full complaint description.</ResponseField>
+        <ResponseField name="status" type="string">Current status — `submitted`, `in-progress`, `resolved`, or `rejected`.</ResponseField>
+        <ResponseField name="priority" type="string">Priority level — `low`, `medium`, `high`, or `critical`.</ResponseField>
+        <ResponseField name="referenceNumber" type="string">Human-readable reference (e.g. `CMP-2026-00789`).</ResponseField>
+        <ResponseField name="submittedAt" type="string">ISO 8601 submission timestamp.</ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="totalDocs" type="number">Total number of complaints matching the filter.</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+curl --request GET \
+  --url 'https://cityos.dakkah.city/api/bff/citizen/complaints?status=in-progress&limit=10' \
+  --header 'Authorization: Bearer <token>' \
+  --header 'x-tenant-slug: riyadh-downtown'
+```
+
+```typescript TypeScript
+const response = await fetch(
+  "/api/bff/citizen/complaints?status=in-progress&limit=10",
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "x-tenant-slug": "riyadh-downtown",
+    },
+  }
+);
+
+const { data } = await response.json();
+// data.docs — array of Complaint objects
+// data.totalDocs — total count
+```
+
+</CodeGroup>
+
+**200 response example**
+
+```json
+{
+  "success": true,
+  "data": {
+    "docs": [
+      {
+        "id": "cmp_789",
+        "category": "road-damage",
+        "title": "Pothole on King Fahd Road",
+        "description": "Large pothole causing traffic issues near exit 12.",
+        "status": "in-progress",
+        "priority": "high",
+        "referenceNumber": "CMP-2026-00789",
+        "submittedAt": "2026-04-10T08:30:00.000Z"
+      }
+    ],
+    "totalDocs": 1
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+| Status | Meaning |
+|--------|---------|
+| `200` | Complaint list returned. |
+| `401` | Authentication required. |
+
+---
+
+## POST /api/bff/citizen/complaints
+
+Submits a new complaint. The server assigns a unique reference number that you can use to track progress in the portal.
+
+### Request headers
+
+<ParamField path="Authorization" type="string" required>
+  `Bearer <jwt>`.
+</ParamField>
+
+<ParamField path="x-tenant-slug" type="string">
+  Tenant slug.
+</ParamField>
+
+### Request body
+
+<ParamField body="category" type="string" required>
+  Complaint category. One of `infrastructure`, `public-safety`, `sanitation`, `noise`, `illegal-dumping`, `road-damage`, `utilities`, `other`.
+</ParamField>
+
+<ParamField body="title" type="string" required>
+  Short title. 5–200 characters.
+</ParamField>
+
+<ParamField body="description" type="string" required>
+  Full description of the issue. 10–5000 characters.
+</ParamField>
+
+<ParamField body="location" type="string">
+  Human-readable address or area description. Maximum 500 characters.
+</ParamField>
+
+<ParamField body="coordinates" type="number[]">
+  Geographic coordinates as `[latitude, longitude]`. Exactly two elements.
+</ParamField>
+
+<ParamField body="evidenceUrls" type="string[]">
+  Up to 5 publicly accessible URLs for photos or supporting evidence.
+</ParamField>
+
+<ParamField body="priority" type="string" default="medium">
+  Priority level: `low`, `medium`, `high`, or `critical`.
+</ParamField>
+
+### Response fields
+
+<ResponseField name="data" type="object">
+  <Expandable title="properties">
+    <ResponseField name="id" type="string">Internal complaint ID.</ResponseField>
+    <ResponseField name="referenceNumber" type="string">Human-readable reference number assigned by the platform.</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Confirmation message.
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+curl --request POST \
+  --url https://cityos.dakkah.city/api/bff/citizen/complaints \
+  --header 'Authorization: Bearer <token>' \
+  --header 'Content-Type: application/json' \
+  --header 'x-tenant-slug: riyadh-downtown' \
+  --data '{
+    "category": "road-damage",
+    "title": "Pothole on King Fahd Road",
+    "description": "Large pothole causing traffic issues near exit 12.",
+    "priority": "high",
+    "location": "King Fahd Road, Exit 12",
+    "coordinates": [24.7136, 46.6753]
+  }'
+```
+
+```typescript TypeScript
+const response = await fetch("/api/bff/citizen/complaints", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+    "x-tenant-slug": "riyadh-downtown",
+  },
+  body: JSON.stringify({
+    category: "road-damage",
+    title: "Pothole on King Fahd Road",
+    description: "Large pothole causing traffic issues near exit 12.",
+    priority: "high",
+    location: "King Fahd Road, Exit 12",
+    coordinates: [24.7136, 46.6753],
+  }),
+});
+
+const { data, message } = await response.json();
+// data.referenceNumber — save this for status tracking
+```
+
+</CodeGroup>
+
+**201 response example**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "cmp_789",
+    "referenceNumber": "CMP-2026-00789"
+  },
+  "message": "Your complaint has been submitted and assigned a reference number",
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+| Status | Meaning |
+|--------|---------|
+| `201` | Complaint created. Reference number assigned. |
+| `400` | Validation error — check `error.details.fieldErrors`. |
+| `401` | Authentication required. |
+
+---
+
+## GET /api/bff/citizen/services
+
+Returns the catalog of services available to citizens in the resolved tenant. This endpoint is public and requires no authentication.
+
+### Request headers
+
+<ParamField path="x-tenant-slug" type="string">
+  Tenant slug. Resolved from the domain if omitted.
+</ParamField>
+
+<CodeGroup>
+
+```bash curl
+curl --request GET \
+  --url https://cityos.dakkah.city/api/bff/citizen/services \
+  --header 'x-tenant-slug: riyadh-downtown'
+```
+
+```typescript TypeScript
+const response = await fetch("/api/bff/citizen/services", {
+  headers: { "x-tenant-slug": "riyadh-downtown" },
+});
+
+const { data } = await response.json();
+// data contains the service catalog array
+```
+
+</CodeGroup>
+
+---
+
+## GET /api/bff/citizen/permits
+
+Returns permits on file for the authenticated citizen. Requires a valid session.
+
+### Request headers
+
+<ParamField path="Authorization" type="string" required>
+  `Bearer <jwt>`.
+</ParamField>
+
+<ParamField path="x-tenant-slug" type="string">
+  Tenant slug.
+</ParamField>
+
+<CodeGroup>
+
+```bash curl
+curl --request GET \
+  --url https://cityos.dakkah.city/api/bff/citizen/permits \
+  --header 'Authorization: Bearer <token>' \
+  --header 'x-tenant-slug: riyadh-downtown'
+```
+
+```typescript TypeScript
+const response = await fetch("/api/bff/citizen/permits", {
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "x-tenant-slug": "riyadh-downtown",
+  },
+});
+
+const { data } = await response.json();
+```
+
+</CodeGroup>
+
+---
+
+## GET /api/bff/citizen/payments
+
+Returns the payment history for the authenticated citizen.
+
+### Request headers
+
+<ParamField path="Authorization" type="string" required>
+  `Bearer <jwt>`.
+</ParamField>
+
+<ParamField path="x-tenant-slug" type="string">
+  Tenant slug.
+</ParamField>
+
+<CodeGroup>
+
+```bash curl
+curl --request GET \
+  --url https://cityos.dakkah.city/api/bff/citizen/payments \
+  --header 'Authorization: Bearer <token>' \
+  --header 'x-tenant-slug: riyadh-downtown'
+```
+
+```typescript TypeScript
+const response = await fetch("/api/bff/citizen/payments", {
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "x-tenant-slug": "riyadh-downtown",
+  },
+});
+
+const { data } = await response.json();
+```
+
+</CodeGroup>
+
+---
+
+## GET /api/bff/citizen/transit
+
+Returns transit information relevant to the authenticated citizen, including applicable routes and service status in the tenant's area.
+
+### Request headers
+
+<ParamField path="Authorization" type="string" required>
+  `Bearer <jwt>`.
+</ParamField>
+
+<ParamField path="x-tenant-slug" type="string">
+  Tenant slug.
+</ParamField>
+
+<CodeGroup>
+
+```bash curl
+curl --request GET \
+  --url https://cityos.dakkah.city/api/bff/citizen/transit \
+  --header 'Authorization: Bearer <token>' \
+  --header 'x-tenant-slug: riyadh-downtown'
+```
+
+```typescript TypeScript
+const response = await fetch("/api/bff/citizen/transit", {
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "x-tenant-slug": "riyadh-downtown",
+  },
+});
+
+const { data } = await response.json();
+```
+
+</CodeGroup>

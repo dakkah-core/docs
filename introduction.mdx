@@ -1,0 +1,67 @@
+---
+title: "Dakkah CityOS: Smart City Platform Overview"
+description: "Dakkah CityOS unifies commerce, citizen services, fleet, and IoT across 7 surface types. Learn what you can build and how the TypeScript SDK fits in."
+---
+
+Dakkah CityOS is a full-stack, multi-tenant city operating system that brings together commerce, government services, fleet logistics, IoT infrastructure, and citizen engagement into a single composable platform. It is designed to power smart city operators with a unified data layer, server-driven UI (SDUI), AI-assisted discovery, and a first-class TypeScript SDK — all from one administrative control plane.
+
+## What you can build
+
+CityOS gives you a headless, API-first foundation for any city-facing product. Content, layouts, and business logic are defined once and rendered across every surface without per-surface code duplication.
+
+### Surface types
+
+| Surface | Runtime |
+|---------|---------|
+| Web | Next.js 15 |
+| Mobile (iOS & Android) | Expo / React Native |
+| Kiosk | Android kiosk runtime |
+| Smart TV | Android TV / tvOS |
+| In-vehicle display | Android Automotive |
+| Smartwatch | watchOS |
+| Smart signage | Digital display runtime |
+
+### Domain coverage
+
+CityOS is organized into bounded domain packages, each exposing typed API clients through `@cityos/api-client`:
+
+- **Commerce** — products, orders, wallets, loyalty, subscriptions, auctions, ticketing, marketplace, B2B
+- **Citizen services** — government requests, permits, public safety, social threads, utilities
+- **Fleet & logistics** — vehicles, shipments, dispatch, route optimization, real-time tracking
+- **IoT** — device registry, sensor telemetry (air quality, smart bins, traffic, parking, irrigation), threshold alerts
+- **Healthcare** — appointments, providers, facilities
+- **Education** — courses, institutions, enrollment, certificates
+- **Finance** — wallets, transactions, invoices, grants, tenders
+- **Environment** — air quality stations, sensor alerts, trend analysis
+
+## TypeScript SDK
+
+The `@cityos/api-client` package is the primary way to integrate with CityOS. It exports `CityOSClient` — a typed HTTP client — along with 30+ domain-scoped clients (e.g. `CommerceClient`, `GovernanceClient`, `IotClient`) and a `createBffClients` factory that wires them all together.
+
+```typescript
+import { CityOSClient, createBffClients } from "@cityos/api-client";
+
+const client = new CityOSClient({
+  baseUrl: "https://your-city.cityosplatform.com",
+  getToken: async () => yourTokenStore.get(),
+  tenantId: "your-tenant-id",
+});
+
+const bff = createBffClients(client);
+```
+
+## Multi-tenant architecture
+
+Every deployment is scoped to a tenant identified by a slug (e.g. `dakkah`). The tenant hierarchy runs from a platform owner down through regional operators, country operators, and city-level merchants. Your API calls automatically carry tenant context via the `x-cityos-tenant-id` request header.
+
+<Columns cols={3}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Install the SDK, authenticate, and make your first API call in minutes.
+  </Card>
+  <Card title="Environment setup" icon="wrench" href="/environment-setup">
+    Configure your local environment variables and prerequisites.
+  </Card>
+  <Card title="API reference" icon="code" href="/api/overview">
+    Explore all BFF endpoints and typed response shapes.
+  </Card>
+</Columns>

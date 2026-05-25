@@ -1,0 +1,20 @@
+---
+title: "Fleet API endpoints"
+sidebarTitle: "Fleet"
+description: "Manage vehicles, drivers, and shipments through the CityOS fleet BFF endpoints."
+icon: "truck"
+---
+
+<Note>
+  Sprint 2 deliverable. Endpoint catalog below — detailed payloads to follow.
+</Note>
+
+## Endpoints
+
+| Method | Path | Description |
+| --- | --- | --- |
+| `GET` | `/api/bff/fleet/vehicles` | List vehicles |
+| `GET` | `/api/bff/fleet/vehicles/{id}` | Get a single vehicle |
+| `POST` | `/api/bff/fleet/shipments` | Create a shipment |
+| `GET` | `/api/bff/fleet/shipments` | List shipments |
+| `POST` | `/api/bff/fleet/shipments/{id}/dispatch` | Dispatch a shipment |

@@ -1,0 +1,57 @@
+---
+title: "Healthcare on CityOS"
+sidebarTitle: "Healthcare"
+description: "Appointments, telemedicine, prescriptions, and records across the CityOS healthcare vertical, with NCA and NDMO compliance."
+icon: "heart-pulse"
+---
+
+Healthcare in CityOS is served by the `healthcare`, `telemedicine`, `pharmacy`, and `blood-bank` domain packages. Governance compliance for healthcare follows **NCA** and **NDMO** mandates.
+
+## Get started
+
+<CardGroup cols={2}>
+     
+</CardGroup>
+
+## Domain map
+
+| Domain | Responsibility |
+| --- | --- |
+| `healthcare` | Clinic and provider directory, patient records |
+| `telemedicine` | Video consultation sessions |
+| `pharmacy` | Prescription fulfillment and pharmacy orders |
+| `blood-bank` | Donor registry and blood-bank requests |
+| `eldercare` / `childcare` / `senior-care` | Specialized care programs |
+
+## Appointments
+
+Clinical appointments use the standard [booking](/verticals/bookings) primitive with `serviceType: "healthcare"`. The provider directory is published via the healthcare domain.
+
+```bash
+curl -X POST https://cityos.dakkah.city/api/bff/booking \
+  -H "Authorization: Bearer <token>" \
+  -H "x-tenant-slug: riyadh-downtown" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "serviceType": "healthcare",
+    "serviceId": "svc_general_consultation",
+    "providerId": "prov_clinic_42",
+    "timeSlot": { "start": "2026-06-10T09:00:00Z", "end": "2026-06-10T09:30:00Z" }
+  }'
+```
+
+## Telemedicine
+
+Telemedicine sessions extend an appointment with a WebRTC channel and consultation metadata. The session lifecycle mirrors the booking status machine.
+
+## Compliance
+
+- **NCA (National Cybersecurity Authority)** — audit log retention, encryption in transit and at rest
+- **NDMO (National Data Management Office)** — patient data residency, classification, and consent
+- **Walt.id Verifiable Credentials** — KYC for telemedicine and prescription pickup
+
+## Related
+
+- [Bookings](/verticals/bookings)
+- [Identity & SSO](/integrations/identity)
+- [Citizen services](/verticals/citizen)

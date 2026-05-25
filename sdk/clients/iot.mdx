@@ -1,0 +1,57 @@
+---
+title: "IotClient"
+sidebarTitle: "IoT"
+description: "Typed SDK client for CityOS IoT devices and telemetry — list devices, query readings, send commands."
+icon: "cpu"
+---
+
+`IotClient` wraps `/api/bff/iot/*` and proxies to Kuzzle Device Manager. Live readings stream over Ably separately.
+
+## Methods
+
+| Method | HTTP | Endpoint |
+| --- | --- | --- |
+| `listDevices(params?)` | GET | `/api/bff/iot/devices` |
+| `getDevice(id)` | GET | `/api/bff/iot/devices/{id}` |
+| `listReadings(params?)` | GET | `/api/bff/iot/readings` |
+| `sendCommand(id, command, payload?)` | POST | `/api/bff/iot/devices/{id}/commands` |
+
+## listDevices
+
+```typescript
+const { data, pagination } = await iot.listDevices({
+  type: "AirQuality",
+  status: "online",
+  page: 1,
+  limit: 50,
+});
+```
+
+## getDevice
+
+Returns the latest decoded metrics.
+
+```typescript
+const { data } = await iot.getDevice("aq-001");
+console.log(data.device.metrics.aqi);
+```
+
+## sendCommand
+
+```typescript
+await iot.sendCommand("cold-001", "setTemperatureAlert", { threshold: 8 });
+```
+
+## Sensor types
+
+`AirQuality`, `SmartBin`, `WaterQuality`, `ColdStorage`, `SmartMeter`, `TrafficFlow`, `ParkingOccupancy`, `IrrigationSensor`. See [IoT guide](/guides/iot-telemetry) for measurement reference.
+
+## Realtime
+
+Use the `ably` package directly with channel `cityos:{tenantSlug}:iot:{sensorType}`. The SDK does not wrap Ably.
+
+## Related
+
+- [IoT vertical](/verticals/iot)
+- [IoT API](/api/iot)
+- [IoT guide](/guides/iot-telemetry) — live subscription walkthrough

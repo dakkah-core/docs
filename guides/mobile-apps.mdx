@@ -1,0 +1,175 @@
+---
+title: "Build mobile apps with the CityOS SDK"
+description: "Build Expo and React Native apps on CityOS. Covers CityOSClient setup, surface values, BffClient domain access, env variables, and the 12 Expo apps."
+---
+
+Dakkah CityOS ships 12 Expo-based mobile applications that share a single monorepo and a common SDK. Whether you are building on top of an existing CityOS app or writing a new one, the `@cityos/api-client` package gives you typed access to every BFF domain through a consistent, surface-aware client.
+
+## The 12 Expo apps
+
+| App | Purpose | Platforms |
+|---|---|---|
+| `superapp` | Main citizen superapp — unified entry point | iOS, Android |
+| `mobile` | Base mobile shell | iOS, Android |
+| `mobile-driver` | Fleet driver companion | iOS, Android |
+| `mobile-merchant` | Merchant POS companion | iOS, Android |
+| `mobile-pos` | Point-of-sale terminal | iOS, Android |
+| `mobile-government` | Government officer app | iOS, Android |
+| `mobile-inspector` | Field inspector app | iOS, Android |
+| `merchant-app-mobile` | Merchant management | iOS, Android |
+| `kiosk` | Interactive self-service kiosk | Android |
+| `tv-app` | Smart TV app | tvOS, Android TV |
+| `watch-app` | Smart watch companion | watchOS |
+| `car-app` | In-vehicle display | Android Automotive |
+
+---
+
+## Environment variables
+
+Every Expo app reads its configuration from `EXPO_PUBLIC_*` variables. Set these in your `.env` file and in EAS secrets for CI/CD builds.
+
+| Variable | Required | Description |
+|---|---|---|
+| `EXPO_PUBLIC_BFF_URL` | Yes | Base URL for the CityOS BFF (e.g. `https://cityos.dakkah.city`) |
+| `EXPO_PUBLIC_MAPBOX_TOKEN` | Yes | Mapbox public token for map rendering |
+| `EXPO_TOKEN` | CI only | EAS build token (never expose in client bundles) |
+
+<Warning>
+  Never commit `.env` files. Store `EXPO_TOKEN` as a GitHub Actions secret, not a repo variable. `EXPO_PUBLIC_*` values are safe as repo variables since they are baked into the client bundle — avoid putting any server-side secrets in `EXPO_PUBLIC_` prefixed vars.
+</Warning>
+
+---
+
+## Initialize CityOSClient
+
+The `CityOSClient` is the single entry point for all API communication. Construct it once (typically in a context provider or store initializer) and share it across your app.
+
+```typescript TypeScript
+import { CityOSClient } from "@cityos/api-client";
+import * as SecureStore from "expo-secure-store";
+
+export const cityosClient = new CityOSClient({
+  baseUrl: process.env.EXPO_PUBLIC_BFF_URL!,
+  tenantId: "riyadh-downtown",  // or read from tenant config
+  surface: "mobile",
+
+  getToken: async () => {
+    return await SecureStore.getItemAsync("cityos_access_token");
+  },
+
+  on401: async () => {
+    // Refresh your token here; return the new token string or null to sign out
+    const refreshed = await refreshAccessToken();
+    if (refreshed) {
+      await SecureStore.setItemAsync("cityos_access_token", refreshed);
+    }
+    return refreshed;
+  },
+});
+```
+
+### Available surface values
+
+Pass the `surface` that matches your device class. The BFF forwards it as `x-cityos-surface` and some endpoints return surface-appropriate payloads.
+
+| Value | Use case |
+|---|---|
+| `mobile` | Phones in portrait |
+| `mobile_large` | Phablets |
+| `tablet` | iPad / Android tablet |
+| `kiosk` | Unattended kiosk hardware |
+| `tv_1080p` | TV app (`tv-app`) |
+| `carplay` | In-vehicle display (`car-app`) |
+
+---
+
+## Access BFF domains
+
+`createBffClients()` returns a typed object with one client per BFF domain. Construct it once from your `CityOSClient` instance.
+
+```typescript TypeScript
+import { createBffClients } from "@cityos/api-client";
+
+const clients = createBffClients(cityosClient);
+
+// Commerce
+const { data: catalog } = await clients.commerce.listProducts({ page: 1, pageSize: 10 });
+
+// Bookings
+const { data: bookings } = await clients.platform.listNotifications();
+
+// IoT
+const { data: devices } = await clients.iot.listDevices();
+```
+
+The available domain clients mirror the BFF tag structure: `commerce`, `governance`, `healthcare`, `transport`, `events`, `platform`, `iot`, `social`, `agriculture`, `ai`, `community`, `cultureTourism`, `education`, `environment`, `facilities`, `finance`, `fleet`, `health`, `jobs`, `media`, `merchant`, `notifications`, `poi`, `realEstate`, `safety`, `sports`, `threads`, `utilities`, `analytics`, `workflows`, and `sdui`.
+
+---
+
+## Switching tenant and surface at runtime
+
+You can update the client's tenant or surface after initialization — useful in superapp flows where a user switches between city zones or folds out their tablet.
+
+```typescript TypeScript
+// User switches to a different city zone
+cityosClient.setTenantId("jeddah-corniche");
+
+// App detects tablet orientation
+cityosClient.setSurface("tablet");
+```
+
+---
+
+## Local development
+
+```bash Terminal
+# Install dependencies from the monorepo root
+pnpm install
+
+# Start the citizen superapp
+cd apps/superapp
+npx expo start
+
+# Run on a physical device with a development build
+eas build --platform ios --profile development
+eas build --platform android --profile development
+```
+
+<Tip>
+  Point `EXPO_PUBLIC_BFF_URL` at `http://localhost:3000` during local development to target the CMS dev server running on your machine.
+</Tip>
+
+---
+
+## Payment integration
+
+The `@cityos/mobile-payments` package wraps Stripe (global) and Moyasar (Saudi Mada / STC Pay) behind a unified `PaymentService`. It also handles Apple Pay, Google Pay, and biometric confirmation.
+
+```typescript TypeScript
+import { PaymentService } from "@cityos/mobile-payments";
+
+const paymentService = new PaymentService({
+  provider: "moyasar",
+  publishableKey: process.env.EXPO_PUBLIC_MOYASAR_KEY!,
+  apiBaseUrl: "https://api.moyasar.com",
+  callbackUrl: `${process.env.EXPO_PUBLIC_BFF_URL}/api/bff/commerce/checkout/callback`,
+});
+
+const result = await paymentService.createPayment({
+  provider: "moyasar",
+  amountHalalas: 4500,   // SAR 45.00
+  currency: "SAR",
+  method: "mada",
+  requireBiometric: true,
+  idempotencyKey: crypto.randomUUID(),
+  referenceId: "order_01H...",
+});
+
+if (result.success) {
+  console.log("Transaction ID:", result.transactionId);
+}
+```
+
+<Note>
+  All monetary amounts in `@cityos/mobile-payments` are expressed in **halalas** (the smallest SAR unit). SAR 1.00 = 100 halalas. Stripe amounts use the currency's own smallest unit (e.g. halalas for SAR, cents for USD).
+</Note>

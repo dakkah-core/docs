@@ -1,0 +1,185 @@
+---
+title: "Authenticate with Dakkah CityOS"
+description: "Learn how to log in, obtain a session token, and authorize API requests. Covers login, session checks, token refresh, logout, and required headers."
+---
+
+Every CityOS API call flows through the BFF middleware pipeline. Before your application can access protected endpoints, you need to establish a session via `POST /api/bff/auth/login` and pass the resulting token as a `Bearer` header on subsequent requests.
+
+## Required headers
+
+All requests to the BFF accept two optional-but-recommended headers:
+
+<ParamField header="x-tenant-slug" type="string">
+  The slug of the tenant your request targets (for example, `riyadh-downtown`). If you omit this header, the BFF resolves the tenant from the request's origin domain. Mobile apps and cross-tenant tools must supply it explicitly.
+</ParamField>
+
+<ParamField header="x-correlation-id" type="string" format="uuid">
+  A UUID you generate to trace a request across services. The BFF auto-generates one if absent and echoes it back in every response as `correlationId`. Use it to correlate your client logs with server-side traces.
+</ParamField>
+
+<ParamField header="Authorization" type="string">
+  Required on protected endpoints. Format: `Bearer <token>`. Obtain the token from the login flow below.
+</ParamField>
+
+---
+
+## Log in
+
+<Steps>
+  <Step title="Send credentials">
+    POST your email and password to the login endpoint. No `Authorization` header is needed here — it is one of the few public routes.
+
+    <CodeGroup>
+
+    ```bash cURL
+    curl -X POST https://cityos.dakkah.city/api/bff/auth/login \
+      -H "Content-Type: application/json" \
+      -H "x-tenant-slug: riyadh-downtown" \
+      -d '{"email": "citizen@example.com", "password": "s3cureP@ss"}'
+    ```
+
+    ```typescript TypeScript
+    const res = await fetch("https://cityos.dakkah.city/api/bff/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-tenant-slug": "riyadh-downtown",
+      },
+      body: JSON.stringify({
+        email: "citizen@example.com",
+        password: "s3cureP@ss",
+      }),
+    });
+
+    const { data, correlationId } = await res.json();
+    // data.customer — { id, email, first_name, last_name }
+    ```
+
+    </CodeGroup>
+  </Step>
+
+  <Step title="Receive the session cookie">
+    On success the BFF sets an httpOnly `medusa_session` cookie with a 7-day TTL. The response body also returns the customer profile.
+
+    ```json Response — 200 OK
+    {
+      "success": true,
+      "data": {
+        "customer": {
+          "id": "cust_01H...",
+          "email": "citizen@example.com",
+          "first_name": "Ahmed",
+          "last_name": "Al-Qahtani"
+        }
+      },
+      "meta": {
+        "tenantSlug": "riyadh-downtown",
+        "timestamp": "2026-04-13T10:00:00.000Z"
+      },
+      "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+    }
+    ```
+
+    <Note>
+      The session cookie is `httpOnly` and scoped to the BFF domain. Browser-based apps get authentication for free from the cookie. Native mobile apps must read the `Authorization` header token from the SDK instead.
+    </Note>
+  </Step>
+</Steps>
+
+---
+
+## Check the current session
+
+Call `GET /api/bff/auth/session` at any time to confirm whether a valid session exists. This endpoint always returns HTTP 200 — check `data.authenticated` in the body.
+
+```typescript TypeScript
+const res = await fetch("https://cityos.dakkah.city/api/bff/auth/session", {
+  headers: { "x-tenant-slug": "riyadh-downtown" },
+  credentials: "include", // sends the session cookie
+});
+
+const { data } = await res.json();
+
+if (data.authenticated) {
+  console.log("Logged in as", data.customer?.email);
+  console.log("Roles:", data.user?.roles);
+  // data.user.tenant — resolved tenant slug
+  // data.user.keycloakSub — Keycloak subject for OIDC flows
+}
+```
+
+---
+
+## Use the CityOSClient SDK
+
+The `@cityos/api-client` package handles token injection, `x-correlation-id` generation, automatic 401 retry, and tenant header attachment.
+
+```typescript TypeScript
+import { CityOSClient } from "@cityos/api-client";
+
+const client = new CityOSClient({
+  baseUrl: process.env.EXPO_PUBLIC_BFF_URL ?? "https://cityos.dakkah.city",
+  tenantId: "riyadh-downtown",
+  surface: "mobile",
+
+  // Called before every request — return your stored token
+  getToken: async () => {
+    return await SecureStore.getItemAsync("cityos_token");
+  },
+
+  // Called on HTTP 401 — refresh the token and return the new one
+  on401: async () => {
+    const refreshed = await refreshSession();
+    if (refreshed) {
+      await SecureStore.setItemAsync("cityos_token", refreshed);
+    }
+    return refreshed;
+  },
+});
+```
+
+<Tip>
+  Set `surface` to one of `mobile`, `mobile_large`, `tablet`, `desktop`, `desktop_wide`, `kiosk`, `tv_1080p`, or `carplay`. The BFF forwards this as `x-cityos-surface` and some endpoints return surface-aware responses.
+</Tip>
+
+---
+
+## Log out
+
+Send a POST to the logout endpoint to invalidate the session cookie server-side.
+
+```typescript TypeScript
+await fetch("https://cityos.dakkah.city/api/bff/auth/logout", {
+  method: "POST",
+  credentials: "include",
+  headers: { "x-correlation-id": crypto.randomUUID() },
+});
+```
+
+---
+
+## Error responses
+
+All BFF errors share a consistent shape:
+
+```json Error — 401 Unauthorized
+{
+  "success": false,
+  "error": {
+    "code": "AUTH_ERROR",
+    "message": "Invalid credentials",
+    "tokenExpired": false
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+<Warning>
+  When `error.tokenExpired` is `true`, your token has expired rather than been rejected outright. Trigger your `on401` refresh handler and retry — do not prompt the user to log in again immediately.
+</Warning>
+
+| Code | Meaning |
+|---|---|
+| `AUTH_ERROR` | Bad credentials or expired token |
+| `VALIDATION_ERROR` | Malformed request body |
+| `RATE_LIMIT` | Too many requests — see `retryAfterSeconds` |

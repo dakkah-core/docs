@@ -1,0 +1,160 @@
+---
+title: "CityOS API error codes and handling"
+description: "BFF error response structure, all 15 error codes, token expiry detection, retry-after hints, and a TypeScript retry strategy with exponential backoff."
+---
+
+When a BFF request fails, the platform returns a consistent `BffErrorResponse` envelope with a machine-readable `code` field. This lets you write a single error handler that dispatches on the code and applies the right recovery strategy — from silent retries to prompting the user to re-authenticate.
+
+## Error response structure
+
+Every error response has the following shape:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Validation failed",
+    "details": {
+      "formErrors": [],
+      "fieldErrors": {
+        "email": ["Invalid email address"],
+        "password": ["Required"]
+      }
+    }
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+<ResponseField name="success" type="boolean" required>
+  Always `false` for error responses.
+</ResponseField>
+
+<ResponseField name="error" type="object" required>
+  <Expandable title="properties" defaultOpen>
+    <ResponseField name="code" type="string" required>
+      Machine-readable error code. See the full list below.
+    </ResponseField>
+    <ResponseField name="message" type="string" required>
+      Human-readable error description.
+    </ResponseField>
+    <ResponseField name="details" type="object">
+      Present on `VALIDATION_ERROR` responses. Contains the Zod `flatten()` output: `formErrors` (array of top-level errors) and `fieldErrors` (object mapping field names to arrays of error messages).
+    </ResponseField>
+    <ResponseField name="httpStatus" type="integer">
+      Present on `AUTH_ERROR` and `SERVICE_ERROR` responses. The original HTTP status code returned by the upstream service.
+    </ResponseField>
+    <ResponseField name="tokenExpired" type="boolean">
+      Present on `AUTH_ERROR` when the JWT has expired. Use this flag to trigger a token refresh instead of redirecting the user to the login page.
+    </ResponseField>
+    <ResponseField name="retryAfterSeconds" type="integer">
+      Present on `RATE_LIMIT` errors. The number of seconds you must wait before retrying the request.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="correlationId" type="string" required>
+  UUID for distributed tracing. Include this in support requests.
+</ResponseField>
+
+## Error codes
+
+| Code | HTTP status | Meaning | Recommended action |
+|---|---|---|---|
+| `NETWORK_ERROR` | 502 / 504 | A downstream service (Medusa, Meilisearch, etc.) was unreachable or returned a network-level error. | Retry with exponential backoff. |
+| `AUTH_ERROR` | 401 | Authentication failed. The JWT is missing, invalid, or expired. Check `tokenExpired` to distinguish expiry from invalid credentials. | Refresh the token if `tokenExpired: true`, otherwise redirect to login. |
+| `VALIDATION_ERROR` | 400 | The request body or query parameters failed schema validation. | Read `details.fieldErrors` to surface field-level messages to the user. |
+| `NOT_FOUND` | 404 | The requested resource does not exist. | Show a not-found state. Do not retry. |
+| `RATE_LIMIT` | 429 | Too many requests. | Wait `retryAfterSeconds` before retrying. |
+| `CONFLICT` | 409 | The operation conflicts with existing state (e.g. duplicate email at registration). | Inform the user and do not retry automatically. |
+| `SERVICE_ERROR` | 500 / 502 | An unexpected error occurred in an upstream service. `httpStatus` contains the upstream status code. | Retry with backoff. Log `correlationId` for debugging. |
+| `UNKNOWN_ERROR` | 500 | An unclassified internal error. | Retry once. If the error persists, report `correlationId` to the platform team. |
+| `COMMERCE_ERROR` | 400 / 500 | An error occurred in the Medusa commerce backend during a cart, order, or product operation. | Display the `message` to the user if it is user-actionable; otherwise show a generic error. |
+| `BOOKING_LIST_ERROR` | 400 / 500 | Failed to retrieve the booking list. | Retry with backoff. |
+| `BOOKING_CREATE_ERROR` | 400 / 422 | Failed to create a booking. Often indicates a time slot conflict or missing required field. | Read `details.fieldErrors` and show validation feedback to the user. |
+| `LOYALTY_ERROR` | 400 / 500 | A loyalty points operation (redeem, enroll, history) failed. | Check `message` for actionable detail (e.g. insufficient points). |
+| `EVENTS_ERROR` | 400 / 500 | An event tickets operation failed. | Retry if the error is transient; otherwise show `message` to the user. |
+| `COMPLAINTS_LIST_ERROR` | 400 / 500 | Failed to retrieve the complaints list. | Retry with backoff. |
+| `COMPLAINT_ERROR` | 400 / 422 | Failed to submit or update a complaint. | Read `details.fieldErrors` for field-level validation feedback. |
+
+## Detecting token expiry
+
+Check for `AUTH_ERROR` + `tokenExpired: true` before redirecting a user to the login page. This pattern avoids unnecessary logouts when the token has simply expired and can be refreshed silently.
+
+```typescript TypeScript
+async function callApi(url: string, token: string): Promise<unknown> {
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  const body = await res.json();
+
+  if (!body.success && body.error?.code === 'AUTH_ERROR') {
+    if (body.error.tokenExpired) {
+      // Refresh and retry — do not redirect to login yet
+      const newToken = await refreshToken();
+      return callApi(url, newToken);
+    }
+    // Truly unauthorized — send to login
+    redirectToLogin();
+  }
+
+  return body;
+}
+```
+
+## Retry strategy
+
+Use exponential backoff with jitter for transient errors (`NETWORK_ERROR`, `SERVICE_ERROR`, `UNKNOWN_ERROR`). Respect the `retryAfterSeconds` hint on `RATE_LIMIT` errors. Do not retry `VALIDATION_ERROR`, `NOT_FOUND`, or `CONFLICT` — these are permanent failures that require user action.
+
+```typescript TypeScript
+interface BffError {
+  code: string;
+  retryAfterSeconds?: number;
+  tokenExpired?: boolean;
+}
+
+const RETRYABLE_CODES = new Set([
+  'NETWORK_ERROR',
+  'SERVICE_ERROR',
+  'UNKNOWN_ERROR',
+  'RATE_LIMIT',
+]);
+
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit,
+  maxAttempts = 3,
+): Promise<Response> {
+  let attempt = 0;
+
+  while (attempt < maxAttempts) {
+    const res = await fetch(url, options);
+
+    if (res.ok) return res;
+
+    const body = await res.clone().json();
+    const error: BffError = body.error ?? {};
+
+    if (!RETRYABLE_CODES.has(error.code)) {
+      // Non-retryable — surface to caller immediately
+      return res;
+    }
+
+    const waitMs =
+      error.code === 'RATE_LIMIT' && error.retryAfterSeconds
+        ? error.retryAfterSeconds * 1000
+        : Math.min(1000 * 2 ** attempt + Math.random() * 500, 30_000);
+
+    await new Promise((r) => setTimeout(r, waitMs));
+    attempt++;
+  }
+
+  throw new Error(`Request to ${url} failed after ${maxAttempts} attempts`);
+}
+```
+
+<Tip>
+  Always log the `correlationId` from error responses. When you contact Dakkah Platform Engineering about an incident, including the correlation ID allows the team to trace the exact request through all downstream services.
+</Tip>

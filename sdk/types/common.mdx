@@ -1,0 +1,220 @@
+---
+title: "Common SDK types"
+sidebarTitle: "Common"
+description: "Shared TypeScript types used by every CityOS domain client — Envelope, Pagination, Surface, ApiError, Capabilities, SessionData."
+icon: "braces"
+---
+
+These types are re-exported from `@cityos/api-client` and mirror the OpenAPI 3.1 schemas. They are stable; domain clients add their own types on top of these primitives.
+
+## `Envelope<T>`
+
+The shape of every successful BFF response.
+
+```typescript
+export type Envelope<T> = {
+  success: true;
+  data: T;
+  meta?: ResponseMeta;
+  pagination?: Pagination;
+  correlationId: string;
+};
+
+export type ResponseMeta = {
+  tenantSlug?: string;
+  timestamp?: string;
+};
+```
+
+Every SDK method returns `Envelope<DomainType>`. Destructure `data` directly:
+
+```typescript
+const { data, pagination } = await commerce.listProducts({ limit: 20 });
+```
+
+## `Pagination`
+
+```typescript
+export type Pagination = {
+  page?: number;
+  limit: number;
+  total: number;
+  totalPages?: number;
+  offset?: number;       // used by booking + event tickets
+};
+```
+
+Both page-based and offset-based pagination share this shape. See [API conventions](/api/conventions).
+
+## `Paginated<T>`
+
+Convenience helper for paginated lists:
+
+```typescript
+export type Paginated<T> = Envelope<T[]> & { pagination: Pagination };
+```
+
+## `Surface`
+
+```typescript
+export type Surface =
+  | "mobile" | "mobile_large"
+  | "tablet"
+  | "desktop" | "desktop_wide"
+  | "kiosk" | "tv_1080p" | "carplay";
+```
+
+Set via `CityOSClient({ surface })` or `cityos.setSurface(...)`. See [Surfaces](/concepts/surfaces).
+
+## `TenantHeaders`
+
+Headers the SDK adds to every request. Documented here so custom transport layers can replicate them.
+
+```typescript
+export type TenantHeaders = {
+  "x-tenant-slug": string;
+  "x-cityos-surface"?: Surface;
+  "x-correlation-id": string;
+  Authorization?: `Bearer ${string}`;
+  "X-S2S-Key"?: string;
+};
+```
+
+## `ApiError`
+
+Thrown for every non-2xx response.
+
+```typescript
+export class ApiError extends Error {
+  code: ErrorCode;
+  message: string;
+  httpStatus?: number;
+  correlationId: string;
+  details?: ValidationDetails;
+  tokenExpired?: boolean;
+  retryAfterSeconds?: number;
+}
+```
+
+### `ErrorCode`
+
+```typescript
+export type ErrorCode =
+  | "NETWORK_ERROR"
+  | "AUTH_ERROR"
+  | "VALIDATION_ERROR"
+  | "NOT_FOUND"
+  | "RATE_LIMIT"
+  | "CONFLICT"
+  | "SERVICE_ERROR"
+  | "UNKNOWN_ERROR"
+  | "COMMERCE_ERROR"
+  | "BOOKING_LIST_ERROR"
+  | "BOOKING_CREATE_ERROR"
+  | "LOYALTY_ERROR"
+  | "EVENTS_ERROR"
+  | "COMPLAINTS_LIST_ERROR"
+  | "COMPLAINT_ERROR";
+```
+
+See [Error codes](/resources/error-codes) for HTTP status mapping and client handling.
+
+### `ValidationDetails`
+
+Matches Zod's `flatten()` output:
+
+```typescript
+export type ValidationDetails = {
+  formErrors: string[];
+  fieldErrors: Record<string, string[]>;
+};
+```
+
+### Type guard
+
+```typescript
+import { ApiError, isApiError } from "@cityos/api-client";
+
+try {
+  await commerce.createOrder(payload);
+} catch (err) {
+  if (isApiError(err)) {
+    if (err.code === "VALIDATION_ERROR") showFieldErrors(err.details);
+    else if (err.code === "AUTH_ERROR" && err.tokenExpired) await refresh();
+  } else {
+    throw err;
+  }
+}
+```
+
+## `Idempotent<T>`
+
+Mutation helper that requires an idempotency key:
+
+```typescript
+export type Idempotent<T> = T & {
+  idempotencyKey?: string;
+};
+
+export type MutationOptions = {
+  idempotencyKey?: string;
+  signal?: AbortSignal;
+  retry?: Partial<RetryConfig>;
+};
+```
+
+Most mutating methods accept `MutationOptions` as a trailing argument:
+
+```typescript
+await bookings.create(payload, { idempotencyKey: `booking_${id}` });
+```
+
+## `Capabilities`
+
+Returned by `TenantClient.getCapabilities()`. Indexes are typed so `useCapability("iotEnabled")` is checked at compile time.
+
+```typescript
+export type Capabilities = {
+  commerceEnabled: boolean;
+  bookingEnabled: boolean;
+  ticketingEnabled: boolean;
+  loyaltyEnabled: boolean;
+  searchEnabled: boolean;
+  iotEnabled: boolean;
+  ablyEnabled: boolean;
+  fleetEnabled: boolean;
+  webhooksEnabled: boolean;
+  kycEnabled: boolean;
+  erpEnabled: boolean;
+};
+```
+
+## `SessionData`
+
+Returned by `AuthClient.getSession()`. Combines Medusa customer and Payload user.
+
+```typescript
+export type SessionData = {
+  authenticated: boolean;
+  customer: {
+    id: string;
+    email: string;
+    first_name?: string;
+    last_name?: string;
+  } | null;
+  user: {
+    payloadUserId: string;
+    roles: string[];
+    tenant: string | null;
+    keycloakSub: string | null;
+    status: string;
+  } | null;
+};
+```
+
+## Related
+
+- [Domain schemas](/sdk/types/domain-schemas)
+- [CityOSClient](/sdk/cityos-client)
+- [BffClient](/sdk/bff-client)
+- [Error codes](/resources/error-codes)

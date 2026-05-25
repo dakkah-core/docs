@@ -1,0 +1,230 @@
+---
+title: "Accept payments with Dakkah CityOS"
+description: "Accept payments in CityOS using Stripe or Moyasar. Covers provider IDs, the four-step checkout flow, ZATCA e-invoicing for Saudi tenants, and BNPL status."
+---
+
+CityOS routes payment processing through Medusa v2 as the commerce engine. Each payment provider is registered as a Medusa payment processor, and you select the active provider at checkout time by passing `provider_id` when initialising a payment session. Saudi Arabia tenants additionally benefit from ZATCA Phase 2 e-invoicing, which the platform generates automatically for every completed order.
+
+## Available payment providers
+
+<CardGroup cols={2}>
+  <Card title="Stripe" icon="credit-card">
+    Global card payments. Fully implemented and production-ready. Use provider ID `pp_stripe_stripe`.
+  </Card>
+  <Card title="Moyasar" icon="building-columns">
+    Saudi-local payments: Mada debit, STC Pay, Apple Pay. Fully implemented. Use provider ID `pp_moyasar_moyasar`.
+  </Card>
+  <Card title="Tabby" icon="cart-shopping">
+    Buy Now Pay Later (MENA). UI components are present in the checkout flow, but the backend processor adapter is not yet implemented.
+  </Card>
+  <Card title="Tamara" icon="cart-shopping">
+    Buy Now Pay Later (Saudi/UAE). UI components are present in the checkout flow, but the backend processor adapter is not yet implemented.
+  </Card>
+</CardGroup>
+
+<Warning>
+  **BNPL is not currently functional.** The Tabby and Tamara checkout UI components exist and will render in your storefront, but no backend payment processor adapters or webhooks have been built. Do not enable these providers for live transactions. They are roadmap items.
+</Warning>
+
+## How checkout works
+
+The CityOS checkout flow follows four steps: create a cart, add items to it, initialise a payment session with your chosen provider, and complete the cart to produce an order.
+
+<Steps>
+  <Step title="Initialise a cart via checkout">
+    Call `POST /api/bff/commerce/checkout` to create (or reuse) a Medusa cart for the authenticated user. Pass the `variant_id` of the product the customer is purchasing. The endpoint is idempotent — include `X-Idempotency-Key` to prevent duplicate carts on network retries.
+
+    ```http
+    POST /api/bff/commerce/checkout
+    Authorization: Bearer <token>
+    Content-Type: application/json
+    X-Idempotency-Key: ik_abc123def456
+
+    {
+      "variant_id": "variant_01HXYZ..."
+    }
+    ```
+
+    A successful response returns `cart_id` and `customer_id`:
+
+    ```json
+    {
+      "success": true,
+      "data": {
+        "cart_id": "cart_01HXYZ...",
+        "customer_id": "cust_01HXYZ..."
+      },
+      "meta": { "timestamp": "2026-05-01T10:00:00.000Z", "idempotent": false },
+      "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+    }
+    ```
+  </Step>
+
+  <Step title="Initialise a payment session">
+    Call `POST /api/bff/commerce/cart/payment-sessions` to attach a payment provider to the cart. Pass `cartId` and `providerId`.
+
+    <Tabs>
+      <Tab title="Stripe">
+        ```http
+        POST /api/bff/commerce/cart/payment-sessions
+        Authorization: Bearer <token>
+        Content-Type: application/json
+
+        {
+          "cartId": "cart_01HXYZ...",
+          "providerId": "pp_stripe_stripe"
+        }
+        ```
+      </Tab>
+      <Tab title="Moyasar">
+        ```http
+        POST /api/bff/commerce/cart/payment-sessions
+        Authorization: Bearer <token>
+        Content-Type: application/json
+
+        {
+          "cartId": "cart_01HXYZ...",
+          "providerId": "pp_moyasar_moyasar"
+        }
+        ```
+      </Tab>
+    </Tabs>
+
+    The response contains a `payment_collection` object from Medusa, which includes any client secrets or redirect URLs your frontend needs to complete the payment.
+  </Step>
+
+  <Step title="Collect payment on the frontend">
+    Use the provider's SDK to collect the payment on your frontend surface.
+
+    <Tabs>
+      <Tab title="Stripe (React)">
+        ```tsx
+        import { loadStripe } from '@stripe/stripe-js';
+        import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
+
+        const stripePromise = loadStripe(process.env.EXPO_PUBLIC_STRIPE_KEY!);
+
+        function CheckoutForm({ clientSecret }: { clientSecret: string }) {
+          const stripe = useStripe();
+          const elements = useElements();
+
+          async function handleSubmit(e: React.FormEvent) {
+            e.preventDefault();
+            if (!stripe || !elements) return;
+            const { error } = await stripe.confirmPayment({
+              elements,
+              confirmParams: { return_url: 'https://your-city.cityos.dakkah.city/order/confirm' },
+            });
+            if (error) console.error(error.message);
+          }
+
+          return (
+            <Elements stripe={stripePromise} options={{ clientSecret }}>
+              <form onSubmit={handleSubmit}>
+                <PaymentElement />
+                <button type="submit">Pay</button>
+              </form>
+            </Elements>
+          );
+        }
+        ```
+      </Tab>
+      <Tab title="Moyasar (React Native)">
+        ```tsx
+        import { WebView } from 'react-native-webview';
+
+        // Moyasar renders its form in a WebView. Pass the publishable key
+        // and the amount returned by the payment session.
+        const MOYASAR_KEY = process.env.EXPO_PUBLIC_MOYASAR_KEY;
+
+        function MoyasarCheckout({ amount, currency, callbackUrl }: {
+          amount: number;
+          currency: string;
+          callbackUrl: string;
+        }) {
+          const html = `
+            <script src="https://cdn.moyasar.com/mpf/1.14.0/moyasar.js"></script>
+            <div class="mysr-form"></div>
+            <script>
+              Moyasar.init({
+                element: '.mysr-form',
+                amount: ${amount},
+                currency: '${currency}',
+                description: 'CityOS Order',
+                publishable_api_key: '${MOYASAR_KEY}',
+                callback_url: '${callbackUrl}',
+                methods: ['creditcard', 'mada', 'applepay', 'stcpay'],
+              });
+            </script>
+          `;
+          return <WebView source={{ html }} />;
+        }
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+
+  <Step title="Complete the cart">
+    Once the provider confirms payment, complete the cart to create an order:
+
+    ```http
+    POST /api/bff/commerce/cart/complete
+    Authorization: Bearer <token>
+    Content-Type: application/json
+
+    {
+      "cartId": "cart_01HXYZ..."
+    }
+    ```
+
+    A completed cart produces a `CommerceOrder` with status `confirmed`. CityOS automatically generates a ZATCA-compliant e-invoice for Saudi tenants at this point.
+  </Step>
+</Steps>
+
+## Using the TypeScript SDK
+
+If you are building a server-side integration, the `@cityos/api-client` package exposes a `CommerceClient` that wraps the BFF endpoints:
+
+```typescript
+import { CityOSClient, CommerceClient } from '@cityos/api-client';
+
+const client = new CityOSClient({
+  baseUrl: 'https://your-city.cityos.dakkah.city',
+  getToken: async () => yourAuthTokenStore.getToken(),
+  tenantId: 'riyadh-downtown',
+});
+
+const commerce = new CommerceClient(client);
+
+// Create an order (cart + line items + complete in one call)
+const { data } = await commerce.createOrder([
+  { productId: 'prod_01H...', quantity: 2 },
+]);
+console.log(data.order.id);
+```
+
+## ZATCA e-invoicing (Saudi Arabia)
+
+For tenants operating in Saudi Arabia, CityOS enforces ZATCA Phase 2 compliance automatically. You do not need to call any additional endpoints. When a cart completes, the platform:
+
+1. Generates a FATOORAH-compliant XML invoice with the order line items, VAT at 15%, and a QR code stamped to the document.
+2. Hashes and chains the invoice to the previous invoice in the sequence (hash chain integrity).
+3. Submits the invoice to the ZATCA clearance API and stores the clearance token on the order.
+4. Makes the cleared invoice available for download via the order record.
+
+<Note>
+  ZATCA e-invoicing is triggered only for tenants that have `zatcaEnabled: true` in their tenant capability flags. You can check this via `GET /api/bff/tenant/capabilities`. Tenants outside Saudi Arabia are unaffected.
+</Note>
+
+## Environment variables
+
+| Variable | Surface | Description |
+|---|---|---|
+| `EXPO_PUBLIC_STRIPE_KEY` | Mobile / web | Stripe publishable key |
+| `EXPO_PUBLIC_MOYASAR_KEY` | Mobile / web | Moyasar publishable API key |
+| `STRIPE_SECRET_KEY` | Server | Stripe secret key (set in your deployment environment) |
+| `MOYASAR_API_KEY` | Server | Moyasar API key for Temporal B2B workflows |
+
+<Tip>
+  For mobile apps, all `EXPO_PUBLIC_*` variables are injected at build time via EAS. Set them as GitHub repository variables and they will be available in every CI/CD build.
+</Tip>

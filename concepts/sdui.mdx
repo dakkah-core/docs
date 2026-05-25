@@ -1,0 +1,174 @@
+---
+title: "Server-Driven UI (SDUI) in CityOS"
+description: "Learn what SDUI is, why CityOS uses it, and how to consume the SdPayload structure returned by the /api/bff/sdui endpoint in your web or native application."
+---
+
+Server-Driven UI (SDUI) is a pattern where the server — not the client app — decides what the interface looks like. Instead of shipping static component trees inside your application binary, you fetch a JSON payload describing the layout, and your app renders whatever that payload contains. In CityOS, this means a single content update in the CMS instantly propagates to every surface — web browsers, smartphones, kiosks, TV displays, and CarPlay dashboards — without waiting for an app store review.
+
+## Why CityOS uses SDUI
+
+A platform serving 7+ surface types, 5 tenant tiers, and multiple user personas would be impractical to maintain with per-surface codebases. SDUI solves this by separating **what to show** (defined in the CMS) from **how to render it** (handled by thin rendering shells on each surface). The same screen definition for a home page renders as a responsive HTML grid on desktop, a vertical scroll list on mobile, and a D-pad-navigable carousel on TV — all from one JSON tree.
+
+CityOS also uses SDUI to enable **live content updates**: operators can change button labels, reorder blocks, swap images, or add new sections in the CMS admin panel, and every connected device reflects the change on the next request — no deployment required.
+
+## The `SdPayload` structure
+
+Every SDUI response conforms to the `SdPayload` type exported from `@cityos/sdui-protocol`. It is a flat envelope that wraps a recursive node tree:
+
+```typescript
+// From @cityos/sdui-protocol
+
+export type SdPayload = {
+  version: string;       // Protocol version, e.g. "1.0"
+  screenId: string;      // Identifier for the screen, e.g. "home_screen"
+  title?: string;        // Optional human-readable screen title
+  root: SdNode;          // The root node of the layout tree
+};
+```
+
+The `root` field is an `SdNode` — a discriminated union of all renderable node types. Container nodes (`stack`, `grid`, `carousel`, `card`) hold arrays of child `SdNode` values, making the tree recursive to any depth.
+
+### Node types
+
+| Node type | Description |
+|---|---|
+| `text` | Paragraph or heading text. Variants: `h1`–`h4`, `body`, `caption`, `label`, `overline`. |
+| `button` | Tappable button. Always carries an `action` field. |
+| `image` | Rendered image with optional aspect ratio and content mode. |
+| `stack` | Linear layout container — vertical or horizontal. |
+| `grid` | Fixed-column grid of child nodes. |
+| `carousel` | Horizontally scrollable child nodes, optionally auto-playing. |
+| `card` | Elevated card container with optional title, subtitle, image, and badge. |
+| `form` | A structured form with typed fields and a submit action. |
+| `map` | A map view anchored to a lat/lng with optional markers. |
+| `list-item` | A single row with leading icon, title, subtitle, and trailing content. |
+| `badge` | Small colored label. |
+| `avatar` | Circular or square user/entity avatar. |
+| `icon` | A semantic platform icon. |
+| `spacer` | Fixed-size or flexible empty space. |
+| `divider` | Horizontal rule. |
+
+### Actions
+
+Every interactive node carries an `action` or `onPress` field typed as `SdAction` — a discriminated union keyed on `type`:
+
+```typescript
+// From @cityos/sdui-protocol
+
+type SdAction =
+  | { type: "navigate"; screen: string; params?: Record<string, unknown> }
+  | { type: "api_mutation"; endpoint: string; method: string; payload?: Record<string, unknown> }
+  | { type: "open_url"; url: string }
+  | { type: "submit_form"; formId: string; endpoint: string; method?: string }
+  | { type: "trigger_workflow"; workflowId: string; input?: Record<string, unknown> }
+  | { type: "deep_link"; uri: string }
+  | { type: "share"; title?: string; message?: string; url?: string }
+  | { type: "copy_text"; text?: string }
+  | { type: "copy_clipboard"; text: string }
+  | { type: "intent"; intent: string; data?: Record<string, unknown> }
+  | { type: "request_hardware_access"; hardware: string };
+```
+
+## Example payload
+
+The following is a minimal SDUI payload for a home screen banner with a call-to-action button:
+
+```json
+{
+  "version": "1.0",
+  "screenId": "home_screen",
+  "title": "Welcome to Riyadh",
+  "root": {
+    "type": "stack",
+    "id": "root-stack",
+    "direction": "vertical",
+    "spacing": "md",
+    "children": [
+      {
+        "type": "image",
+        "id": "hero-banner",
+        "src": "https://cdn.cityos.example.com/riyadh-hero.jpg",
+        "alt": "Aerial view of Riyadh",
+        "aspectRatio": 2.0,
+        "contentMode": "cover"
+      },
+      {
+        "type": "text",
+        "id": "welcome-heading",
+        "content": "Good morning, Ahmed",
+        "variant": "h2"
+      },
+      {
+        "type": "button",
+        "id": "explore-btn",
+        "label": "Explore city services",
+        "variant": "solid",
+        "color": "primary",
+        "action": {
+          "type": "navigate",
+          "screen": "citizen_services"
+        }
+      }
+    ]
+  }
+}
+```
+
+## Fetching SDUI payloads
+
+SDUI screens are served from the `/api/bff/sdui/{screenId}` endpoint. Always include your tenant and surface headers:
+
+```http
+GET /api/bff/sdui/home_screen HTTP/1.1
+Host: cityos.example.com
+Authorization: Bearer <your-jwt>
+x-tenant-slug: riyadh-municipality
+x-cityos-surface: mobile
+```
+
+### Using `CityOSClient`
+
+The `CityOSClient` in `@cityos/api-client` handles headers automatically. Pass the `screenId` as the path:
+
+```typescript
+import { CityOSClient } from "@cityos/api-client";
+import type { SdPayload } from "@cityos/sdui-protocol";
+
+const client = new CityOSClient({
+  baseUrl: "https://cityos.example.com",
+  getToken: () => authSession.getToken(),
+  tenantId: "riyadh-municipality",
+  surface: "mobile",
+});
+
+const payload = await client.get<SdPayload>("/api/bff/sdui/home_screen");
+
+// payload.root is now a fully typed SdNode tree
+console.log(payload.screenId);  // "home_screen"
+console.log(payload.root.type); // "stack"
+```
+
+## Validating payloads
+
+The `@cityos/sdui-protocol` package exports `validateSduiPayload`, a helper that runs Zod schema validation and throws a typed error if the payload is malformed. Use it in server-side code that generates or proxies SDUI responses:
+
+```typescript
+import { validateSduiPayload } from "@cityos/sdui-protocol";
+
+const rawPayload = await fetchFromCMS(screenId);
+
+// Throws [SDUI] Invalid Server Driven UI payload generated: ... if invalid
+const payload = validateSduiPayload(rawPayload);
+```
+
+<Warning>
+Do not call `validateSduiPayload` in client-side rendering code on every render — it runs full Zod schema validation and is designed for server-side payload generation, not hot-path rendering.
+</Warning>
+
+## How live data is injected
+
+Static CMS screens become useful for real apps through hydration hooks. When the Composer resolves a screen, it replaces template tokens in node fields before sending the response. For example, a text node with `"content": "{{ fleetbase.active_trips.count }}"` is hydrated with the live trip count from Fleetbase before the payload leaves the server. Your rendering shell receives fully resolved values and never needs to make secondary data requests for hydrated fields.
+
+<Tip>
+Hydration runs entirely on the server. Your rendering shell is always a passive consumer of the final AST — it does not need to know which fields were hydrated or where the data came from.
+</Tip>

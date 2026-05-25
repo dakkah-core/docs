@@ -1,0 +1,117 @@
+---
+title: "Realtime streaming with Ably"
+sidebarTitle: "Realtime (Ably)"
+description: "Stream live IoT readings, fleet positions, booking status, and event scans over tenant-scoped Ably channels in CityOS."
+icon: "radio"
+---
+
+CityOS uses **Ably** for all client-facing realtime: IoT sensor readings, fleet driver positions, booking status updates, and event-gate scans. Channels are tenant-scoped and short-lived auth tokens are issued by the BFF.
+
+## Auth
+
+Call `/api/bff/tenant/ably-token` to mint a tenant-scoped Ably token. The BFF embeds the user's roles so Ably enforces per-channel ACLs.
+
+```typescript
+import Ably from "ably";
+
+const ably = new Ably.Realtime({
+  authUrl: `${baseUrl}/api/bff/tenant/ably-token`,
+  authHeaders: {
+    Authorization: `Bearer ${await tokenStore.get()}`,
+    "x-tenant-slug": "riyadh-downtown",
+  },
+});
+```
+
+The Ably client auto-refreshes the token before expiry.
+
+## Channel naming
+
+All channels follow:
+
+```text
+cityos:{tenantSlug}:{domain}:{topic}
+```
+
+## Channel catalog
+
+### IoT
+
+| Channel | Event | Payload |
+| --- | --- | --- |
+| `cityos:{tenant}:iot:air-quality` | `reading` | `{ deviceId, measures: { aqi, pm25, ... }, timestamp }` |
+| `cityos:{tenant}:iot:smart-bin` | `reading` | `{ deviceId, measures: { fillLevel, battery, ... }, timestamp }` |
+| `cityos:{tenant}:iot:water-quality` | `reading` | `{ deviceId, measures: { ph, turbidity, ... }, timestamp }` |
+| `cityos:{tenant}:iot:cold-storage` | `reading` | `{ deviceId, measures: { temperature, doorOpen, ... } }` |
+| `cityos:{tenant}:iot:smart-meter` | `reading` | `{ deviceId, measures: { consumption, peakDemand, ... } }` |
+| `cityos:{tenant}:iot:traffic-flow` | `reading` | `{ deviceId, measures: { vehicleCount, congestion, ... } }` |
+| `cityos:{tenant}:iot:parking` | `reading` | `{ deviceId, measures: { occupied }, metadata }` |
+| `cityos:{tenant}:iot:irrigation` | `reading` | `{ deviceId, measures: { soilMoisture, ... } }` |
+
+### Fleet
+
+| Channel | Event | Payload |
+| --- | --- | --- |
+| `cityos:{tenant}:fleet:positions` | `position` | `{ driverId, lat, lng, heading, speed, timestamp }` |
+| `cityos:{tenant}:fleet:positions:{driverId}` | `position` | Single driver only |
+| `cityos:{tenant}:fleet:shipments` | `status` | `{ shipmentId, status, at }` |
+| `cityos:{tenant}:fleet:presence` | presence | Driver shift presence |
+
+### Bookings
+
+| Channel | Event | Payload |
+| --- | --- | --- |
+| `cityos:{tenant}:bookings:status` | `status` | `{ bookingId, status, at }` |
+
+### Events
+
+| Channel | Event | Payload |
+| --- | --- | --- |
+| `cityos:{tenant}:events:scans` | `scan` | `{ ticketId, gateId, scannedAt }` |
+
+### Commerce
+
+| Channel | Event | Payload |
+| --- | --- | --- |
+| `cityos:{tenant}:commerce:orders` | `status` | `{ orderId, status, at }` |
+
+## Reconnection & presence
+
+The Ably client handles reconnection transparently. For presence channels (fleet drivers, support agents), call `presence.enter()` on connect and `presence.leave()` on shutdown:
+
+```typescript
+const presence = ably.channels.get("cityos:riyadh-downtown:fleet:presence");
+await presence.presence.enter({ driverId, shift: "morning" });
+
+// later
+await presence.presence.leave();
+```
+
+## Rate limits
+
+The BFF issues tokens with these defaults (configurable per tenant):
+
+| Limit | Default |
+| --- | --- |
+| Concurrent connections per user | 10 |
+| Messages per second per channel | 100 |
+| Token TTL | 60 minutes |
+
+## Capability flag
+
+Gate every Ably subscription on `ablyEnabled`:
+
+```typescript
+const { data } = await tenant.getCapabilities();
+if (!data.ablyEnabled) {
+  console.warn("Realtime not available; falling back to polling");
+  return;
+}
+```
+
+## Related
+
+- [IoT guide](/guides/iot-telemetry) — full subscription walkthrough
+- [Fleet guide](/guides/fleet) — driver positions
+- [Events guide](/guides/events) — live scan feed
+- [TenantClient](/sdk/clients/tenant) — `getAblyToken()` helper

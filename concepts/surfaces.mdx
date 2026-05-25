@@ -1,0 +1,138 @@
+---
+title: "CityOS surfaces: web, mobile, and beyond"
+description: "Learn how CityOS targets 8 surface types from desktop to CarPlay, and how the x-cityos-surface header tells the SDUI engine which layout to return."
+---
+
+Dakkah CityOS runs on a wide range of hardware — browser tabs, smartphones, public kiosks, Android TV displays, and in-vehicle dashboards — without shipping separate codebases for each. The surface system is what makes this possible: every SDUI payload the platform returns is shaped by a declared surface, ensuring that layout, navigation depth, and interaction patterns match the physical device your user is holding.
+
+## The `Surface` type
+
+The SDK exposes a TypeScript union type that enumerates every supported surface. This type is used in client configuration and is mirrored in the `x-cityos-surface` request header.
+
+```typescript
+// From @cityos/api-client
+export type Surface =
+  | "mobile"
+  | "mobile_large"
+  | "tablet"
+  | "desktop"
+  | "desktop_wide"
+  | "kiosk"
+  | "tv_1080p"
+  | "carplay";
+```
+
+## Surface types and their use cases
+
+<Columns cols={2}>
+  <Card title="mobile" icon="mobile">
+    Standard smartphone viewport (iOS and Android). The default surface for the CityOS Superapp. Deep navigation stacks, touch-first interactions, compact card layouts.
+  </Card>
+  <Card title="mobile_large" icon="mobile-screen">
+    Large-screen smartphones (≥ 6.5 inch). Behaves like `mobile` but with a slightly wider grid and larger touch targets.
+  </Card>
+  <Card title="tablet" icon="tablet">
+    iPad and Android tablet. Two-column layouts, expanded navigation drawers, and richer data tables. Used by the merchant POS companion app.
+  </Card>
+  <Card title="desktop" icon="monitor">
+    Standard desktop and laptop browser. Full sidebar navigation, multi-column grids, hover states, and keyboard shortcuts. Used by the City Dashboard and Business Dashboard.
+  </Card>
+  <Card title="desktop_wide" icon="display">
+    Wide-format desktop displays (≥ 1440 px). Expands layouts to use the additional horizontal space. Used by the Smart City Portal for municipal operators.
+  </Card>
+  <Card title="kiosk" icon="rectangle-terminal">
+    Interactive public kiosks. Simplified navigation, large touch targets, no keyboard input assumed. The SDUI engine injects hardware IPC nodes for thermal printers and NFC readers.
+  </Card>
+  <Card title="tv_1080p" icon="tv">
+    Android TV and Apple TV at 1080p. Deep navigation stacks are flattened into horizontal carousels. D-pad and remote input only; no touch or mouse events.
+  </Card>
+  <Card title="carplay" icon="car">
+    Apple CarPlay and Android Auto. Strictly limited text lengths, no images in primary content areas, and flattened button hierarchies conforming to CPListTemplate constraints. Safety regulations limit interactive complexity.
+  </Card>
+</Columns>
+
+## Setting the surface in a request
+
+Pass the `x-cityos-surface` header with every request that fetches an SDUI payload or surface-sensitive BFF data. When using the SDK, set `surface` in your client config:
+
+```typescript
+import { CityOSClient, Surface } from "@cityos/api-client";
+
+const client = new CityOSClient({
+  baseUrl: "https://cityos.example.com",
+  getToken: () => authSession.getToken(),
+  tenantId: "riyadh-municipality",
+  surface: "mobile",
+});
+
+// The header x-cityos-surface: mobile is sent on every request
+const screen = await client.get("/api/bff/sdui/home_screen");
+```
+
+You can change the surface at runtime — for example, if a tablet app needs to switch between a kiosk presentation mode and normal merchant mode:
+
+```typescript
+client.setSurface("kiosk");
+const kioskScreen = await client.get("/api/bff/sdui/kiosk_home");
+
+client.setSurface("tablet");
+const merchantScreen = await client.get("/api/bff/sdui/merchant_home");
+```
+
+## How the surface header affects SDUI rendering
+
+The SDUI Composer resolves a final UI tree using the following equation:
+
+```
+Final_UI_AST = f( Screen_ID + Surface + Tenant_ID + User_Role + Live_Backend_State )
+```
+
+Surface is one of five inputs. The same screen ID returns structurally different JSON depending on the declared surface:
+
+<Tabs>
+  <Tab title="tv_1080p">
+    ```http
+    GET /api/bff/sdui/home_screen
+    x-cityos-surface: tv_1080p
+    ```
+
+    The response contains a `carousel` root node. Deep navigation trees are flattened. Image `contentMode` defaults to `cover` for full-bleed display. All buttons carry `action.type: "navigate"` — no `open_url` or `submit_form` actions appear at the root level.
+  </Tab>
+  <Tab title="carplay">
+    ```http
+    GET /api/bff/sdui/home_screen
+    x-cityos-surface: carplay
+    ```
+
+    The response contains a flat `stack` root with a small number of `list-item` nodes. Images are stripped. Text nodes enforce `numberOfLines: 1`. Button labels are limited to short strings suitable for voice announcement.
+  </Tab>
+  <Tab title="kiosk">
+    ```http
+    GET /api/bff/sdui/home_screen
+    x-cityos-surface: kiosk
+    ```
+
+    The response may include hardware IPC nodes for thermal printers and NFC readers. Navigation is minimal. `button` nodes use `size: "xl"` and high-contrast colors for accessibility in public environments.
+  </Tab>
+</Tabs>
+
+<Warning>
+If you omit `x-cityos-surface`, the SDUI Composer falls back to `desktop`. This is intentional for server-side rendering contexts, but you should always declare the correct surface for client-facing requests to avoid layout mismatches.
+</Warning>
+
+## Capability negotiation
+
+For finer-grained control — particularly on native mobile surfaces — you can include SDUI capability metadata in the request body. The `SdCapabilities` type describes the OS, screen class, and input methods available on the device:
+
+```typescript
+// From @cityos/sdui-protocol
+export type SdCapabilities = {
+  os: "ios" | "android" | "web" | "watchos" | "wearos"
+    | "tvos" | "carplay" | "android_auto" | "kiosk";
+  osVersion?: string;
+  screenClass: "mobile" | "tablet" | "desktop" | "watch" | "tv" | "ambient";
+  inputMethods: Array<"touch" | "mouse" | "keyboard" | "voice" | "dpad" | "remote">;
+};
+```
+
+Sending capabilities alongside `x-cityos-surface` lets the Composer make finer decisions — for example, suppressing hover interactions on a device that only reports `touch` as an input method.

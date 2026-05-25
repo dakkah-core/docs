@@ -1,0 +1,53 @@
+---
+title: "CitizenClient"
+sidebarTitle: "Citizen"
+description: "Typed SDK client for CityOS citizen services — complaints, services, permits, payments, transit."
+icon: "users"
+---
+
+`CitizenClient` wraps `/api/bff/citizen/*`.
+
+## Methods
+
+| Method | HTTP | Endpoint |
+| --- | --- | --- |
+| `listServices()` | GET | `/api/bff/citizen/services` |
+| `listComplaints(params?)` | GET | `/api/bff/citizen/complaints` |
+| `submitComplaint(body)` | POST | `/api/bff/citizen/complaints` |
+| `listPermits()` | GET | `/api/bff/citizen/permits` |
+| `listPayments()` | GET | `/api/bff/citizen/payments` |
+| `getTransit()` | GET | `/api/bff/citizen/transit` |
+
+## submitComplaint
+
+```typescript
+const { data } = await citizen.submitComplaint({
+  category: "road-damage",
+  title: "Pothole on King Fahd Road",
+  description: "Large pothole causing traffic issues near exit 12.",
+  priority: "high",
+  coordinates: [24.7136, 46.6753],
+});
+
+console.log(data.id, data.referenceNumber); // CMP-2026-00789
+```
+
+Category enum: `infrastructure`, `public-safety`, `sanitation`, `noise`, `illegal-dumping`, `road-damage`, `utilities`, `other`. Priority enum: `low`, `medium`, `high`, `critical` (default `medium`).
+
+## listComplaints
+
+```typescript
+const { data } = await citizen.listComplaints({ status: "in-progress", limit: 20 });
+```
+
+Status filter: `all` (default), `submitted`, `in-progress`, `resolved`, `rejected`.
+
+## Errors
+
+`COMPLAINTS_LIST_ERROR`, `COMPLAINT_ERROR`, `VALIDATION_ERROR`, `AUTH_ERROR`.
+
+## Related
+
+- [Citizen vertical](/verticals/citizen)
+- [Citizen API](/api/citizen)
+- [Identity & KYC](/integrations/identity)

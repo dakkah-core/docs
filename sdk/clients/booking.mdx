@@ -1,0 +1,68 @@
+---
+title: "BookingClient"
+sidebarTitle: "Booking"
+description: "Typed SDK client for CityOS service bookings — list with filters, create with idempotency, cancel."
+icon: "calendar"
+---
+
+`BookingClient` wraps `/api/bff/booking` and the booking lifecycle.
+
+## Get it
+
+```typescript
+const { bookings } = createBffClients(cityos);
+```
+
+## Methods
+
+| Method | HTTP | Endpoint |
+| --- | --- | --- |
+| `list(params?)` | GET | `/api/bff/booking` |
+| `create(body, opts?)` | POST | `/api/bff/booking` |
+| `get(id)` | GET | `/api/bff/booking/{id}` |
+| `cancel(id, reason?)` | POST | `/api/bff/booking/{id}/cancel` |
+
+## list
+
+```typescript
+const { data } = await bookings.list({
+  status: "confirmed",
+  from: "2026-06-01",
+  to: "2026-06-30",
+  serviceType: "healthcare",
+  limit: 20,
+  offset: 0,
+});
+```
+
+| Param | Type | Notes |
+| --- | --- | --- |
+| `status` | enum | `pending` \| `confirmed` \| `cancelled` \| `completed` \| `no_show` |
+| `from` / `to` | `YYYY-MM-DD` | Date range |
+| `serviceType` | string | e.g. `beauty`, `healthcare` |
+| `providerId` | string | Filter by provider |
+| `limit` / `offset` | number | Max limit 100 |
+
+## create
+
+```typescript
+const { data: booking } = await bookings.create({
+  serviceType: "beauty",
+  serviceId: "svc_haircut",
+  providerId: "prov_salon_42",
+  timeSlot: { start: "2026-06-01T10:00:00Z", end: "2026-06-01T11:00:00Z" },
+  attendeeCount: 1,
+}, { idempotencyKey: `booking_${crypto.randomUUID()}` });
+```
+
+Required: `serviceType`, `serviceId`, `providerId`, `timeSlot.start`, `timeSlot.end`. Always pass `idempotencyKey`.
+
+## Errors
+
+`BOOKING_LIST_ERROR`, `BOOKING_CREATE_ERROR`, `VALIDATION_ERROR`, `AUTH_ERROR`, `CONFLICT` (slot collision).
+
+## Related
+
+- [Bookings vertical](/verticals/bookings)
+- [Booking API](/api/booking)
+- [Bookings guide](/guides/bookings)

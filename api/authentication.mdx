@@ -1,0 +1,206 @@
+---
+title: "Authenticate API requests to CityOS"
+description: "Obtain JWT tokens via the login endpoint, pass them as Bearer headers, handle token expiry, and use S2S keys for machine-to-machine calls."
+---
+
+The CityOS BFF API supports two authentication mechanisms: **JWT Bearer tokens** for user-facing applications, and **S2S keys** for server-to-server (machine-to-machine) calls. Most endpoints require one of these. A small number of public endpoints — such as `GET /api/bff/tenant` and `GET /api/bff/search` — are open and require no credentials.
+
+## JWT authentication
+
+### 1. Obtain a token
+
+Send a `POST` request to `/api/bff/auth/login` with the user's email and password. On success, the platform sets an httpOnly `medusa_session` cookie (7-day TTL) and returns the customer profile.
+
+#### Request
+
+<ParamField body="email" type="string" required>
+  The user's email address. Maximum 255 characters.
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  The user's password. Between 1 and 128 characters.
+</ParamField>
+
+<CodeGroup>
+
+```bash curl
+curl -X POST https://cityos.dakkah.city/api/bff/auth/login \
+  -H "Content-Type: application/json" \
+  -H "x-tenant-slug: riyadh-downtown" \
+  -d '{
+    "email": "citizen@example.com",
+    "password": "s3cureP@ss"
+  }'
+```
+
+```typescript TypeScript
+const res = await fetch('https://cityos.dakkah.city/api/bff/auth/login', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'x-tenant-slug': 'riyadh-downtown',
+  },
+  body: JSON.stringify({
+    email: 'citizen@example.com',
+    password: 's3cureP@ss',
+  }),
+  credentials: 'include', // preserve the session cookie
+});
+
+const { success, data, correlationId } = await res.json();
+```
+
+</CodeGroup>
+
+#### Response
+
+<ResponseField name="success" type="boolean" required>
+  `true` on a successful login.
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="properties">
+    <ResponseField name="customer" type="object">
+      The authenticated customer's profile from Medusa.
+      <Expandable title="properties">
+        <ResponseField name="id" type="string">
+          Medusa customer ID (e.g. `cust_01H...`).
+        </ResponseField>
+        <ResponseField name="email" type="string">
+          The customer's email address.
+        </ResponseField>
+        <ResponseField name="first_name" type="string">
+          First name.
+        </ResponseField>
+        <ResponseField name="last_name" type="string">
+          Last name.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="correlationId" type="string" required>
+  UUID for distributed tracing.
+</ResponseField>
+
+```json Example response
+{
+  "success": true,
+  "data": {
+    "customer": {
+      "id": "cust_01H...",
+      "email": "citizen@example.com",
+      "first_name": "Ahmed",
+      "last_name": "Al-Qahtani"
+    }
+  },
+  "meta": {
+    "timestamp": "2026-04-13T10:00:00.000Z"
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+### 2. Use the Bearer token
+
+For endpoints that use Keycloak-issued JWTs (OIDC flow) or Payload-issued tokens, pass the token in the `Authorization` header:
+
+```
+Authorization: Bearer <token>
+```
+
+The BFF validates the JWT signature using the Keycloak JWKS endpoint configured by `KEYCLOAK_ISSUER_URL`. Session cookies and Bearer tokens are both accepted depending on the client type.
+
+### 3. Check the current session
+
+Call `GET /api/bff/auth/session` at any time to verify the current authentication state. This endpoint always returns `200` — check `data.authenticated` in the response body.
+
+```bash curl
+curl https://cityos.dakkah.city/api/bff/auth/session \
+  -H "x-tenant-slug: riyadh-downtown" \
+  --cookie "medusa_session=..."
+```
+
+```json Example response
+{
+  "success": true,
+  "data": {
+    "authenticated": true,
+    "customer": {
+      "id": "cust_01H...",
+      "email": "citizen@example.com"
+    },
+    "user": {
+      "payloadUserId": "usr_123",
+      "roles": ["citizen", "verified_citizen"],
+      "tenant": "riyadh-downtown",
+      "keycloakSub": "kc-sub-456",
+      "status": "active"
+    }
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+### 4. Handle token expiry and refresh
+
+When a JWT expires, the BFF returns a `401` error with `tokenExpired: true` in the error detail:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "AUTH_ERROR",
+    "message": "Token expired",
+    "tokenExpired": true,
+    "httpStatus": 401
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+When you detect `tokenExpired: true`, refresh the token using your Keycloak OIDC refresh flow and retry the original request with the new token. The `CityOSClient` from `@cityos/api-client` handles this automatically via its `on401` callback:
+
+```typescript TypeScript
+import { CityOSClient } from '@cityos/api-client';
+
+const client = new CityOSClient({
+  baseUrl: 'https://cityos.dakkah.city',
+  getToken: async () => localStorage.getItem('cityos_token'),
+  on401: async () => {
+    // Refresh the token via Keycloak OIDC
+    const newToken = await refreshKeycloakToken();
+    localStorage.setItem('cityos_token', newToken);
+    return newToken;
+  },
+});
+```
+
+### 5. Sign out
+
+Call `POST /api/bff/auth/logout` to end the session and clear the `medusa_session` cookie.
+
+```bash curl
+curl -X POST https://cityos.dakkah.city/api/bff/auth/logout \
+  -H "Authorization: Bearer <token>"
+```
+
+## S2S authentication (machine-to-machine)
+
+For server-to-server calls where no user session exists — such as background jobs, cron tasks, or internal microservices — pass the shared service-to-service secret in the `X-S2S-Key` header:
+
+```
+X-S2S-Key: <CITYOS_S2S_SECRET>
+```
+
+Set the secret value in the `CITYOS_S2S_SECRET` environment variable. The BFF validates this header and grants access to system-tier endpoints without requiring a JWT.
+
+<Warning>
+  Never expose `CITYOS_S2S_SECRET` in client-side code or frontend bundles. It is intended exclusively for server-to-server communication over a private network or a secured channel.
+</Warning>
+
+```bash curl
+curl https://cityos.dakkah.city/api/bff/workflows/health \
+  -H "X-S2S-Key: ${CITYOS_S2S_SECRET}"
+```

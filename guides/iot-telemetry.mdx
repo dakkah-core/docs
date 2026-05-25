@@ -1,0 +1,290 @@
+---
+title: "Access IoT sensor data via the CityOS API"
+description: "Query live IoT telemetry for 8 sensor types through the CityOS BFF. Covers device listing, real-time Ably channel streaming, and IotClient SDK usage."
+---
+
+CityOS integrates a Kuzzle-backed IoT pipeline that ingests MQTT sensor data, normalises it through typed decoders, and exposes it through both REST and real-time Ably channels. You can access devices, query historical readings, and stream live sensor events from the same `@cityos/api-client` SDK you use for commerce or bookings.
+
+## The 8 sensor types
+
+Each sensor type has a dedicated decoder that normalises raw MQTT payloads into structured measurements.
+
+| Sensor type | Device model | Key measurements |
+|---|---|---|
+| `AirQuality` | `AirQualityStationV1` | `aqi`, `pm25`, `pm10`, `no2`, `co2`, `temperature`, `humidity` |
+| `SmartBin` | `SmartBinv1` | `fillLevel` (%), `temperature`, `battery` |
+| `WaterQuality` | `WaterQualitySensorV1` | `ph`, `turbidity`, `dissolvedO2`, `temperature`, `conductivity` |
+| `ColdStorage` | — | `temperature`, `humidity`, `doorOpen`, `batteryLevel` |
+| `SmartMeter` | `SmartMeter` | `consumption` (kWh), `peakDemand` (kW), `voltage` (V) |
+| `TrafficFlow` | — | `vehicleCount`, `avgSpeed` (km/h), `congestion` (%) |
+| `ParkingOccupancy` | — | `occupied` (boolean), `zone`, `spotType` |
+| `IrrigationSensor` | `IrrigationSensor` | `soilMoisture` (%), `soilTemp` (°C), `soilEC` (dS/m) |
+
+---
+
+## List devices
+
+`GET /api/bff/iot/devices` returns IoT devices registered in the tenant, paginated.
+
+```bash cURL
+curl "https://cityos.dakkah.city/api/bff/iot/devices?page=1&pageSize=20" \
+  -H "Authorization: Bearer <token>" \
+  -H "x-tenant-slug: riyadh-downtown"
+```
+
+### Response
+
+```json Response — 200 OK
+{
+  "success": true,
+  "data": {
+    "devices": [
+      {
+        "id": "aq-001",
+        "name": "Air Quality Station — Al Olaya",
+        "type": "AirQuality",
+        "location": "Al Olaya District, Riyadh",
+        "status": "online",
+        "batteryLevel": 88,
+        "lastSeen": "2026-05-25T09:45:00.000Z",
+        "metrics": {
+          "aqi": 72,
+          "pm25": 18,
+          "temperature": 34
+        }
+      }
+    ]
+  }
+}
+```
+
+## Get a single device
+
+```bash cURL
+curl "https://cityos.dakkah.city/api/bff/iot/devices/aq-001" \
+  -H "Authorization: Bearer <token>" \
+  -H "x-tenant-slug: riyadh-downtown"
+```
+
+---
+
+## Using the IotClient SDK
+
+The `IotClient` in `@cityos/api-client` wraps the IoT endpoints and inherits all header management from `CityOSClient`.
+
+```typescript TypeScript
+import { CityOSClient, createBffClients } from "@cityos/api-client";
+
+const cityos = new CityOSClient({
+  baseUrl: process.env.EXPO_PUBLIC_BFF_URL!,
+  tenantId: "riyadh-downtown",
+  surface: "mobile",
+  getToken: async () => yourTokenStore.get(),
+});
+
+const { iot } = createBffClients(cityos);
+
+// List all devices
+const { data } = await iot.listDevices({ page: 1, pageSize: 50 });
+
+// Get a specific device with its latest metrics
+const { data: device } = await iot.getDevice("trf-001");
+console.log("Vehicle count:", device.device.metrics.vehicleCount);
+
+// Send a command to a device
+await iot.sendCommand("cold-001", "setTemperatureAlert", { threshold: 8 });
+```
+
+---
+
+## Real-time streaming via Ably
+
+For live sensor data, subscribe to Ably channels rather than polling. Each tenant has dedicated channels per sensor type. The Ably realtime client is separate from `@cityos/api-client` — use the official `ably` package.
+
+### Channel naming
+
+Ably channels follow the pattern:
+
+```
+cityos:{tenantSlug}:iot:{sensorType}
+```
+
+Examples:
+- `cityos:riyadh-downtown:iot:air-quality`
+- `cityos:riyadh-downtown:iot:traffic-flow`
+- `cityos:riyadh-downtown:iot:parking`
+
+### TypeScript subscription example
+
+```typescript TypeScript
+import Ably from "ably";
+
+const ably = new Ably.Realtime({
+  authUrl: `${process.env.EXPO_PUBLIC_BFF_URL}/api/bff/tenant/ably-token`,
+  authHeaders: {
+    Authorization: `Bearer ${await yourTokenStore.get()}`,
+    "x-tenant-slug": "riyadh-downtown",
+  },
+});
+
+// Subscribe to air quality readings in real time
+const airQualityChannel = ably.channels.get(
+  "cityos:riyadh-downtown:iot:air-quality"
+);
+
+airQualityChannel.subscribe("reading", (message) => {
+  const { deviceId, measures, timestamp } = message.data as {
+    deviceId: string;
+    measures: {
+      aqi: { value: number };
+      pm25: { value: number };
+      pm10: { value: number };
+      no2: { value: number };
+      temperature: { value: number };
+    };
+    timestamp: string;
+  };
+
+  console.log(`[${timestamp}] Station ${deviceId}`);
+  console.log(`  AQI: ${measures.aqi.value}`);
+  console.log(`  PM2.5: ${measures.pm25.value} µg/m³`);
+});
+
+// Subscribe to traffic flow for congestion alerts
+const trafficChannel = ably.channels.get(
+  "cityos:riyadh-downtown:iot:traffic-flow"
+);
+
+trafficChannel.subscribe("reading", (message) => {
+  const { deviceId, measures, metadata } = message.data as {
+    deviceId: string;
+    measures: {
+      vehicleCount: { value: number };
+      avgSpeed: { value: number };
+      congestion: { value: number };
+    };
+    metadata: { roadId: string; direction: string };
+  };
+
+  if (measures.congestion.value > 75) {
+    console.warn(
+      `High congestion on road ${metadata.roadId}: ${measures.congestion.value}%`
+    );
+  }
+});
+
+// Clean up subscriptions when done
+// (e.g. in a React useEffect cleanup or app unmount)
+airQualityChannel.unsubscribe();
+trafficChannel.unsubscribe();
+ably.close();
+```
+
+<Note>
+  Ably tokens expire. The `authUrl` above calls the BFF token endpoint, which issues a short-lived Ably token scoped to the tenant and the authenticated user. The Ably SDK will automatically re-request a token when the current one is near expiry.
+</Note>
+
+---
+
+## Sensor measurement reference
+
+<AccordionGroup>
+  <Accordion title="AirQuality — AirQualityStationV1">
+    | Measurement | Unit | Notes |
+    |---|---|---|
+    | `aqi` | — | Air Quality Index (0–500). Alert threshold: > 150 |
+    | `pm25` | µg/m³ | Fine particulate matter. Default 0 if missing |
+    | `pm10` | µg/m³ | Coarse particulate matter. Default 0 if missing |
+    | `no2` | ppm | Nitrogen dioxide |
+    | `co2` | ppm | Carbon dioxide |
+    | `temperature` | °C | Ambient air temperature. Default 0 if missing |
+    | `humidity` | % | Relative humidity |
+  </Accordion>
+
+  <Accordion title="SmartBin — SmartBinv1">
+    | Measurement | Unit | Notes |
+    |---|---|---|
+    | `fillLevel` | % | Parsed from `fillStr` string field. Alert threshold: > 80% |
+    | `temperature` | °C | Internal bin temperature |
+    | `battery` | % | Battery charge level |
+  </Accordion>
+
+  <Accordion title="WaterQuality — WaterQualitySensorV1">
+    | Measurement | Unit | Notes |
+    |---|---|---|
+    | `ph` | — | Acceptable range 6.5–8.5. Alert outside range |
+    | `turbidity` | NTU | Cloudiness of water. Default 0 if missing |
+    | `dissolvedO2` | mg/L | Dissolved oxygen content. Default 0 if missing |
+    | `temperature` | °C | Water temperature |
+    | `conductivity` | µS/cm | Electrical conductivity. Default 0 if missing |
+  </Accordion>
+
+  <Accordion title="ColdStorage">
+    | Measurement | Unit | Notes |
+    |---|---|---|
+    | `temperature` | °C | Cold room temperature. Default 0 if missing |
+    | `humidity` | % | Internal humidity. Default 0 if missing |
+    | `doorOpen` | boolean | Whether the door is currently open. Default false |
+    | `batteryLevel` | % | Sensor battery. Default 100 if missing |
+  </Accordion>
+
+  <Accordion title="SmartMeter — SmartMeter">
+    | Measurement | Unit | Notes |
+    |---|---|---|
+    | `consumption` | kWh | Energy consumed in the reporting interval |
+    | `peakDemand` | kW | Peak demand during the interval |
+    | `voltage` | V | Supply voltage. Null if not provided |
+
+    Metadata: `phase` (`single` \| `three`), `interval` (`15min` default)
+  </Accordion>
+
+  <Accordion title="TrafficFlow">
+    | Measurement | Unit | Notes |
+    |---|---|---|
+    | `vehicleCount` | count | Vehicles counted in the reporting period |
+    | `avgSpeed` | km/h | Average vehicle speed |
+    | `congestion` | % | Congestion percentage. Alert threshold: > 75% |
+
+    Metadata: `roadId`, `direction` (`north` \| `south` \| `east` \| `west` \| `both`)
+  </Accordion>
+
+  <Accordion title="ParkingOccupancy">
+    | Measurement | Unit | Notes |
+    |---|---|---|
+    | `occupied` | boolean | Whether the spot is currently occupied |
+
+    Metadata: `lotId`, `spotNumber`, `zone` (default `general`), `spotType` (default `standard`, or `reserved`)
+  </Accordion>
+
+  <Accordion title="IrrigationSensor — IrrigationSensor">
+    | Measurement | Unit | Notes |
+    |---|---|---|
+    | `soilMoisture` | % | Volumetric water content. Alert threshold: < 20% |
+    | `soilTemp` | °C | Soil temperature |
+    | `soilEC` | dS/m | Electrical conductivity of soil. Null if not provided |
+
+    Metadata: `zone`, `fieldId`
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Check tenant IoT capability
+
+Before making IoT calls, verify the tenant has IoT enabled. A tenant without `iotEnabled: true` will not have active sensor feeds.
+
+```typescript TypeScript
+const res = await fetch(
+  "https://cityos.dakkah.city/api/bff/tenant/capabilities",
+  { headers: { "x-tenant-slug": "riyadh-downtown" } }
+);
+
+const { data } = await res.json();
+
+if (!data.iotEnabled) {
+  console.warn("IoT is not enabled for this tenant.");
+}
+if (!data.ablyEnabled) {
+  console.warn("Real-time streaming is not available for this tenant.");
+}
+```

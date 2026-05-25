@@ -1,0 +1,80 @@
+---
+title: "Dakkah CityOS: Smart City Platform"
+description: "Documentation hub for Dakkah CityOS — the multi-tenant smart city operating system for commerce, citizen services, fleet, and IoT."
+mode: custom
+---
+
+<div className="mx-auto flex w-full max-w-[720px] flex-col gap-12 px-4 py-10 lg:gap-14 lg:py-16">
+  <div className="flex flex-col items-center gap-6">
+    <div className="flex max-w-[480px] flex-col gap-2 text-center">
+      <h1 className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-50">
+        Welcome to Dakkah CityOS
+      </h1>
+      <p className="text-balance text-base text-gray-600 dark:text-gray-400">
+        Everything you need to integrate with the CityOS platform — from your first API call to deploying commerce, citizen services, and IoT across 7 surface types. Use the tabs to navigate or search with <kbd>⌘</kbd> <kbd>K</kbd>.
+      </p>
+    </div>
+  </div>
+
+  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+    <a
+      href="/quickstart"
+      className="group flex flex-col outline-none"
+    >
+      <div
+        className="kb-feature-card relative flex h-[170px] items-center justify-center overflow-hidden rounded-2xl ring-1 ring-gray-100 transition group-hover:ring-gray-200 dark:ring-white/[0.08] dark:group-hover:ring-white/15 saturate-50 group-hover:saturate-100"
+      >
+        <div className="relative flex items-center justify-center">
+          <Icon icon="rocket" size={36} className="!bg-white" />
+        </div>
+      </div>
+      <div className="flex flex-col gap-1 pt-4">
+        <span className="text-base font-medium text-gray-900 dark:text-gray-50">Quick start</span>
+        <span className="text-sm leading-5 text-gray-600 dark:text-gray-400">
+          Make your first authenticated API call to CityOS in minutes.
+        </span>
+      </div>
+    </a>
+
+    <a
+      href="/guides/authentication"
+      className="group flex flex-col outline-none"
+    >
+      <div
+        className="kb-feature-card relative flex h-[170px] items-center justify-center overflow-hidden rounded-2xl ring-1 ring-gray-100 transition group-hover:ring-gray-200 dark:ring-white/[0.08] dark:group-hover:ring-white/15 saturate-50 group-hover:saturate-100"
+      >
+        <div className="relative flex items-center justify-center">
+          <Icon icon="key-round" size={36} className="!bg-white" />
+        </div>
+      </div>
+      <div className="flex flex-col gap-1 pt-4">
+        <span className="text-base font-medium text-gray-900 dark:text-gray-50">Authentication</span>
+        <span className="text-sm leading-5 text-gray-600 dark:text-gray-400">
+          Learn how to obtain tokens and authenticate every API request.
+        </span>
+      </div>
+    </a>
+  </div>
+
+  <div className="flex flex-col gap-4">
+    <h2 className="text-lg font-medium tracking-tight text-gray-900 dark:text-gray-50">Resources</h2>
+
+    <Columns cols={2}>
+      <Card title="Core Concepts" icon="layers" iconType="light" href="/concepts/multi-tenancy">
+        Multi-tenancy, surfaces, SDUI, and domain packages explained.
+      </Card>
+      <Card title="API Reference" icon="code-xml" iconType="light" href="/api/overview">
+        Full BFF API reference with request and response examples.
+      </Card>
+    </Columns>
+
+    <Columns cols={2}>
+      <Card title="Guides" icon="book-open" iconType="light" href="/guides/commerce">
+        Step-by-step walkthroughs for commerce, bookings, mobile, and IoT.
+      </Card>
+      <Card title="Integrations" icon="plug" iconType="light" href="/integrations/payments">
+        Payments, identity, fleet logistics, and full-text search.
+      </Card>
+    </Columns>
+  </div>
+</div>

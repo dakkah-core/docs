@@ -1,0 +1,198 @@
+---
+title: "Set up your CityOS development environment"
+description: "Install prerequisites, configure environment variables, run migrations, and start the CityOS dev server to make local API calls as an integrator."
+---
+
+This page covers everything you need to run CityOS locally and call its API. You will configure a PostgreSQL database, set the minimum environment variables required by the platform, and start the development server. Internal deployment infrastructure (Kubernetes, CI/CD pipelines, VPS configuration) is out of scope here — this guide is for integrators and application developers who want to run the BFF and CMS locally.
+
+## Prerequisites
+
+Before you start, make sure you have the following installed:
+
+| Tool | Version | Purpose |
+|------|---------|---------|
+| Node.js | 22.x LTS | Application runtime |
+| pnpm | 10.x | Package manager (monorepo workspaces) |
+| PostgreSQL | 15+ | Primary database |
+| Docker + Docker Compose | 24.x / 2.x | Runs Postgres and optional services locally |
+| Git | 2.40+ | Source control |
+
+Verify your versions:
+
+```bash
+node -v         # v22.x
+pnpm -v         # 10.x
+docker -v       # 24.x+
+docker compose version
+```
+
+## Clone and install
+
+```bash
+git clone https://github.com/dakkah-core/dakkah-cityos-cms.git
+cd dakkah-cityos-cms
+pnpm install
+```
+
+`pnpm install` installs all workspace packages, including the BFF core, domain packages, and `@cityos/api-client`.
+
+## Environment variables
+
+Copy the example file to get started:
+
+```bash
+cp .env.example .env
+```
+
+Then open `.env` and fill in the values described below. Never commit `.env` to version control — it is already included in `.gitignore`.
+
+### Core variables
+
+These are the minimum variables you need to run the CMS and BFF locally:
+
+```env
+# PostgreSQL connection string
+# Use the Docker Compose hostname when running inside Docker,
+# or 127.0.0.1 when connecting from the host.
+DATABASE_URL=postgresql://cityos:cityos_dev@127.0.0.1:5432/cmsdb?family=4
+
+# Payload CMS JWT secret — must be at least 32 characters, randomly generated
+PAYLOAD_SECRET=replace-me-with-a-32-char-random-string
+
+# Public-facing server URL used by the CMS and Next.js
+PAYLOAD_PUBLIC_SERVER_URL=http://127.0.0.1:3000
+NEXT_PUBLIC_SERVER_URL=http://127.0.0.1:3000
+
+# Server-to-server authentication secret shared between internal services
+# Generate with: openssl rand -base64 32
+CITYOS_S2S_SECRET=replace-me
+```
+
+<Warning>
+  `PAYLOAD_SECRET` and `CITYOS_S2S_SECRET` are security-critical. Use a cryptographically random value of at least 32 characters for each. Rotating `PAYLOAD_SECRET` in a running system will invalidate all active CMS sessions.
+</Warning>
+
+### Tenant configuration
+
+CityOS is multi-tenant. Every API request is scoped to a tenant identified by its slug. The default development tenant is `dakkah`:
+
+```env
+# Default tenant slug — used by the BFF when no tenant is inferred from the request
+DEFAULT_TENANT_SLUG=dakkah
+CITYOS_DEFAULT_TENANT_SLUG=dakkah
+
+# Default tenant ULID — matches the record ID in your Payload CMS tenants collection
+CITYOS_DEFAULT_TENANT_ID=01KGZ2JRYX607FWMMYQNQRKVWS
+```
+
+When you initialize `CityOSClient` in your application, pass the same `tenantId` to ensure requests are routed to the correct tenant:
+
+```typescript
+const client = new CityOSClient({
+  baseUrl: "http://localhost:3000",
+  getToken: async () => yourTokenStore.get(),
+  tenantId: "01KGZ2JRYX607FWMMYQNQRKVWS",
+});
+```
+
+The BFF reads the tenant from the `x-cityos-tenant-id` and `x-tenant-id` request headers, which `CityOSClient` sets automatically when `tenantId` is present.
+
+### BFF and service URLs
+
+These variables configure the URLs for the commerce backend and search service. For local development, all services run on `localhost`:
+
+```env
+# Medusa commerce backend (required for orders, products, auth)
+MEDUSA_API_URL=http://127.0.0.1:9000
+MEDUSA_BACKEND_URL=http://127.0.0.1:9000
+NEXT_PUBLIC_MEDUSA_BACKEND_URL=http://127.0.0.1:9000
+
+# Meilisearch (required for /api/bff/search endpoints)
+MEILISEARCH_HOST=http://127.0.0.1:7700
+```
+
+<Note>
+  If you are not running Medusa or Meilisearch locally, the BFF will return errors for commerce and search endpoints. The CMS admin panel and most content endpoints work without them.
+</Note>
+
+### Optional variables
+
+These services are optional for basic local development. Configure them when you need the corresponding features:
+
+```env
+# Keycloak — required for SSO and RBAC. CMS works without it for local dev.
+KEYCLOAK_URL=http://127.0.0.1:8080
+KEYCLOAK_ISSUER=http://localhost:8080/realms/cityos
+KEYCLOAK_CLIENT_ID=cityos-web
+KEYCLOAK_CLIENT_SECRET=your-keycloak-secret
+
+# Redis — required for caching and realtime features
+REDIS_URL=redis://cityos-redis:6379
+
+# Temporal — required only if you are running workflow workers
+TEMPORAL_ENDPOINT=localhost:7233
+TEMPORAL_NAMESPACE=default
+
+# Kuzzle — required only for IoT/realtime endpoints
+KUZZLE_HOST=localhost
+KUZZLE_PORT=7512
+```
+
+## Start the development server
+
+Once your `.env` file is in place, run database migrations and start the server:
+
+```bash
+# Apply Payload CMS database migrations
+pnpm payload migrate
+
+# Start the CMS and BFF (Next.js dev server on port 3000)
+pnpm dev
+```
+
+The following local endpoints will be available:
+
+| URL | Purpose |
+|-----|---------|
+| `http://localhost:3000` | Citizen-facing Next.js app |
+| `http://localhost:3000/admin` | Payload CMS admin panel |
+| `http://localhost:3000/api/bff/health` | Platform health check (no auth required) |
+| `http://localhost:3000/api/bff/auth/login` | BFF authentication endpoint |
+
+## Validate your environment
+
+Run the validation script to check that all required variables are present before starting services:
+
+```bash
+bash scripts/validate/validate-env.sh
+```
+
+This checks all required variables across the service tiers and reports missing or malformed values.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Database connection refused">
+    Make sure PostgreSQL is running. If you are using Docker, start the database container:
+    ```bash
+    docker compose up -d postgres
+    ```
+    Then confirm `DATABASE_URL` in `.env` points to the correct host. Use `127.0.0.1` when connecting from the host machine, or the Docker service name (e.g. `postgres`) when connecting from within a container.
+  </Accordion>
+  <Accordion title="Port 3000 already in use">
+    Start the dev server on a different port:
+    ```bash
+    pnpm dev -- --port 3001
+    ```
+    Update `PAYLOAD_PUBLIC_SERVER_URL` and `NEXT_PUBLIC_SERVER_URL` to match.
+  </Accordion>
+  <Accordion title="Missing or stale TypeScript types">
+    If you see type errors after pulling new code, regenerate the CMS types:
+    ```bash
+    pnpm payload generate:types
+    ```
+  </Accordion>
+  <Accordion title="pnpm install fails on native modules">
+    On Windows, open a WSL-backed checkout or use VS Code's **Dev Containers: Clone Repository in Container Volume** command. The monorepo's hoisted `pnpm` layout requires Linux filesystem semantics during install.
+  </Accordion>
+</AccordionGroup>

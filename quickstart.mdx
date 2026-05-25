@@ -1,0 +1,228 @@
+---
+title: "Get started with Dakkah CityOS"
+description: "Install @cityos/api-client, initialize CityOSClient, authenticate via the BFF login endpoint, and make your first live domain API call in minutes."
+---
+
+This guide walks you through installing the CityOS TypeScript SDK, authenticating a user through the Backend-for-Frontend (BFF), and making your first live API call. All requests go through the BFF layer, which normalizes responses into a consistent envelope and attaches per-request correlation IDs for tracing.
+
+<Steps>
+
+<Step title="Install the client package">
+
+Add `@cityos/api-client` to your project:
+
+<CodeGroup>
+
+```bash npm
+npm install @cityos/api-client
+```
+
+```bash pnpm
+pnpm add @cityos/api-client
+```
+
+```bash yarn
+yarn add @cityos/api-client
+```
+
+</CodeGroup>
+
+</Step>
+
+<Step title="Initialize CityOSClient">
+
+`CityOSClient` is the core HTTP client. You configure it once and pass it to the domain clients or use it directly.
+
+```typescript client.ts
+import { CityOSClient } from "@cityos/api-client";
+
+export const client = new CityOSClient({
+  // Base URL of your CityOS deployment
+  baseUrl: "https://your-city.cityosplatform.com",
+
+  // Async function that returns the current bearer token, or null if unauthenticated
+  getToken: async () => {
+    return localStorage.getItem("cityos_token");
+  },
+
+  // Your tenant's unique identifier (ULID format)
+  tenantId: "01KGZ2JRYX607FWMMYQNQRKVWS",
+
+  // Optional: surface context sent as x-cityos-surface header
+  surface: "desktop",
+
+  // Optional: called on HTTP 401 — return a refreshed token to retry automatically
+  on401: async () => {
+    const refreshed = await refreshToken();
+    return refreshed;
+  },
+});
+```
+
+The `getToken` function is called before every request. Return `null` when no token is available — the request will proceed without an `Authorization` header.
+
+<Note>
+  You can update the surface at runtime by calling `client.setSurface("mobile")`, or the tenant by calling `client.setTenantId("new-tenant-id")`.
+</Note>
+
+</Step>
+
+<Step title="Authenticate via POST /api/bff/auth/login">
+
+Before making authenticated requests, exchange user credentials for a session token. The BFF login endpoint validates credentials against the commerce layer and sets an `httpOnly` session cookie.
+
+```typescript auth.ts
+interface LoginResponse {
+  success: boolean;
+  data: {
+    customer: {
+      id: string;
+      email: string;
+      first_name: string;
+      last_name: string;
+    };
+  };
+  meta: { timestamp: string };
+  correlationId: string;
+}
+
+const response = await client.post<LoginResponse>("/api/bff/auth/login", {
+  email: "user@example.com",
+  password: "your-password",
+});
+
+if (!response.success) {
+  throw new Error("Authentication failed");
+}
+
+console.log("Logged in as:", response.data.customer.email);
+```
+
+On success, the BFF sets a `medusa_session` cookie automatically. Subsequent requests from browser environments will include this cookie without additional configuration.
+
+<Warning>
+  Passwords must be between 1 and 128 characters. Email addresses are validated server-side. A `VALIDATION_ERROR` response with a `400` status is returned for malformed input.
+</Warning>
+
+</Step>
+
+<Step title="Check platform health">
+
+Before your first business call, verify that the platform is reachable by hitting the unauthenticated health endpoint. This is useful for readiness checks and local debugging.
+
+```typescript health.ts
+interface HealthResponse {
+  status: "ok" | "degraded" | "down";
+  timestamp: string;
+  services: {
+    medusa: { status: "ok" | "degraded" | "down"; latencyMs: number };
+    payloadDb: { status: "ok" | "degraded" | "down"; latencyMs: number };
+    temporal: { status: "ok" | "degraded" | "down"; latencyMs: number };
+    firebase: { status: "ok" | "degraded" | "down"; latencyMs: number };
+  };
+  totalLatencyMs: number;
+}
+
+const health = await client.get<HealthResponse>("/api/bff/health");
+
+console.log("Platform status:", health.status);
+console.log("Medusa latency:", health.services.medusa.latencyMs, "ms");
+```
+
+A `status` of `"ok"` means all downstream services are healthy. `"degraded"` means at least one service is slow or returning errors. `"down"` triggers an HTTP `503` response.
+
+</Step>
+
+<Step title="Make a domain API call">
+
+Use `createBffClients` to get a typed client for any domain. The following example lists commerce products using the `CommerceClient`:
+
+```typescript products.ts
+import { CityOSClient, createBffClients } from "@cityos/api-client";
+
+const client = new CityOSClient({
+  baseUrl: "https://your-city.cityosplatform.com",
+  getToken: async () => localStorage.getItem("cityos_token"),
+  tenantId: "01KGZ2JRYX607FWMMYQNQRKVWS",
+});
+
+const bff = createBffClients(client);
+
+// List the first page of products
+const result = await bff.commerce.listProducts({ page: 1, pageSize: 20 });
+
+// result.data.products is typed as CommerceProduct[]
+for (const product of result.data.products) {
+  console.log(product.name, product.price, product.currency);
+}
+```
+
+You can access any of the 30+ domain clients the same way:
+
+```typescript other-domains.ts
+// Governance: list available citizen services
+const services = await bff.governance.listServices("permits");
+
+// Transport: list bus and metro routes
+const routes = await bff.transport.listRoutes();
+
+// Environment: get air quality from all monitoring stations
+const air = await bff.environment.getAirQuality();
+
+// IoT: list all registered devices for this tenant
+const devices = await bff.iot.listDevices({ page: 1, pageSize: 50 });
+```
+
+</Step>
+
+<Step title="Understand the BFF response envelope">
+
+Every response from a BFF endpoint follows the same shape:
+
+```typescript
+interface BffResponse<T> {
+  success: boolean;
+  data: T;
+}
+```
+
+Authenticated endpoints also include a `correlationId` in error responses — a unique string generated per-request (e.g. `"m3f8a2-k9xz4r1b"`) that you can use to trace requests in logs.
+
+```typescript error-handling.ts
+try {
+  const result = await bff.commerce.listProducts();
+
+  if (!result.success) {
+    // Handle application-level failure
+    console.error("Request failed");
+    return;
+  }
+
+  const { products } = result.data;
+  // use products...
+
+} catch (err) {
+  // Network or HTTP error (non-2xx response)
+  // GET requests retry automatically up to 2 times with exponential backoff
+  console.error("HTTP error:", err);
+}
+```
+
+<Tip>
+  `CityOSClient` retries `GET` requests up to 2 times on network failure, with 1-second and 2-second delays between attempts. `POST`, `PUT`, `PATCH`, and `DELETE` requests are not retried automatically.
+</Tip>
+
+</Step>
+
+</Steps>
+
+## Next steps
+
+<Columns cols={2}>
+  <Card title="Environment setup" icon="wrench" href="/environment-setup">
+    Set up your local development environment with the correct variables.
+  </Card>
+  <Card title="API reference" icon="code" href="/api/overview">
+    Browse all BFF endpoints, request schemas, and typed responses.
+  </Card>
+</Columns>

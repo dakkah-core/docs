@@ -1,0 +1,93 @@
+---
+title: "CityOS error codes"
+sidebarTitle: "Error codes"
+description: "Canonical list of CityOS error codes from the OpenAPI spec, with HTTP statuses, retry strategy, and recommended client handling."
+icon: "triangle-alert"
+---
+
+Every non-2xx BFF response uses the same envelope:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Validation failed",
+    "details": { "formErrors": [], "fieldErrors": {} },
+    "httpStatus": 400
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+## Canonical codes
+
+| Code | HTTP | When | Recommended client action |
+| --- | --- | --- | --- |
+| `VALIDATION_ERROR` | 400 | Zod schema fails | Show field errors from `details.fieldErrors` |
+| `AUTH_ERROR` | 401 | Missing / invalid / expired JWT | If `tokenExpired: true`, refresh; else redirect to login |
+| `AUTH_ERROR` | 403 | Authenticated but lacks role / ownership | Show permission denied |
+| `NOT_FOUND` | 404 | Resource doesn't exist or hidden by tenant scope | Show 404 UI |
+| `CONFLICT` | 409 | Duplicate / overlapping resource (e.g. booking slot) | Surface a friendly conflict message |
+| `RATE_LIMIT` | 429 | Per-IP or per-token quota hit | Backoff by `retryAfterSeconds` |
+| `NETWORK_ERROR` | — | Client-side transport failure | Retry with exponential backoff |
+| `SERVICE_ERROR` | 502 / 503 | Downstream (Medusa, Keycloak, etc.) failed | Retry; surface degraded-mode UI |
+| `UNKNOWN_ERROR` | 500 | Unhandled exception | Show generic error, log `correlationId` |
+| `COMMERCE_ERROR` | varies | Commerce-specific failure | Inspect `details` |
+| `BOOKING_LIST_ERROR` | varies | Booking list query failed | Retry / report |
+| `BOOKING_CREATE_ERROR` | varies | Booking creation failed | Inspect `details`; retry safely with `X-Idempotency-Key` |
+| `LOYALTY_ERROR` | varies | Loyalty action failed | Inspect `details` |
+| `EVENTS_ERROR` | varies | Events / tickets action failed | Inspect `details` |
+| `COMPLAINTS_LIST_ERROR` | varies | Complaint list query failed | Retry |
+| `COMPLAINT_ERROR` | varies | Complaint submission failed | Inspect `details` |
+
+## Retry strategy (TypeScript)
+
+```typescript
+import type { ApiError } from "@cityos/api-client";
+
+async function withRetry<T>(
+  fn: () => Promise<T>,
+  opts: { maxAttempts?: number } = {}
+): Promise<T> {
+  const max = opts.maxAttempts ?? 3;
+  let attempt = 0;
+  let lastError: unknown;
+
+  while (attempt < max) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastError = err;
+      const e = err as { code?: string; retryAfterSeconds?: number };
+
+      if (e.code === "AUTH_ERROR" || e.code === "VALIDATION_ERROR" || e.code === "NOT_FOUND") {
+        throw err; // not retryable
+      }
+
+      const delay =
+        e.code === "RATE_LIMIT" && e.retryAfterSeconds
+          ? e.retryAfterSeconds * 1000
+          : Math.min(1000 * 2 ** attempt, 8000);
+
+      await new Promise((r) => setTimeout(r, delay));
+      attempt++;
+    }
+  }
+
+  throw lastError;
+}
+```
+
+## Detecting expired tokens
+
+`AUTH_ERROR` responses include `tokenExpired: true` when the JWT is expired. Use this to drive a transparent refresh flow rather than logging the user out.
+
+## Always log `correlationId`
+
+Every response (success or failure) returns `correlationId`. Forward it to your logger and to user-facing support widgets — it lets platform engineering trace the failure across BFF, domain, and downstream service logs.
+
+## See also
+
+- [API conventions](/api/conventions)
+- [API → Errors](/api/errors) — deeper reference and examples

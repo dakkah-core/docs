@@ -1,0 +1,223 @@
+---
+title: "Identity and SSO with Dakkah CityOS"
+description: "Authenticate users via Keycloak OIDC, read session roles and tenant data, and verify KYC identity using Walt.id Verifiable Credentials in CityOS."
+---
+
+CityOS uses a two-layer identity stack. Keycloak handles OIDC/SSO for all human users and issues JWTs that carry roles and tenant context. Walt.id handles Verifiable Credentials (VCs) based on the W3C DID standard — these are used for KYC identity verification, vendor onboarding, business license issuance, and government employee credentialing. You interact with both layers through the BFF rather than calling Keycloak or Walt.id directly.
+
+<Note>
+  This page covers what you need to build on top of the identity layer: how to authenticate, what the session contains, and how to present Verifiable Credentials. It does not cover Keycloak realm configuration or Walt.id server setup — those are infrastructure concerns handled by the platform team.
+</Note>
+
+## Authenticating with the BFF
+
+### Email and password login
+
+Call `POST /api/bff/auth/login` with an email and password. The endpoint validates credentials against the Medusa store auth layer, sets an `httpOnly` session cookie (`medusa_session`, 7-day TTL), and returns the customer profile.
+
+```http
+POST /api/bff/auth/login
+Content-Type: application/json
+
+{
+  "email": "citizen@example.com",
+  "password": "s3cureP@ss"
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "customer": {
+      "id": "cust_01H...",
+      "email": "citizen@example.com",
+      "first_name": "Ahmed",
+      "last_name": "Al-Qahtani"
+    }
+  },
+  "meta": { "timestamp": "2026-05-01T10:00:00.000Z" },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+The session cookie is set automatically for browser clients. For mobile and server-side clients, store the token returned in the cookie and pass it as `Authorization: Bearer <token>` on subsequent requests.
+
+### Keycloak OIDC flow
+
+For web applications that need full SSO (single sign-on across multiple services), redirect users through the Keycloak OIDC authorization endpoint. Keycloak is configured with 11 clients covering all CityOS surfaces. Your OIDC client credentials and realm URL are provided by the platform team.
+
+```typescript
+// Standard OIDC PKCE flow — works with any OIDC library
+import { OidcClient } from 'oidc-client-ts';
+
+const oidc = new OidcClient({
+  authority: 'https://auth.cityos.dakkah.city/realms/cityos',
+  client_id: 'cityos-web',
+  redirect_uri: 'https://your-app.cityos.dakkah.city/auth/callback',
+  response_type: 'code',
+  scope: 'openid profile email roles',
+});
+
+// Redirect to Keycloak
+const signinRequest = await oidc.createSigninRequest({});
+window.location.href = signinRequest.url;
+```
+
+After the redirect callback, the access token contains the claims described in the next section.
+
+## Session data
+
+Once authenticated, call `GET /api/bff/auth/session` at any time to read the current session state. This endpoint always returns HTTP 200; check the `authenticated` field rather than the HTTP status.
+
+```http
+GET /api/bff/auth/session
+```
+
+**Response when authenticated:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "authenticated": true,
+    "customer": {
+      "id": "cust_01H...",
+      "email": "citizen@example.com",
+      "first_name": "Ahmed",
+      "last_name": "Al-Qahtani"
+    },
+    "user": {
+      "payloadUserId": "usr_123",
+      "roles": ["citizen", "verified_citizen"],
+      "tenant": "riyadh-downtown",
+      "keycloakSub": "kc-sub-456abc",
+      "status": "active"
+    }
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+**Response when unauthenticated:**
+
+```json
+{
+  "success": true,
+  "data": { "authenticated": false, "customer": null, "user": null },
+  "correlationId": "..."
+}
+```
+
+### Understanding the `user` object
+
+The `user` field is enriched from the Payload CMS user record and carries the data your application should use for access control decisions:
+
+| Field | Type | Description |
+|---|---|---|
+| `payloadUserId` | `string` | Internal CMS user ID |
+| `roles` | `string[]` | RBAC roles assigned to this user (e.g. `citizen`, `merchant`, `government`, `admin`) |
+| `tenant` | `string \| null` | The tenant slug this user belongs to |
+| `keycloakSub` | `string \| null` | Keycloak subject identifier — use this to correlate with Keycloak tokens |
+| `status` | `string` | User account status (`active`, `suspended`, etc.) |
+
+<Tip>
+  Use `user.roles` for client-side UI gating (e.g. showing merchant-only navigation). Always enforce RBAC server-side through the BFF middleware — never rely solely on client-side role checks.
+</Tip>
+
+## Verifiable Credentials and KYC
+
+Walt.id provides Decentralized Identity (DID) and Verifiable Credentials for scenarios that require cryptographic proof of identity or credentials: KYC verification, vendor license confirmation, government employee identity, and more.
+
+### Credential types
+
+CityOS issues the following VC types:
+
+| Credential type | Constant | Use case |
+|---|---|---|
+| `KYCIdentityCredential` | `CREDENTIAL_TYPES.KYC_VERIFIED` | Citizen identity verification |
+| `VendorLicenseCredential` | `CREDENTIAL_TYPES.VENDOR_ONBOARDED` | Merchant or vendor onboarding |
+| `BusinessLicenseCredential` | `CREDENTIAL_TYPES.BUSINESS_LICENSE` | Business operating license |
+| `NationalIdentityCredential` | `CREDENTIAL_TYPES.NATIONAL_ID` | National ID binding |
+| `GovernmentEmployeeCredential` | `CREDENTIAL_TYPES.GOVERNMENT_EMPLOYEE` | Government staff identity |
+| `DisabilityCardCredential` | `CREDENTIAL_TYPES.DISABILITY_CARD` | Disability benefit entitlement |
+
+### Requesting a KYC credential
+
+To initiate KYC for a user, your server calls the Walt.id issuer API through the platform's VC lifecycle service. From a customer integration perspective, the flow is:
+
+<Steps>
+  <Step title="User completes identity verification">
+    The user submits their national ID and biometric data through the CityOS citizen portal or your custom UI. Once the verification service approves the submission, the platform triggers VC issuance internally.
+  </Step>
+
+  <Step title="Platform issues the VC">
+    The platform calls the Walt.id issuer and stores the returned credential against the user's DID. The credential is a signed SD-JWT (selective disclosure JWT) by default. This step happens server-side — you do not need to call the issuer directly.
+  </Step>
+
+  <Step title="User presents the VC for access">
+    When the user needs to prove their identity (for example, to access a restricted service), they present their VC token. Call the BFF verify endpoint:
+
+    ```http
+    POST /api/bff/waltid/verify
+    Authorization: Bearer <token>
+    Content-Type: application/json
+
+    { "vcToken": "<signed-jwt-credential>" }
+    ```
+
+    A successful response includes the credential type, holder DID, and expiry date. A failed response explains why: credential expired, revoked, or signature invalid.
+
+    ```json
+    {
+      "success": true,
+      "data": {
+        "valid": true,
+        "holderDid": "did:key:z6Mk...",
+        "credentialType": "KYCIdentityCredential",
+        "expiresAt": "2027-05-01T00:00:00.000Z"
+      }
+    }
+    ```
+  </Step>
+</Steps>
+
+### Offline verification at edge checkpoints
+
+For venue entry or field inspector scenarios where network connectivity is unreliable, you can verify a VC offline by parsing the JWT locally. Offline verification checks expiry but does **not** verify the cryptographic signature — use it only for low-risk access scenarios.
+
+```typescript
+// Decode the JWT payload (without verifying the signature)
+const [, payloadB64] = vcToken.split('.');
+const claims = JSON.parse(atob(payloadB64));
+
+const expiresAt = claims.exp ? new Date(claims.exp * 1000) : null;
+if (expiresAt && expiresAt < new Date()) {
+  throw new Error('Credential has expired');
+}
+```
+
+<Warning>
+  Offline verification skips signature verification by design. Use it only at low-risk checkpoints (venue entry, kiosk access). Never use it for financial authorization or high-assurance decisions.
+</Warning>
+
+## Logging out
+
+```http
+POST /api/bff/auth/logout
+```
+
+This clears the `medusa_session` cookie. For Keycloak OIDC sessions, also redirect the user to the Keycloak end-session endpoint to clear their SSO session across all applications.
+
+## Role reference
+
+| Role | Access level |
+|---|---|
+| `citizen` | Standard authenticated citizen |
+| `verified_citizen` | Citizen who has passed KYC |
+| `merchant` | Merchant or business operator |
+| `government` | Government portal user |
+| `admin` | Platform administrator |
+| `staff` | Tenant staff member |

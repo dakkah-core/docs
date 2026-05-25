@@ -1,0 +1,353 @@
+---
+title: "Authentication API endpoints"
+description: "Manage sessions, register accounts, and handle password resets through the Dakkah CityOS BFF authentication endpoints using Medusa-backed credentials."
+---
+
+The authentication endpoints let your application sign users in, inspect their current session, sign them out, register new accounts, and trigger password reset emails. All routes sit under `/api/bff/auth/`. Login and registration require no prior token; all other auth endpoints follow the standard BFF middleware pipeline including rate limiting and CSRF protection on mutations.
+
+Every response envelope includes a `correlationId` UUID you can use to trace requests across platform logs.
+
+---
+
+## POST /api/bff/auth/login
+
+Validates email and password against the Medusa store auth layer. On success the server sets an `httpOnly` `medusa_session` cookie (7-day TTL) and returns the resolved customer profile.
+
+### Request headers
+
+<ParamField path="x-tenant-slug" type="string">
+  Tenant slug for multi-tenant routing. Resolved from the request domain automatically if omitted. Required when calling from a non-tenant-bound origin such as a mobile app.
+</ParamField>
+
+<ParamField path="x-correlation-id" type="string">
+  Distributed tracing UUID. Auto-generated if not provided. Returned in every response.
+</ParamField>
+
+### Request body
+
+<ParamField body="email" type="string" required>
+  The user's email address. Maximum 255 characters.
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  The user's password. Minimum 1 character, maximum 128 characters.
+</ParamField>
+
+### Response fields
+
+<ResponseField name="success" type="boolean" required>
+  `true` on a successful login.
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="properties">
+    <ResponseField name="customer" type="object">
+      The authenticated customer profile.
+      <Expandable title="customer properties">
+        <ResponseField name="id" type="string">Medusa customer ID (e.g. `cust_01H...`).</ResponseField>
+        <ResponseField name="email" type="string">Customer email address.</ResponseField>
+        <ResponseField name="first_name" type="string">First name.</ResponseField>
+        <ResponseField name="last_name" type="string">Last name.</ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="meta" type="object">
+  <Expandable title="properties">
+    <ResponseField name="tenantSlug" type="string">Resolved tenant slug.</ResponseField>
+    <ResponseField name="timestamp" type="string">ISO 8601 timestamp of the response.</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="correlationId" type="string" required>
+  UUID for distributed tracing.
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+curl --request POST \
+  --url https://cityos.dakkah.city/api/bff/auth/login \
+  --header 'Content-Type: application/json' \
+  --header 'x-tenant-slug: riyadh-downtown' \
+  --data '{
+    "email": "citizen@example.com",
+    "password": "s3cureP@ss"
+  }'
+```
+
+```typescript TypeScript
+import { CityOSClient } from "@cityos/api-client";
+
+const client = new CityOSClient({ baseUrl: "https://cityos.dakkah.city" });
+
+const response = await fetch("/api/bff/auth/login", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "x-tenant-slug": "riyadh-downtown",
+  },
+  body: JSON.stringify({
+    email: "citizen@example.com",
+    password: "s3cureP@ss",
+  }),
+});
+
+const data = await response.json();
+// data.data.customer contains the resolved Customer profile
+```
+
+</CodeGroup>
+
+**200 response example**
+
+```json
+{
+  "success": true,
+  "data": {
+    "customer": {
+      "id": "cust_01H...",
+      "email": "citizen@example.com",
+      "first_name": "Ahmed",
+      "last_name": "Al-Qahtani"
+    }
+  },
+  "meta": {
+    "timestamp": "2026-04-13T10:00:00.000Z"
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+| Status | Meaning |
+|--------|---------|
+| `200` | Login successful. `medusa_session` cookie set. |
+| `400` | Validation error — invalid email format or missing password. |
+| `401` | Invalid credentials. |
+
+---
+
+## GET /api/bff/auth/session
+
+Returns the current session state without requiring a bearer token. The endpoint always responds with `200`; check `data.authenticated` to determine whether a valid session cookie is present. When authenticated, the response includes both the Medusa customer profile and the enriched Payload CMS user object with roles and tenant.
+
+### Request headers
+
+<ParamField path="x-tenant-slug" type="string">
+  Tenant slug. Resolved automatically from the domain if omitted.
+</ParamField>
+
+### Response fields
+
+<ResponseField name="data" type="object">
+  <Expandable title="properties">
+    <ResponseField name="authenticated" type="boolean" required>
+      `true` if a valid session cookie exists.
+    </ResponseField>
+    <ResponseField name="customer" type="object">
+      Medusa customer profile. `null` when unauthenticated.
+      <Expandable title="customer properties">
+        <ResponseField name="id" type="string">Customer ID.</ResponseField>
+        <ResponseField name="email" type="string">Customer email.</ResponseField>
+        <ResponseField name="first_name" type="string">First name.</ResponseField>
+        <ResponseField name="last_name" type="string">Last name.</ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="user" type="object">
+      Payload CMS user object. `null` when unauthenticated.
+      <Expandable title="user properties">
+        <ResponseField name="payloadUserId" type="string">Internal Payload user ID.</ResponseField>
+        <ResponseField name="roles" type="string[]">Assigned RBAC roles (e.g. `["citizen", "verified_citizen"]`).</ResponseField>
+        <ResponseField name="tenant" type="string">Tenant slug the user belongs to.</ResponseField>
+        <ResponseField name="keycloakSub" type="string">Keycloak subject identifier.</ResponseField>
+        <ResponseField name="status" type="string">Account status (e.g. `active`).</ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+curl --request GET \
+  --url https://cityos.dakkah.city/api/bff/auth/session \
+  --header 'x-tenant-slug: riyadh-downtown'
+```
+
+```typescript TypeScript
+const response = await fetch("/api/bff/auth/session", {
+  headers: { "x-tenant-slug": "riyadh-downtown" },
+  credentials: "include", // send the medusa_session cookie
+});
+
+const { data } = await response.json();
+
+if (data.authenticated) {
+  console.log("Logged in as", data.customer?.email);
+  console.log("Roles:", data.user?.roles);
+}
+```
+
+</CodeGroup>
+
+**200 response example**
+
+```json
+{
+  "success": true,
+  "data": {
+    "authenticated": true,
+    "customer": {
+      "id": "cust_01H...",
+      "email": "citizen@example.com"
+    },
+    "user": {
+      "payloadUserId": "usr_123",
+      "roles": ["citizen", "verified_citizen"],
+      "tenant": "riyadh-downtown",
+      "keycloakSub": "kc-sub-456",
+      "status": "active"
+    }
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+---
+
+## POST /api/bff/auth/logout
+
+Terminates the current session by clearing the `medusa_session` cookie. Requires an active session.
+
+### Request headers
+
+<ParamField path="x-correlation-id" type="string">
+  Optional tracing UUID.
+</ParamField>
+
+<CodeGroup>
+
+```bash curl
+curl --request POST \
+  --url https://cityos.dakkah.city/api/bff/auth/logout \
+  --cookie 'medusa_session=<your-session-token>'
+```
+
+```typescript TypeScript
+await fetch("/api/bff/auth/logout", {
+  method: "POST",
+  credentials: "include",
+});
+```
+
+</CodeGroup>
+
+**200 response example**
+
+```json
+{
+  "success": true,
+  "correlationId": "550e8400-e29b-41d4-a716-446655440001"
+}
+```
+
+---
+
+## POST /api/bff/auth/register
+
+Creates a new citizen account. On success the account is created in Medusa but the user is not automatically logged in — call `POST /api/bff/auth/login` after registration to obtain a session cookie.
+
+### Request body
+
+<ParamField body="email" type="string" required>
+  Email address for the new account.
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  Password. Minimum 8 characters.
+</ParamField>
+
+<ParamField body="name" type="string" required>
+  Full display name.
+</ParamField>
+
+<CodeGroup>
+
+```bash curl
+curl --request POST \
+  --url https://cityos.dakkah.city/api/bff/auth/register \
+  --header 'Content-Type: application/json' \
+  --header 'x-tenant-slug: riyadh-downtown' \
+  --data '{
+    "email": "new.citizen@example.com",
+    "password": "MyStr0ngPass!",
+    "name": "Nora Al-Rashid"
+  }'
+```
+
+```typescript TypeScript
+const response = await fetch("/api/bff/auth/register", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "x-tenant-slug": "riyadh-downtown",
+  },
+  body: JSON.stringify({
+    email: "new.citizen@example.com",
+    password: "MyStr0ngPass!",
+    name: "Nora Al-Rashid",
+  }),
+});
+
+const result = await response.json();
+// result.success === true on 201
+```
+
+</CodeGroup>
+
+| Status | Meaning |
+|--------|---------|
+| `201` | Account created successfully. |
+| `409` | A customer with that email already exists. |
+
+---
+
+## POST /api/bff/auth/reset-password
+
+Sends a password reset email to the provided address. The endpoint always returns `200` regardless of whether the email exists in the system, preventing email enumeration attacks.
+
+### Request body
+
+<ParamField body="email" type="string" required>
+  The email address associated with the account.
+</ParamField>
+
+<CodeGroup>
+
+```bash curl
+curl --request POST \
+  --url https://cityos.dakkah.city/api/bff/auth/reset-password \
+  --header 'Content-Type: application/json' \
+  --data '{ "email": "citizen@example.com" }'
+```
+
+```typescript TypeScript
+await fetch("/api/bff/auth/reset-password", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ email: "citizen@example.com" }),
+});
+// Always 200 — do not infer account existence from the response
+```
+
+</CodeGroup>
+
+**200 response example**
+
+```json
+{
+  "success": true,
+  "correlationId": "550e8400-e29b-41d4-a716-446655440002"
+}
+```

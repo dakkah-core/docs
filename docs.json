@@ -1,0 +1,215 @@
+{
+  "theme": "luma",
+  "name": "Dakkah CityOS",
+  "description": "Documentation for Dakkah CityOS — the smart city commerce and services platform.",
+  "colors": {
+    "primary": "#0F4C81",
+    "light": "#E8F0FA",
+    "dark": "#071E3A"
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "favicon": "/favicon.ico",
+  "navbar": {
+    "links": [
+      {
+        "href": "https://cityos.dakkah.city",
+        "label": "Platform Status"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Get started",
+      "href": "/quickstart"
+    }
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/dakkah",
+      "linkedin": "https://linkedin.com/company/dakkah"
+    }
+  },
+  "icons": {
+    "library": "lucide"
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "assistant"
+    ],
+    "display": "header"
+  },
+  "redirects": [],
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "index",
+              "introduction",
+              "quickstart",
+              "environment-setup",
+              "architecture.mdx"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/multi-tenancy",
+              "concepts/surfaces",
+              "concepts/sdui",
+              "concepts/domains",
+              "concepts/data-model.mdx"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/authentication",
+              "guides/commerce",
+              "guides/bookings",
+              "guides/fleet.mdx",
+              "guides/events.mdx",
+              "guides/loyalty.mdx",
+              "guides/iot-telemetry"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "integrations/payments",
+              "integrations/identity",
+              "integrations/fleet",
+              "integrations/realtime.mdx",
+              "integrations/storage.mdx",
+              "integrations/search"
+            ]
+          },
+          {
+            "group": "Configuration",
+            "pages": [
+              "configuration/environment-variables",
+              "configuration/tenant-setup",
+              "configuration/webhooks",
+              "configuration/feature-flags.mdx",
+              "configuration/deployment.mdx"
+            ]
+          },
+          {
+            "group": "Verticals",
+            "icon": "layers",
+            "pages": [
+              "verticals/commerce.mdx",
+              "verticals/citizen.mdx",
+              "verticals/events.mdx",
+              "verticals/loyalty.mdx",
+              "verticals/fleet.mdx",
+              "verticals/iot.mdx",
+              "verticals/governance.mdx",
+              "verticals/healthcare.mdx",
+              "verticals/bookings.mdx"
+            ]
+          },
+          {
+            "group": "Apps",
+            "icon": "smartphone",
+            "pages": [
+              "apps/overview.mdx",
+              "apps/web.mdx",
+              "apps/carplay-auto.mdx",
+              "apps/admin.mdx",
+              "guides/mobile-apps"
+            ]
+          },
+          {
+            "group": "Resources",
+            "icon": "book-open",
+            "pages": [
+              "resources/glossary.mdx",
+              "resources/error-codes.mdx",
+              "resources/faq.mdx",
+              "resources/contributing.mdx",
+              "resources/support.mdx"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api/overview",
+              "api/authentication",
+              "api/errors",
+              "api/conventions.mdx"
+            ]
+          },
+          {
+            "group": "Endpoints",
+            "pages": [
+              "api/auth",
+              "api/booking",
+              "api/citizen",
+              "api/commerce",
+              "api/events",
+              "api/fleet.mdx",
+              "api/iot.mdx",
+              "api/loyalty",
+              "api/sdui.mdx",
+              "api/search",
+              "api/tenant"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "SDK Reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "sdk/overview.mdx",
+              "sdk/cityos-client.mdx",
+              "sdk/bff-client.mdx"
+            ]
+          },
+          {
+            "group": "Domain Clients",
+            "pages": [
+              "sdk/clients/commerce.mdx",
+              "sdk/clients/booking.mdx",
+              "sdk/clients/citizen.mdx",
+              "sdk/clients/events.mdx",
+              "sdk/clients/fleet.mdx",
+              "sdk/clients/iot.mdx",
+              "sdk/clients/loyalty.mdx",
+              "sdk/clients/search.mdx",
+              "sdk/clients/tenant.mdx"
+            ]
+          },
+          {
+            "group": "Types & Schemas",
+            "pages": [
+              "sdk/types/common.mdx",
+              "sdk/types/domain-schemas.mdx"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Changelog",
+        "pages": [
+          "changelog/index.mdx"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,138 @@
+---
+title: "CityOS domain packages explained"
+description: "Explore CityOS domain packages — bounded contexts that expose BFF routes and typed SDK clients for commerce, governance, healthcare, fleet, IoT, and more."
+---
+
+Dakkah CityOS organizes all business logic into domain packages. Each package is an independent TypeScript library that follows Domain-Driven Design (DDD) principles. A domain package owns its collections, SDUI blocks, React hooks, and BFF API routes. This means that the code for restaurant menus, citizen complaints, parking zones, healthcare appointments, and fleet telemetry live in entirely separate packages — they do not share state, and they do not call each other directly.
+
+There are over 77 domain packages in CityOS. Every package that exposes public API routes does so under `/api/bff/<domain>/`, following the BFF (Backend for Frontend) pattern.
+
+## Domain package structure
+
+Every domain package is a self-contained TypeScript library that exports React hooks, SDUI block definitions, and BFF API routes for its vertical. Each package exports a `domainPackage` object that the platform's domain registry uses to discover available features at boot — you do not configure domain registration manually.
+
+## Key domains
+
+<Columns cols={2}>
+  <Card title="commerce" icon="shopping-cart">
+    Products, cart, checkout, orders, subscriptions, loyalty, B2B quotes, approvals, contracts, marketplace vendors, gift cards, installments, and digital downloads.
+
+    **BFF routes:** `/api/bff/commerce/products`, `/api/bff/commerce/cart`, `/api/bff/commerce/orders`, `/api/bff/commerce/checkout`, and 30+ others.
+  </Card>
+  <Card title="citizen-services" icon="building-columns">
+    Government service directory, permit applications, complaint submission, civic proposals, booking time slots for municipal services, and transit information.
+
+    **BFF routes:** `/api/bff/citizen/services`, `/api/bff/citizen/complaints`, `/api/bff/citizen/permits`, `/api/bff/citizen/bookings`.
+  </Card>
+  <Card title="events-culture" icon="calendar">
+    City events, ticketing, cultural programs, and event-scoped SDUI screens. Connects to the commerce domain for ticket purchases.
+
+    **BFF routes:** `/api/bff/commerce/events-tickets`, `/api/bff/citizen/events`.
+  </Card>
+  <Card title="loyalty" icon="star">
+    Points programs, reward tiers, redemption flows, and loyalty history. Points earned in any domain — grocery, fitness, pharmacy — can be redeemed across all participating merchants.
+
+    **BFF routes:** `/api/bff/commerce/loyalty`.
+  </Card>
+  <Card title="healthcare" icon="heart-pulse">
+    Appointment booking, telemedicine sessions, prescription management, health records, pharmacy orders, and blood bank requests. Governed by NCA and NDMO compliance rules.
+
+    **BFF routes:** Served via the `healthcare` and `telemedicine` domain packages.
+  </Card>
+  <Card title="fleet-logistics" icon="truck">
+    Delivery order dispatch, driver assignment, route optimization, real-time tracking, and SLA enforcement. Bridges to Fleetbase for physical fleet operations.
+
+    **BFF routes:** `/api/bff/commerce/delivery`.
+  </Card>
+  <Card title="iot-telemetry" icon="wifi">
+    Sensor data ingestion via MQTT, device registry, threshold alerts, and IoT workflow automation. Powers the smart city monitoring dashboard.
+
+    **BFF routes:** Served via the `iot-telemetry` domain package and the Kuzzle IoT backend.
+  </Card>
+  <Card title="governance" icon="landmark">
+    Municipal authority management, policy inheritance, compliance mandates, governance workflows, and regulatory reporting.
+
+    **BFF routes:** Served via the `governance` domain package.
+  </Card>
+</Columns>
+
+## Full domain list
+
+The platform ships with domains for every major vertical a smart city needs. The following table lists all registered packages:
+
+<AccordionGroup>
+  <Accordion title="Commerce and transactions">
+    `commerce`, `auctions`, `bookings`, `crowdfunding`, `digital-products`, `franchise-management`, `grocery`, `hospitality`, `insurance`, `laundry`, `loyalty`, `membership`, `parking-zones`, `pet-services`, `pharmacy`, `print-on-demand`, `real-estate`, `rental-items`, `repair`, `restaurants`, `ride-hailing`, `saas-platform`, `sports-recreation`, `subscriptions`, `trade-in`, `warranty`
+  </Accordion>
+  <Accordion title="Citizen and government services">
+    `citizen-services`, `civil-defense`, `classifieds`, `governance`, `hajj`, `jobs-economy`, `legal`, `permits` (via citizen-services), `public-safety`, `registry`, `umrah`, `waste-management`
+  </Accordion>
+  <Accordion title="Health and social care">
+    `blood-bank`, `childcare`, `eldercare`, `health-human-services`, `healthcare`, `senior-care`, `telemedicine`
+  </Accordion>
+  <Accordion title="Education and culture">
+    `culture-tourism`, `e-learning`, `education`, `events-culture`, `event-ticketing`, `tourism`, `travel`
+  </Accordion>
+  <Accordion title="Infrastructure and logistics">
+    `automotive`, `energy`, `environment`, `fleet-logistics`, `gis-maps`, `industrial`, `iot-telemetry`, `maritime`, `mining`, `smart-city`, `telecom`, `transit`, `transportation`, `utilities`, `zone-coverage`
+  </Accordion>
+  <Accordion title="Platform and developer">
+    `advertising`, `ai-ml`, `analytics`, `communication`, `community`, `construction`, `coworking`, `creator-economy`, `data-visualization`, `finance`, `freelance`, `identity-auth`, `i18n`, `innovation`, `media-assets`, `multi-tenancy`, `notifications`, `personas`, `poi`, `search`, `security-services`, `social-engagement`, `social-media`, `social-trust`, `sponsorship`, `system-observability`, `white-label`, `workflow`
+  </Accordion>
+</AccordionGroup>
+
+## BFF route conventions
+
+All domain API routes follow a consistent pattern:
+
+```
+/api/bff/<domain>/<resource>
+/api/bff/<domain>/<resource>/[id]
+/api/bff/<domain>/<resource>/[id]/<action>
+```
+
+Every BFF route automatically enforces authentication, tenant context resolution, and role-based access before your handler runs. You never need to add manual permission checks inside your client code.
+
+```http
+# List products in the commerce domain
+GET /api/bff/commerce/products
+x-tenant-slug: riyadh-municipality
+Authorization: Bearer <your-jwt>
+
+# Get a single order
+GET /api/bff/commerce/orders/ord_01HXYZ
+x-tenant-slug: riyadh-municipality
+Authorization: Bearer <your-jwt>
+
+# Submit a citizen complaint
+POST /api/bff/citizen/complaints
+x-tenant-slug: riyadh-municipality
+Authorization: Bearer <your-jwt>
+Content-Type: application/json
+
+{ "category": "road-maintenance", "description": "Pothole on King Fahd Road", "nodeId": "zone-3-riyadh" }
+```
+
+<Note>
+Not all 77 domains have BFF routes fully implemented yet. Domains that are CMS-only (no external data source) may not expose a `/api/bff/` route. Check the domain package's `src/api/` directory to confirm route availability before building an integration.
+</Note>
+
+## Using domain hooks in your app
+
+Domain packages export typed React hooks that abstract BFF calls. These hooks handle loading state, error handling, and data normalization for you:
+
+```typescript
+import { useProducts } from "@cityos/domain-commerce";
+import { useOrders } from "@cityos/domain-commerce";
+
+function ProductList() {
+  const { products, loading, error } = useProducts({ tenantSlug: "riyadh-municipality" });
+
+  if (loading) return <Spinner />;
+  if (error) return <ErrorBanner message={error.message} />;
+
+  return products.map((product) => <ProductCard key={product.id} product={product} />);
+}
+```
+
+Each domain hook is self-contained. You do not need to configure a global store or provider — hooks source their data directly from the BFF layer using the tenant context already present in your session.

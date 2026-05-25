@@ -1,0 +1,274 @@
+---
+title: "Loyalty program API endpoints"
+description: "Check points balances, enroll in loyalty programs, redeem points, and retrieve transaction history through the Dakkah CityOS loyalty BFF endpoints."
+---
+
+The loyalty endpoints let your application read a customer's points balance and tier, enroll them in a program, process point redemptions, and fetch transaction history. All routes use the single base path `/api/bff/commerce/loyalty` and require an authenticated session.
+
+The `GET` endpoint reads account state; the `POST` endpoint accepts an `action` field that selects the operation to perform — keeping mutation semantics explicit without proliferating paths.
+
+---
+
+## GET /api/bff/commerce/loyalty
+
+Returns the loyalty account balance, current tier, and program association for the authenticated customer.
+
+### Request headers
+
+<ParamField path="Authorization" type="string" required>
+  `Bearer <jwt>` — Keycloak or Payload-issued JWT.
+</ParamField>
+
+<ParamField path="x-tenant-slug" type="string">
+  Tenant slug for multi-tenant routing. Resolved from the domain if omitted.
+</ParamField>
+
+### Query parameters
+
+<ParamField query="customerId" type="string">
+  Customer ID to query. Defaults to the authenticated user's customer ID.
+</ParamField>
+
+<ParamField query="programId" type="string">
+  Filter to a specific loyalty program.
+</ParamField>
+
+### Response fields
+
+<ResponseField name="data" type="object">
+  <Expandable title="properties">
+    <ResponseField name="customerId" type="string">
+      Medusa customer ID.
+    </ResponseField>
+    <ResponseField name="pointsBalance" type="number">
+      Current redeemable points balance.
+    </ResponseField>
+    <ResponseField name="tier" type="string">
+      Loyalty tier name (e.g. `silver`, `gold`, `platinum`).
+    </ResponseField>
+    <ResponseField name="programId" type="string">
+      ID of the enrolled loyalty program.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+curl --request GET \
+  --url https://cityos.dakkah.city/api/bff/commerce/loyalty \
+  --header 'Authorization: Bearer <token>' \
+  --header 'x-tenant-slug: riyadh-downtown'
+```
+
+```typescript TypeScript
+const response = await fetch("/api/bff/commerce/loyalty", {
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "x-tenant-slug": "riyadh-downtown",
+  },
+});
+
+const { data } = await response.json();
+console.log(`Balance: ${data.pointsBalance} pts — Tier: ${data.tier}`);
+```
+
+</CodeGroup>
+
+**200 response example**
+
+```json
+{
+  "success": true,
+  "data": {
+    "customerId": "cust_01H...",
+    "pointsBalance": 1250,
+    "tier": "gold",
+    "programId": "pgm_gold_rewards"
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+| Status | Meaning |
+|--------|---------|
+| `200` | Account data returned. |
+| `401` | Authentication required. |
+
+---
+
+## POST /api/bff/commerce/loyalty
+
+Performs a loyalty action. Set `action` to `enroll`, `redeem`, or `history` to select the operation.
+
+### Request headers
+
+<ParamField path="Authorization" type="string" required>
+  `Bearer <jwt>`.
+</ParamField>
+
+<ParamField path="x-tenant-slug" type="string">
+  Tenant slug.
+</ParamField>
+
+### Request body
+
+<ParamField body="action" type="string" required>
+  The loyalty operation to perform. One of `enroll`, `redeem`, `history`.
+</ParamField>
+
+<ParamField body="customerId" type="string">
+  Customer ID. Defaults to the authenticated user's customer ID.
+</ParamField>
+
+<ParamField body="points" type="number">
+  Number of points to redeem. Required when `action` is `redeem`. Minimum 1.
+</ParamField>
+
+<ParamField body="programId" type="string">
+  Program ID to enroll in. Required when `action` is `enroll`.
+</ParamField>
+
+<CodeGroup>
+
+```bash curl
+# Enroll in a loyalty program
+curl --request POST \
+  --url https://cityos.dakkah.city/api/bff/commerce/loyalty \
+  --header 'Authorization: Bearer <token>' \
+  --header 'Content-Type: application/json' \
+  --header 'x-tenant-slug: riyadh-downtown' \
+  --data '{
+    "action": "enroll",
+    "programId": "pgm_gold_rewards"
+  }'
+
+# Redeem 500 points
+curl --request POST \
+  --url https://cityos.dakkah.city/api/bff/commerce/loyalty \
+  --header 'Authorization: Bearer <token>' \
+  --header 'Content-Type: application/json' \
+  --header 'x-tenant-slug: riyadh-downtown' \
+  --data '{
+    "action": "redeem",
+    "points": 500
+  }'
+
+# Get transaction history
+curl --request POST \
+  --url https://cityos.dakkah.city/api/bff/commerce/loyalty \
+  --header 'Authorization: Bearer <token>' \
+  --header 'Content-Type: application/json' \
+  --header 'x-tenant-slug: riyadh-downtown' \
+  --data '{ "action": "history" }'
+```
+
+```typescript TypeScript
+// Enroll in a program
+const enrollRes = await fetch("/api/bff/commerce/loyalty", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+    "x-tenant-slug": "riyadh-downtown",
+  },
+  body: JSON.stringify({
+    action: "enroll",
+    programId: "pgm_gold_rewards",
+  }),
+});
+
+// Redeem points
+const redeemRes = await fetch("/api/bff/commerce/loyalty", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+    "x-tenant-slug": "riyadh-downtown",
+  },
+  body: JSON.stringify({
+    action: "redeem",
+    points: 500,
+  }),
+});
+
+// Get transaction history
+const historyRes = await fetch("/api/bff/commerce/loyalty", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+    "x-tenant-slug": "riyadh-downtown",
+  },
+  body: JSON.stringify({ action: "history" }),
+});
+
+const { data } = await historyRes.json();
+```
+
+</CodeGroup>
+
+**200 response — enroll**
+
+```json
+{
+  "success": true,
+  "data": {
+    "enrolled": true,
+    "programId": "pgm_gold_rewards",
+    "customerId": "cust_01H..."
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+**200 response — redeem**
+
+```json
+{
+  "success": true,
+  "data": {
+    "pointsRedeemed": 500,
+    "remainingBalance": 750,
+    "transactionId": "txn_loyalty_01H..."
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+**200 response — history**
+
+```json
+{
+  "success": true,
+  "data": {
+    "transactions": [
+      {
+        "id": "txn_loyalty_01H...",
+        "type": "earn",
+        "points": 200,
+        "description": "Purchase at Al Faisaliah Mall",
+        "createdAt": "2026-04-01T12:00:00.000Z"
+      },
+      {
+        "id": "txn_loyalty_02H...",
+        "type": "redeem",
+        "points": -500,
+        "description": "Redeemed for store credit",
+        "createdAt": "2026-04-10T09:30:00.000Z"
+      }
+    ]
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+| Status | Meaning |
+|--------|---------|
+| `200` | Action completed. |
+| `400` | Missing required parameter for the chosen action (e.g. `points` for `redeem`, `programId` for `enroll`). |
+| `401` | Authentication required. |
+
+<Warning>
+  Redemptions are irreversible. Verify the points balance with `GET /api/bff/commerce/loyalty` before calling `redeem`, and present the deducted amount to the user for confirmation before submitting the request.
+</Warning>

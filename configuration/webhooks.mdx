@@ -1,0 +1,199 @@
+---
+title: "Webhooks in Dakkah CityOS"
+description: "Receive HMAC-verified CityOS webhook events. Covers all supported event types, signature verification code, and how to register your endpoint."
+---
+
+CityOS emits webhook events when significant state changes occur across its domains — commerce orders, logistics deliveries, ERP transactions, and Temporal workflow completions. All nine inbound webhook receivers use HMAC-SHA256 signature verification to ensure that payloads originate from a trusted source.
+
+This page covers the event types you can subscribe to, how to verify signatures, and how to register your endpoint.
+
+## Supported webhook receivers
+
+CityOS exposes four inbound webhook receiver endpoints. Each receiver handles events from a specific integration domain and verifies the payload signature using a shared secret.
+
+| Receiver | Endpoint | Auth header | Secret variable |
+|---|---|---|---|
+| Commerce (Medusa) | `/api/bff/integrations/webhooks/commerce` | `X-Webhook-Secret` (HMAC-SHA256) | `FLEETBASE_WEBHOOK_SECRET` (commerce adapter) |
+| Logistics (Fleetbase) | `/api/bff/integrations/webhooks/logistics` | `x-fleetbase-signature` | `FLEETBASE_WEBHOOK_SECRET` |
+| ERP (ERPNext/Frappe) | `/api/bff/integrations/webhooks/erp` | `x-frappe-webhook-signature` | `ERPNEXT_WEBHOOK_SECRET` |
+| Temporal workflows | `/api/bff/integrations/webhooks/temporal` | `X-API-Key` | `TEMPORAL_WEBHOOK_SECRET` |
+
+For the generic integration receiver at `/api/bff/integrations/webhook`, the platform checks the `x-cityos-signature` header and validates against `CITYOS_WEBHOOK_SECRET` (falling back to `CITYOS_S2S_SECRET`).
+
+## Supported event types
+
+### Commerce events
+
+These events are emitted by the Medusa commerce backend when order and catalog state changes.
+
+| Event | Description |
+|---|---|
+| `order.placed` | A customer completed checkout and placed a new order |
+| `order.fulfilled` | All items in an order have been fulfilled |
+| `order.cancelled` | An order was cancelled by a customer or administrator |
+| `order.refunded` | A refund was issued for an order |
+| `return.requested` | A customer requested a return |
+| `return.completed` | A return was processed and completed |
+| `product.created` | A new product was added to the catalog |
+| `product.updated` | An existing product was modified |
+| `customer.created` | A new customer account was registered |
+| `inventory.updated` | Stock levels changed for a product variant |
+| `store.created` | A new store was created for the tenant |
+| `store.updated` | Store settings were modified |
+
+### Logistics and fleet events
+
+These events are emitted by Fleetbase when delivery and fleet state changes.
+
+| Event | Description |
+|---|---|
+| `delivery.created` | A new delivery order was created |
+| `delivery.assigned` | A delivery was assigned to a driver |
+| `delivery.picked_up` | A driver picked up the delivery |
+| `delivery.in_transit` | The delivery is on the way |
+| `delivery.completed` | The delivery was successfully completed |
+| `delivery.failed` | A delivery attempt failed |
+| `delivery.cancelled` | The delivery was cancelled |
+| `delivery.returned` | The package was returned to sender |
+| `pod.received` | Proof of delivery was recorded |
+| `fleet.status_changed` | A vehicle or fleet asset changed status |
+| `geofence.triggered` | A vehicle entered or exited a geofence zone |
+| `sla.breached` | A service level agreement threshold was exceeded |
+| `route.optimized` | A route was recalculated for a driver |
+
+### ERP events
+
+These events are emitted by ERPNext/Frappe when financial records are created or updated.
+
+| Event | Description |
+|---|---|
+| `journal_entry.created` | A GL journal entry was posted |
+| `invoice.created` | A sales or purchase invoice was created |
+| `invoice.paid` | An invoice was marked as paid |
+| `payout.ready` | A payout to a merchant or supplier is ready |
+| `payout.processed` | A payout was processed and sent |
+| `settlement.confirmed` | A payment settlement was confirmed |
+| `cod.collected` | Cash on delivery was collected by a driver |
+| `debit_memo.created` | A debit memo was issued |
+| `purchase_order.created` | A purchase order was raised |
+| `supplier.synced` | A supplier record was synchronised |
+
+### Temporal workflow events
+
+| Event | Description |
+|---|---|
+| `workflow.completed` | A Temporal workflow finished successfully |
+| `workflow.failed` | A Temporal workflow failed |
+| `workflow.timed_out` | A Temporal workflow exceeded its timeout |
+| `workflow.cancelled` | A Temporal workflow was cancelled |
+| `workflow.started` | A Temporal workflow was started |
+| `activity.failed` | A workflow activity failed |
+| `schedule.triggered` | A scheduled workflow trigger fired |
+
+## Verifying HMAC signatures
+
+Every inbound webhook payload must be verified before you process it. CityOS uses HMAC-SHA256 and performs constant-time comparison to prevent timing attacks.
+
+The signature header format varies by provider. Keycloak, ERPNext, Moyasar, and the CityOS generic receiver use the `sha256=<hex>` prefix format. Fleetbase sends the raw hex digest without a prefix.
+
+<CodeGroup>
+
+```typescript TypeScript (Node.js)
+import { createHmac, timingSafeEqual } from 'crypto';
+
+export function verifyWebhookSignature(
+  rawBody: string,
+  signatureHeader: string,
+  secret: string,
+): boolean {
+  // Strip optional "sha256=" prefix
+  const hexSignature = signatureHeader.startsWith('sha256=')
+    ? signatureHeader.slice(7)
+    : signatureHeader;
+
+  const expected = createHmac('sha256', secret)
+    .update(rawBody)
+    .digest('hex');
+
+  try {
+    const sigBuf = Buffer.from(hexSignature, 'hex');
+    const expBuf = Buffer.from(expected, 'hex');
+    if (sigBuf.length !== expBuf.length) return false;
+    return timingSafeEqual(sigBuf, expBuf);
+  } catch {
+    return false;
+  }
+}
+
+// Express example
+app.post('/webhooks/cityos', express.raw({ type: 'application/json' }), (req, res) => {
+  const signature =
+    req.headers['x-cityos-signature'] ||
+    req.headers['x-fleetbase-signature'] ||
+    req.headers['x-frappe-webhook-signature'];
+
+  if (!signature || !verifyWebhookSignature(req.body.toString(), signature, process.env.CITYOS_WEBHOOK_SECRET)) {
+    return res.status(401).json({ error: 'Invalid signature' });
+  }
+
+  const payload = JSON.parse(req.body.toString());
+  // process payload.event ...
+  res.json({ received: true });
+});
+```
+
+```python Python
+import hashlib
+import hmac
+
+def verify_webhook_signature(raw_body: bytes, signature_header: str, secret: str) -> bool:
+    hex_signature = signature_header
+    if signature_header.startswith("sha256="):
+        hex_signature = signature_header[7:]
+
+    expected = hmac.new(
+        secret.encode("utf-8"),
+        raw_body,
+        hashlib.sha256,
+    ).hexdigest()
+
+    return hmac.compare_digest(hex_signature, expected)
+```
+
+</CodeGroup>
+
+<Warning>
+  Always read the raw request body **before** parsing it as JSON. Body parsers that re-serialise JSON can produce a different byte sequence, causing signature verification to fail.
+</Warning>
+
+## Registering a webhook endpoint
+
+Use the developer webhooks API to register your HTTPS endpoint and subscribe to specific event types. You must be authenticated with a valid session.
+
+### Register an endpoint
+
+```bash curl
+curl -X POST https://cityos.dakkah.city/api/bff/developer/webhooks \
+  -H "Authorization: Bearer <token>" \
+  -H "x-tenant-slug: riyadh-downtown" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Order notifications",
+    "url": "https://your-server.example.com/webhooks/cityos",
+    "events": ["order.placed", "order.fulfilled", "order.cancelled"]
+  }'
+```
+
+### List registered endpoints
+
+```bash curl
+curl https://cityos.dakkah.city/api/bff/developer/webhooks \
+  -H "Authorization: Bearer <token>" \
+  -H "x-tenant-slug: riyadh-downtown"
+```
+
+The response includes the endpoint's `status`, the timestamp of the last trigger, and the HTTP status code returned by your server.
+
+<Note>
+  Webhook URLs must use HTTPS. The platform rejects `http://` endpoints at registration time.
+</Note>

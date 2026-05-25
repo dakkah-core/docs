@@ -1,0 +1,72 @@
+---
+title: "LoyaltyClient"
+sidebarTitle: "Loyalty"
+description: "Typed SDK client for CityOS loyalty programs — enroll, balance, redeem, credit, history."
+icon: "award"
+---
+
+`LoyaltyClient` wraps `/api/bff/commerce/loyalty`.
+
+## Methods
+
+| Method | HTTP | Endpoint |
+| --- | --- | --- |
+| `getAccount(params?)` | GET | `/api/bff/commerce/loyalty` |
+| `enroll(body)` | POST | `/loyalty` with `action: "enroll"` |
+| `redeem(body, opts?)` | POST | `/loyalty` with `action: "redeem"` |
+| `credit(body, opts?)` | POST | `/loyalty` with `action: "credit"` |
+| `history()` | POST | `/loyalty` with `action: "history"` |
+
+## getAccount
+
+```typescript
+const { data } = await loyalty.getAccount();
+// { customerId, pointsBalance, tier, programId }
+```
+
+Optional params: `customerId`, `programId`.
+
+## enroll
+
+```typescript
+await loyalty.enroll({ programId: "pgm_gold_rewards" });
+```
+
+## redeem
+
+```typescript
+await loyalty.redeem({ points: 500 });
+```
+
+Minimum 1 point. The BFF applies the discount to the active cart.
+
+## credit
+
+Webhook-driven accrual. Always pass `idempotencyKey`:
+
+```typescript
+await loyalty.credit({
+  customerId: "cust_01H...",
+  points: 50,
+  reason: "order:order_01H...",
+}, { idempotencyKey: "accrue_order_01H..." });
+```
+
+## history
+
+```typescript
+const { data } = await loyalty.history();
+// data: Array<{ timestamp, type, points, reason }>
+```
+
+Transaction types: `enroll`, `accrue`, `redeem`, `expire`, `adjust`.
+
+## Errors
+
+`LOYALTY_ERROR`, `VALIDATION_ERROR`, `CONFLICT` (already enrolled), `AUTH_ERROR`.
+
+## Related
+
+- [Loyalty vertical](/verticals/loyalty)
+- [Loyalty API](/api/loyalty)
+- [Loyalty guide](/guides/loyalty)

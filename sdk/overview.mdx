@@ -1,0 +1,125 @@
+---
+title: "@cityos/api-client overview"
+sidebarTitle: "Overview"
+description: "Install, initialize, and authenticate the typed TypeScript SDK for the CityOS BFF. CityOSClient, createBffClients, surfaces, and error handling."
+icon: "package"
+---
+
+`@cityos/api-client` is the official TypeScript SDK for the Dakkah CityOS BFF. It ships `CityOSClient` (root client) and one typed domain client per vertical.
+
+## Install
+
+<CodeGroup>
+
+```bash npm
+npm install @cityos/api-client
+```
+
+```bash pnpm
+pnpm add @cityos/api-client
+```
+
+```bash yarn
+yarn add @cityos/api-client
+```
+
+</CodeGroup>
+
+## Initialize
+
+```typescript
+import { CityOSClient, createBffClients } from "@cityos/api-client";
+
+const cityos = new CityOSClient({
+  baseUrl: process.env.BFF_URL!,
+  tenantId: "riyadh-downtown",
+  surface: "web",
+  getToken: async () => sessionStore.getToken(),
+});
+
+const { auth, commerce, bookings, citizen, events, loyalty, fleet, iot, search, tenant } =
+  createBffClients(cityos);
+```
+
+All domain clients share the same `cityos` instance, so they automatically pick up:
+
+- `Authorization: Bearer <token>` from `getToken`
+- `x-tenant-slug` from `tenantId`
+- `x-cityos-surface` from `surface`
+- correlation ID propagation
+
+## Surfaces
+
+The `surface` option is a typed union:
+
+```typescript
+type Surface =
+  | "mobile" | "mobile_large"
+  | "tablet"
+  | "desktop" | "desktop_wide"
+  | "kiosk" | "tv_1080p" | "carplay";
+```
+
+Change it at runtime with `cityos.setSurface("kiosk")`. See [Surfaces](/concepts/surfaces).
+
+## Domain clients
+
+<CardGroup cols={2}>
+  <Card title="CommerceClient" href="/sdk/clients/commerce">
+  </Card>
+
+  <Card title="BookingClient" href="/sdk/clients/booking">
+  </Card>
+
+  <Card title="CitizenClient" href="/sdk/clients/citizen">
+  </Card>
+
+  <Card title="EventsClient" href="/sdk/clients/events">
+  </Card>
+
+  <Card title="LoyaltyClient" href="/sdk/clients/loyalty">
+  </Card>
+
+  <Card title="FleetClient" href="/sdk/clients/fleet">
+  </Card>
+
+  <Card title="IotClient" href="/sdk/clients/iot">
+  </Card>
+
+  <Card title="SearchClient" href="/sdk/clients/search">
+  </Card>
+
+  <Card title="TenantClient" href="/sdk/clients/tenant">
+  </Card>
+</CardGroup>
+
+## Error handling
+
+Every method returns the standard envelope. The SDK throws on `success: false` with a typed `ApiError`:
+
+```typescript
+import type { ApiError } from "@cityos/api-client";
+
+try {
+  const { data } = await commerce.listProducts({ page: 1, limit: 20 });
+} catch (err) {
+  const e = err as ApiError;
+  if (e.code === "AUTH_ERROR" && e.tokenExpired) {
+    await refreshToken();
+  } else if (e.code === "RATE_LIMIT") {
+    await sleep(e.retryAfterSeconds * 1000);
+  }
+}
+```
+
+See [Error codes](/resources/error-codes) for the full table and retry helper.
+
+## Tree-shaking
+
+Domain clients are independently importable so unused verticals are dropped at build time. On mobile, prefer named imports (`import { commerce } from ...`) over the factory if bundle size matters.
+
+## Related
+
+- [CityOSClient](/sdk/cityos-client) — root client options
+- [BffClient](/sdk/bff-client) — low-level transport
+- [API conventions](/api/conventions)

@@ -1,0 +1,202 @@
+---
+title: "Contributing to the docs"
+sidebarTitle: "Contributing"
+description: "Handbook for everyone writing CityOS docs — IA, page templates, frontmatter, style, cross-link checklist, and review guide."
+icon: "git-pull-request"
+---
+
+This is the handbook for everyone writing CityOS docs. Read it before opening a PR that adds or restructures pages.
+
+## Repository
+
+- Docs source: `mintlify-community/docs-dakkahcityos-8f9f2c2b`
+- Codebase source of truth: [`dakkah-core/dakkah-cityos-cms`](https://github.com/dakkah-core/cms)
+- OpenAPI spec: `docs/api/openapi.yaml` in the codebase
+
+## Information architecture
+
+All new pages must land in one of these groups:
+
+| Group | When to use |
+| --- | --- |
+| **Get Started** | Onboarding, quickstart, architecture, environment setup |
+| **Core Concepts** | Cross-cutting topics: multi-tenancy, surfaces, SDUI, domains, data model |
+| **Verticals** | One overview per business domain. Router pages, not deep guides. |
+| **Guides** | Long-form, task-oriented walkthroughs |
+| **Apps** | Surface-specific docs (mobile, web, kiosk, etc.) |
+| **Integrations** | Third-party services (Stripe, Keycloak, Ably, MinIO) |
+| **Configuration** | Env vars, tenant setup, webhooks, feature flags, deployment |
+| **Resources** | Glossary, FAQ, error codes, contributing |
+| **API Reference** | Per-endpoint reference pages |
+| **SDK Reference** | `@cityos/api-client` reference |
+| **Changelog** | Release notes |
+
+When in doubt, open a draft PR and tag a reviewer for IA guidance before writing the body.
+
+## Page templates
+
+### Vertical overview (router page)
+
+```mdx
+---
+title: "{Vertical} on CityOS"
+sidebarTitle: "{Vertical}"
+description: "One sentence value prop ≤ 160 chars."
+icon: "{lucide-icon}"
+---
+
+Hero paragraph (3–4 sentences).
+
+## Get started
+<CardGroup cols={2}>
+  <Card title="Guide" href="/guides/{slug}" />
+  <Card title="API reference" href="/api/{slug}" />
+  <Card title="SDK client" href="/sdk/clients/{slug}" />
+  <Card title="Realtime / Webhook / Integration" href="..." />
+</CardGroup>
+
+## Architecture
+Mermaid diagram.
+
+## Endpoints at a glance
+Table of method, path, auth, purpose.
+
+## Domain-specific section
+Schema table, lifecycle diagram, or archetype list.
+
+## Capability flags
+Which flag gates this vertical.
+
+## Events emitted
+Webhook event table.
+
+## Related
+Bullet list of cross-links.
+```
+
+### Guide (long-form walkthrough)
+
+```mdx
+---
+title: "<Action verb> with CityOS"
+sidebarTitle: "{Topic}"
+description: "≤ 160 chars."
+icon: "{icon}"
+---
+
+One-paragraph intro.
+
+## What you'll build
+Bulleted outcome list.
+
+## Prerequisites
+SDK init code + capability check.
+
+## 1. …   2. …   3. …
+Numbered steps with cURL + TypeScript samples.
+
+## Error handling
+Table of common codes + actions.
+
+## Capability flags
+## Related
+```
+
+### SDK client page
+
+See [`/sdk/clients/commerce`](/sdk/clients/commerce) as the canonical example.
+
+## Frontmatter conventions
+
+| Field | Required | Notes |
+| --- | --- | --- |
+| `title` | yes | Long title for the SEO `<title>` element |
+| `sidebarTitle` | yes | ≤ 2 words, used in the left nav |
+| `description` | yes | ≤ 160 chars, action-oriented, no marketing |
+| `icon` | yes | Lucide icon name (we use the Lucide library globally) |
+| `keywords` | top 20 pages | Array of search keywords |
+| `noindex` | rare | Only for tenant-specific or beta pages |
+
+Icon picking: `building` for tenant, `shopping-cart` for commerce, `calendar` for bookings, `truck` for fleet, `cpu` for IoT, `radio` for realtime, etc.
+
+## Writing style
+
+- **Active voice. Imperative for instructions.** "Pass `idempotencyKey` on every mutation." not "You should pass…"
+- **Show, don't tell.** Every claim about an API needs a code sample.
+- **Always show curl \+ TypeScript** for endpoint examples.
+- **Always note the capability flag** that gates a feature.
+- **Always link to the SDK client** from API pages, and vice versa.
+- **Mermaid diagrams** are mandatory for any flow with ≥ 3 steps.
+- **Lowercase code-fence languages.** ` ```bash`, ` ```typescript`, ` ```json`, ` ```mermaid`.
+- **No raw URLs in prose.** Use `[link text](url)`.
+- **MDX gotchas:**
+  - Escape `>` and `<` inside text (`\>`, `\<`).
+  - Use ASCII en/em dashes (`—`) sparingly — they render fine but interrupt flow.
+  - Don't use angle-bracket auto-links (`<https://…>`); they break MDX parsing.
+
+## Cross-link checklist
+
+When you add a new page, link **to** and **from** these:
+
+| Page type | Must link to | Must link from |
+| --- | --- | --- |
+| Vertical overview | Guide, API, SDK client, related concepts | `concepts/domains` |
+| Guide | Vertical, API, SDK client, error codes | Vertical overview |
+| API endpoint | Vertical, SDK client, conventions | Vertical, API overview |
+| SDK client | API, vertical, common types | SDK overview |
+| Integration | All verticals that use it | Architecture page if foundational |
+
+## Code samples
+
+- Always set `tenantId`, never inline it: `"riyadh-downtown"` is the canonical example.
+- Use `crypto.randomUUID()` for idempotency keys in samples.
+- Show a realistic response shape when documenting an endpoint.
+- Prefer the SDK example over raw fetch when both are available.
+
+## Reviewing a PR
+
+Use this checklist when reviewing a docs PR:
+
+- Frontmatter complete (title, sidebarTitle, description, icon)
+- Description ≤ 160 chars and action-oriented
+- At least one cURL **and** one TypeScript example for API content
+- Capability flag noted if applicable
+- Cross-links present per the table above
+- Mermaid diagrams render (no syntax errors)
+- No raw angle-bracket URLs
+- No outdated references (e.g. "5 sensor types" — it's 8)
+- Changelog entry appended for substantive changes
+- No broken internal links (preview build passes)
+
+## When the codebase changes
+
+If you change a BFF route or schema in `dakkah-cityos-cms`:
+
+1. Update `docs/api/openapi.yaml` in the codebase
+2. Open a docs PR updating the matching `api/*.mdx` page
+3. Update the SDK client page if signatures changed
+4. Append a [changelog](/changelog) entry
+5. If a flag was added/removed, update [`configuration/feature-flags`](/configuration/feature-flags)
+
+## Common edits
+
+| Change | Pages to touch |
+| --- | --- |
+| New endpoint | `api/{vertical}.mdx`, `sdk/clients/{vertical}.mdx`, vertical overview |
+| New capability flag | `configuration/feature-flags`, vertical overview, glossary |
+| New webhook event | `configuration/webhooks`, vertical overview, glossary |
+| New domain package | `concepts/domains`, possibly a new vertical |
+| New surface | `concepts/surfaces`, `sdk/cityos-client`, `concepts/sdui` |
+
+## Don'ts
+
+- **Don't** invent endpoints, fields, or capability flags. If it's not in the OpenAPI spec or codebase, don't document it.
+- **Don't** ship pages without a `description`. Mintlify search penalises them.
+- **Don't** create new groups without an IA discussion. The current 11 are the source of truth.
+- **Don't** duplicate content. Cross-link instead.
+
+## Related
+
+- [Glossary](/resources/glossary)
+- [Error codes](/resources/error-codes)
+- [Changelog](/changelog)

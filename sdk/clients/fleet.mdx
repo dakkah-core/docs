@@ -1,0 +1,46 @@
+---
+title: "FleetClient"
+sidebarTitle: "Fleet"
+description: "Typed SDK client for CityOS fleet operations — vehicles, drivers, shipments, dispatch."
+icon: "truck"
+---
+
+`FleetClient` wraps `/api/bff/fleet/*` and proxies to Fleetbase \+ FleetOps.
+
+## Methods
+
+| Method | HTTP | Endpoint |
+| --- | --- | --- |
+| `listVehicles(params?)` | GET | `/api/bff/fleet/vehicles` |
+| `getVehicle(id)` | GET | `/api/bff/fleet/vehicles/{id}` |
+| `listDrivers(params?)` | GET | `/api/bff/fleet/drivers` |
+| `listShipments(params?)` | GET | `/api/bff/fleet/shipments` |
+| `createShipment(body, opts?)` | POST | `/api/bff/fleet/shipments` |
+| `dispatchShipment(id)` | POST | `/api/bff/fleet/shipments/{id}/dispatch` |
+| `getShipment(id)` | GET | `/api/bff/fleet/shipments/{id}` |
+
+## createShipment
+
+```typescript
+const { data: shipment } = await fleet.createShipment({
+  pickup: { address, lat, lng, contactName, contactPhone },
+  dropoff: { address, lat, lng, contactName, contactPhone },
+  sla: { pickupBy: "2026-06-01T10:00:00Z", deliverBy: "2026-06-01T11:00:00Z" },
+  metadata: { orderId: "order_01H..." },
+}, { idempotencyKey: `ship_${crypto.randomUUID()}` });
+```
+
+## Realtime
+
+Fleet positions stream over Ably (not via this client). See [Fleet guide](/guides/fleet) for the channel pattern.
+
+## Errors
+
+`VALIDATION_ERROR`, `CONFLICT`, `SERVICE_ERROR` (Fleetbase downstream), `RATE_LIMIT`, `AUTH_ERROR`.
+
+## Related
+
+- [Fleet vertical](/verticals/fleet)
+- [Fleet API](/api/fleet)
+- [Fleet guide](/guides/fleet)
+- [Realtime (Ably)](/integrations/realtime)

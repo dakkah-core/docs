@@ -1,0 +1,302 @@
+---
+title: "Domain schemas"
+sidebarTitle: "Domain schemas"
+description: "Per-vertical TypeScript schemas exported by @cityos/api-client — commerce, booking, citizen, events, loyalty, search, IoT, fleet, tenant, storage."
+icon: "braces"
+---
+
+Every domain client returns typed data. This page is the canonical index of the schemas. The shapes mirror `docs/api/openapi.yaml` in the [open-source repo](https://github.com/dakkah-core/dakkah-cityos-cms).
+
+## Auth
+
+### `Customer`
+
+```typescript
+export type Customer = {
+  id: string;
+  email: string;
+  first_name?: string;
+  last_name?: string;
+};
+```
+
+### `SessionData`
+
+See [Common types](/sdk/types/common#sessiondata).
+
+## Commerce
+
+### `Product`
+
+```typescript
+export type Product = {
+  id: string;
+  title: string;
+  handle: string;
+  description?: string;
+  status: "draft" | "published" | "proposed" | "rejected";
+  variants: ProductVariant[];
+  images: ProductImage[];
+};
+
+export type ProductVariant = Record<string, unknown>; // Medusa variant pass-through
+export type ProductImage = { url: string };
+```
+
+### `CartAction`
+
+```typescript
+export type CartAction =
+  | { action: "create" }
+  | { action: "retrieve"; cartId: string }
+  | { action: "addItem"; cartId: string; variantId: string; quantity: number }
+  | { action: "updateItem"; cartId: string; lineId: string; quantity: number }
+  | { action: "removeItem"; cartId: string; lineId: string };
+```
+
+Discriminated union — TypeScript narrows on the `action` literal.
+
+### `Order`
+
+Order shape is a Medusa pass-through (`Record<string, unknown>` at the type level). Common fields you'll use:
+
+```typescript
+export type Order = {
+  id: string;
+  status: "pending" | "completed" | "archived" | "canceled" | "requires_action";
+  email: string;
+  customer_id?: string;
+  total: number;
+  currency_code: string;
+  items: OrderLineItem[];
+  shipping_address?: Address;
+  created_at: string;
+};
+```
+
+## Booking
+
+### `Booking`
+
+```typescript
+export type Booking = {
+  id: string;                       // UUID
+  userId: string;
+  tenantSlug: string;
+  serviceType: string;
+  serviceId: string;
+  providerId: string;
+  timeSlot: { start: string; end: string };
+  location?: { address: string; lat: number; lng: number };
+  status: BookingStatus;
+  attendeeCount: number;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type BookingStatus =
+  | "pending" | "confirmed" | "cancelled" | "completed" | "no_show";
+```
+
+## Citizen
+
+### `Complaint`
+
+```typescript
+export type Complaint = {
+  id: string;
+  category: ComplaintCategory;
+  title: string;
+  description: string;
+  status: "submitted" | "in-progress" | "resolved" | "rejected";
+  priority: "low" | "medium" | "high" | "critical";
+  referenceNumber: string;          // e.g. "CMP-2026-00789"
+  submittedAt: string;
+};
+
+export type ComplaintCategory =
+  | "infrastructure"
+  | "public-safety"
+  | "sanitation"
+  | "noise"
+  | "illegal-dumping"
+  | "road-damage"
+  | "utilities"
+  | "other";
+```
+
+## Loyalty
+
+### `LoyaltyAccount`
+
+```typescript
+export type LoyaltyAccount = {
+  customerId: string;
+  pointsBalance: number;
+  tier: string;                     // program-specific (e.g. "bronze" | "gold")
+  programId: string;
+};
+
+export type LoyaltyAction =
+  | { action: "enroll"; programId: string; customerId?: string }
+  | { action: "redeem"; points: number; customerId?: string }
+  | { action: "history"; customerId?: string };
+```
+
+## Events & tickets
+
+```typescript
+export type EventTicketPurchase = {
+  eventId: string;
+  ticketTypeId: string;
+  quantity?: number;                // default 1
+};
+
+export type EventTicket = {
+  id: string;
+  event: { id: string; title: string; startsAt: string };
+  ticketTypeId: string;
+  qrCode: string;                   // signed JWT for gate scanners
+  seat?: string;
+  scannedAt?: string;
+  status: "active" | "used" | "refunded" | "cancelled";
+};
+```
+
+## Search
+
+```typescript
+export type SearchResult = {
+  query: string;
+  hits: Array<Record<string, unknown> & { id: string; type: string }>;
+  totalHits: number;
+  processingTimeMs: number;
+  facets?: Record<string, Record<string, number>>;
+  meta: {
+    surface: string;
+    scope: string;
+    tenant: string;
+    indices: string[];
+  };
+};
+
+export type SearchIndex =
+  | "pois" | "products" | "services" | "events"
+  | "businesses" | "documents" | "users"
+  | "citizen-services" | "orders";
+```
+
+## IoT
+
+```typescript
+export type SensorType =
+  | "AirQuality"
+  | "SmartBin"
+  | "WaterQuality"
+  | "ColdStorage"
+  | "SmartMeter"
+  | "TrafficFlow"
+  | "ParkingOccupancy"
+  | "IrrigationSensor";
+
+export type IotDevice = {
+  id: string;
+  name: string;
+  type: SensorType;
+  location: string;
+  status: "online" | "offline" | "degraded";
+  batteryLevel?: number;
+  lastSeen: string;
+  metrics: Record<string, number | boolean | string | null>;
+};
+
+export type IotReadingMessage<M = Record<string, { value: number }>> = {
+  deviceId: string;
+  measures: M;
+  metadata?: Record<string, unknown>;
+  timestamp: string;
+};
+```
+
+See the [IoT guide](/guides/iot-telemetry) for per-sensor `measures` shapes.
+
+## Fleet
+
+```typescript
+export type Vehicle = {
+  id: string;
+  licensePlate: string;
+  model: string;
+  status: "available" | "dispatched" | "in_service" | "offline";
+  assignedDriverId: string | null;
+  lastKnownPosition?: { lat: number; lng: number; timestamp: string };
+};
+
+export type Shipment = {
+  id: string;
+  status: "created" | "dispatched" | "picked_up" | "in_transit" | "delivered" | "failed";
+  pickup: ShipmentAddress;
+  dropoff: ShipmentAddress;
+  sla: { pickupBy: string; deliverBy: string };
+  assignedDriverId?: string;
+  metadata?: Record<string, unknown>;
+};
+
+export type ShipmentAddress = {
+  address: string;
+  lat: number;
+  lng: number;
+  contactName?: string;
+  contactPhone?: string;
+};
+
+export type FleetPositionMessage = {
+  driverId: string;
+  lat: number;
+  lng: number;
+  heading?: number;
+  speed?: number;
+  timestamp: string;
+};
+```
+
+## Tenant
+
+### `Capabilities`
+
+See [Common types](/sdk/types/common#capabilities).
+
+### `WorkflowStatus`
+
+```typescript
+export type WorkflowStatus = {
+  workflowId: string;
+  status: "running" | "completed" | "failed" | "cancelled";
+  startedAt: string;
+  completedAt?: string;
+  result?: unknown;
+};
+```
+
+## Storage
+
+```typescript
+export type FileMetadata = {
+  id: string;
+  url: string;
+  key: string;
+  contentType: string;
+  sizeBytes: number;
+  tenantSlug: string;
+  domain: string;
+  uploadedBy: string;
+  uploadedAt: string;
+};
+```
+
+## Related
+
+- [Common types](/sdk/types/common)
+- [SDK overview](/sdk/overview)
+- [OpenAPI source of truth](https://github.com/dakkah-core/dakkah-cityos-cms/blob/main/docs/api/openapi.yaml)

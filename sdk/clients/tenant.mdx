@@ -1,0 +1,66 @@
+---
+title: "TenantClient"
+sidebarTitle: "Tenant"
+description: "Typed SDK client for CityOS tenant config, capability flags, Ably tokens, Temporal workflows, and health."
+icon: "building"
+---
+
+`TenantClient` wraps `/api/bff/tenant/*`.
+
+## Methods
+
+| Method | HTTP | Endpoint |
+| --- | --- | --- |
+| `getConfig()` | GET | `/api/bff/tenant/config` |
+| `getCapabilities()` | GET | `/api/bff/tenant/capabilities` |
+| `getAblyToken()` | GET | `/api/bff/tenant/ably-token` |
+| `triggerWorkflow(name, payload)` | POST | `/api/bff/tenant/workflows/{name}` |
+| `getWorkflowStatus(id)` | GET | `/api/bff/tenant/workflows/{id}` |
+| `health()` | GET | `/api/bff/tenant/health` |
+
+## getCapabilities
+
+```typescript
+const { data } = await tenant.getCapabilities();
+
+if (!data.iotEnabled) hideIotDashboard();
+if (!data.fleetEnabled) hideFleetSection();
+if (!data.loyaltyEnabled) hideLoyaltyCard();
+```
+
+Common flags: `commerceEnabled`, `bookingEnabled`, `iotEnabled`, `ablyEnabled`, `fleetEnabled`, `loyaltyEnabled`, `ticketingEnabled`, `searchEnabled`, `webhooksEnabled`.
+
+## getAblyToken
+
+Returns a short-lived Ably auth token scoped to the tenant and authenticated user. Pass the URL as `authUrl` to the Ably client:
+
+```typescript
+import Ably from "ably";
+
+const ably = new Ably.Realtime({
+  authUrl: `${baseUrl}/api/bff/tenant/ably-token`,
+  authHeaders: { Authorization: `Bearer ${token}`, "x-tenant-slug": tenantSlug },
+});
+```
+
+## triggerWorkflow
+
+Kick off a Temporal workflow (port 7233 in dev):
+
+```typescript
+const { data } = await tenant.triggerWorkflow("daily_loyalty_expiry", {
+  date: "2026-06-01",
+});
+console.log(data.workflowId);
+```
+
+## Errors
+
+`VALIDATION_ERROR`, `AUTH_ERROR`, `NOT_FOUND` (workflow name), `SERVICE_ERROR`.
+
+## Related
+
+- [Tenant API](/api/tenant)
+- [Tenant setup](/configuration/tenant-setup)
+- [Feature flags](/configuration/feature-flags)
+- [Realtime (Ably)](/integrations/realtime)

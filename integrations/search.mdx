@@ -1,0 +1,249 @@
+---
+title: "Full-text search across CityOS content"
+description: "Search CityOS content with Meilisearch — query products, events, POIs, and services through a single tenant-scoped endpoint with facets and autocomplete."
+---
+
+CityOS indexes 19 content types in Meilisearch and exposes them through a single unified search endpoint. Every search query is automatically scoped to the caller's tenant — you never need to filter by tenant ID yourself, and results from other tenants are never returned. The search layer supports faceted filtering, multi-index queries, surface-specific access control, and autocomplete suggestions.
+
+## The search endpoint
+
+```
+GET /api/bff/search
+```
+
+The endpoint accepts the following query parameters:
+
+| Parameter | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `q` | `string` | Yes | — | Search query (max 200 chars) |
+| `limit` | `integer` | No | `20` | Results per page (max 100) |
+| `offset` | `integer` | No | `0` | Pagination offset |
+| `surface` | `string` | No | `citizen` | Surface context (`citizen`, `merchant`, `kiosk`, etc.) |
+| `scope` | `string` | No | `all` | Search scope within the surface |
+| `types` | `string` | No | All allowed | Comma-separated index types to include |
+| `facets` | `string` | No | — | Comma-separated facet attributes to compute |
+| `sort` | `string` | No | — | Comma-separated sort fields |
+| `filters` | `string` | No | — | JSON-encoded filter object |
+
+### Available search indexes
+
+| Index name | Content |
+|---|---|
+| `products` | Product catalog items from Medusa |
+| `events` | City events and activities |
+| `pois` | Points of interest (restaurants, parks, government offices, etc.) |
+| `services` | Citizen services and government service listings |
+| `citizen-services` | Extended citizen portal service records |
+| `businesses` | Merchant and business profiles |
+| `documents` | CMS documents and published content |
+| `users` | Citizen directory (restricted to authenticated users) |
+| `orders` | Order records (restricted to authenticated users) |
+
+<Note>
+  Unauthenticated callers are automatically limited to public indexes (`products`, `events`, `pois`, `services`, `citizen-services`, `businesses`, `documents`). The `users` and `orders` indexes require authentication.
+</Note>
+
+## Basic search example
+
+```http
+GET /api/bff/search?q=coffee+shop&types=pois,products&limit=10
+Authorization: Bearer <token>
+x-tenant-id: riyadh-downtown
+```
+
+**Response:**
+
+```json
+{
+  "query": "coffee shop",
+  "hits": [
+    {
+      "id": "poi_123",
+      "title": "Al-Faisal Coffee House",
+      "type": "pois",
+      "category": "cafe",
+      "lat": 24.7136,
+      "lng": 46.6753
+    }
+  ],
+  "totalHits": 42,
+  "processingTimeMs": 12,
+  "facets": {
+    "category": {
+      "cafe": 27,
+      "restaurant": 15
+    }
+  },
+  "meta": {
+    "surface": "citizen",
+    "scope": "all",
+    "tenant": "riyadh-downtown",
+    "indices": ["pois", "products"]
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+## Using the TypeScript SDK
+
+The `@cityos/api-client` package does not expose a dedicated `SearchClient` class (search is handled through the BFF directly), but you can use `CityOSClient.get()` with full type safety:
+
+```typescript
+import { CityOSClient } from '@cityos/api-client';
+
+const client = new CityOSClient({
+  baseUrl: 'https://your-city.cityos.dakkah.city',
+  getToken: async () => yourAuthTokenStore.getToken(),
+  tenantId: 'riyadh-downtown',
+});
+
+interface SearchHit {
+  id: string;
+  title: string;
+  type: string;
+  [key: string]: unknown;
+}
+
+interface SearchResponse {
+  query: string;
+  hits: SearchHit[];
+  totalHits: number;
+  processingTimeMs: number;
+  facets: Record<string, Record<string, number>>;
+  meta: {
+    surface: string;
+    scope: string;
+    tenant: string;
+    indices: string[];
+  };
+  correlationId: string;
+}
+
+const params = new URLSearchParams({
+  q: 'pharmacy',
+  types: 'pois,services',
+  limit: '20',
+  facets: 'category,district',
+});
+
+const results = await client.get<SearchResponse>(
+  `/api/bff/search?${params.toString()}`
+);
+
+console.log(`${results.totalHits} results in ${results.processingTimeMs}ms`);
+results.hits.forEach((hit) => console.log(hit.title));
+```
+
+## Faceted search
+
+Pass a comma-separated list of attribute names to the `facets` parameter to receive facet counts in the response. Use these counts to build filter UI in your application.
+
+```typescript
+const params = new URLSearchParams({
+  q: 'restaurant',
+  types: 'pois',
+  facets: 'category,district,rating',
+});
+
+const results = await client.get<SearchResponse>(
+  `/api/bff/search?${params.toString()}`
+);
+
+// results.facets.category → { "casual": 43, "fine-dining": 12, "fast-food": 31 }
+// results.facets.district → { "olaya": 22, "diplomatic-quarter": 15, ... }
+```
+
+## Filtered search
+
+Pass a JSON-encoded object to the `filters` parameter to narrow results. Values must be strings, numbers, or booleans. The `tenantId` key is reserved and ignored if you include it — tenant scoping is always enforced by the server.
+
+```typescript
+const filters = JSON.stringify({
+  category: 'pharmacy',
+  available: true,
+});
+
+const params = new URLSearchParams({
+  q: 'insulin',
+  types: 'products',
+  filters,
+});
+
+const results = await client.get<SearchResponse>(
+  `/api/bff/search?${params.toString()}`
+);
+```
+
+## Autocomplete suggestions
+
+For search-as-you-type input fields, use the dedicated suggestions endpoint instead of the main search endpoint. It returns up to 10 lightweight suggestions with much lower latency.
+
+```http
+GET /api/bff/search/suggest?q=cof&limit=5
+```
+
+**Response:**
+
+```json
+{
+  "suggestions": [
+    "coffee",
+    "coffee shop",
+    "coffeehouse",
+    "coffee beans",
+    "coffee machine"
+  ]
+}
+```
+
+```typescript
+// React hook example
+import { useState, useEffect } from 'react';
+
+function useSearchSuggestions(query: string) {
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (query.length < 2) return;
+    const params = new URLSearchParams({ q: query, limit: '5' });
+    client.get<{ suggestions: string[] }>(
+      `/api/bff/search/suggest?${params.toString()}`
+    ).then((res) => setSuggestions(res.suggestions));
+  }, [query]);
+
+  return suggestions;
+}
+```
+
+## Surface-scoped search
+
+The `surface` parameter restricts which indexes are searched and what roles are required. When you call the search endpoint from the merchant dashboard, pass `surface=merchant` to limit results to merchant-relevant indexes and apply the correct access rules for that context.
+
+| Surface | Default indexes | Requires auth |
+|---|---|---|
+| `citizen` | `pois`, `events`, `products`, `services`, `citizen-services` | No |
+| `merchant` | `products`, `orders`, `businesses` | Yes |
+| `kiosk` | `pois`, `events`, `services` | No |
+| `government` | All indexes including `users` | Yes (`government` role) |
+
+## Checking Meilisearch health
+
+```http
+GET /api/bff/search/health
+```
+
+Returns the Meilisearch status and per-index document counts:
+
+```json
+{
+  "status": "available",
+  "indexes": [
+    { "uid": "pois", "numberOfDocuments": 8432, "isIndexing": false },
+    { "uid": "products", "numberOfDocuments": 15621, "isIndexing": false }
+  ]
+}
+```
+
+<Tip>
+  Call the health endpoint during application startup to verify that the search service is reachable before rendering search UI. If `status` is `unavailable`, degrade gracefully by hiding the search bar rather than showing an error.
+</Tip>

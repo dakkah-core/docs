@@ -1,0 +1,126 @@
+---
+title: "Configure a CityOS tenant"
+description: "Configure a CityOS tenant: choose a tier, set the default slug and ID, send the x-tenant-slug header in requests, and read capability flags from the API."
+---
+
+CityOS is a hierarchical multi-tenant platform. Every API request is resolved to a tenant context, which determines the feature set available, the ERP backend used, branding tokens, and which domains the tenant can operate on. This page explains how to create and configure a tenant for your deployment.
+
+## Tenant tiers
+
+CityOS defines five tenant tiers arranged in a strict hierarchy. The tier you assign to a tenant determines which modules it can access and which ERP backend processes its financial data.
+
+| Tier | Who uses it | ERP backend | Typical capabilities |
+|---|---|---|---|
+| `MASTER` | Platform owner (Dakkah) | ERPNext | Full platform control, all modules enabled |
+| `GLOBAL` | Regional operators | ERPNext | Multi-country operations, global analytics |
+| `REGIONAL` | Country-level franchises | ERPNext | Country-scoped operations, compliance modules |
+| `COUNTRY` | National operators | Tryton | National services, SME merchant management |
+| `CITY` | City-level operators and SME merchants | Tryton | City services, local commerce, citizen portal |
+
+Higher tiers unlock additional modules — for example, IoT monitoring, fleet logistics, and AI-powered features are typically gated at the `GLOBAL` tier and above. The `CITY` tier provides access to the citizen portal, local commerce catalog, booking services, and complaint management.
+
+<Note>
+  Row-Level Security (RLS) enforces data isolation between tenants at the database level. A `CITY` tenant cannot read data belonging to a sibling `CITY` tenant even within the same `REGIONAL` parent.
+</Note>
+
+## Required environment variables
+
+Set these two variables in your `.env` file before starting the platform. They define the fallback tenant used when a request cannot be resolved to a specific tenant from its origin domain.
+
+```bash .env
+DEFAULT_TENANT_SLUG=dakkah
+CITYOS_DEFAULT_TENANT_ID=01KGZ2JRYX607FWMMYQNQRKVWS
+```
+
+Both values must match the `slug` and `id` fields of the tenant record stored in the database. If you are setting up a new tenant, create the tenant record first, then update these variables.
+
+## Identifying the tenant in API requests
+
+The BFF middleware resolves tenant context using the following priority order:
+
+1. **`x-tenant-slug` request header** — Explicit tenant slug sent by the caller.
+2. **Request origin domain** — The platform maps known domains to tenant slugs automatically.
+3. **`DEFAULT_TENANT_SLUG`** — Used as a final fallback.
+
+When you call the API from a mobile app, a cross-tenant admin tool, or any origin that is not already mapped to a tenant domain, you must supply the `x-tenant-slug` header.
+
+<CodeGroup>
+
+```bash curl
+curl https://cityos.dakkah.city/api/bff/tenant \
+  -H "x-tenant-slug: riyadh-downtown"
+```
+
+```typescript TypeScript
+const response = await fetch('https://cityos.dakkah.city/api/bff/tenant', {
+  headers: {
+    'x-tenant-slug': 'riyadh-downtown',
+    'Authorization': `Bearer ${token}`,
+  },
+});
+```
+
+</CodeGroup>
+
+## What tenant configuration controls
+
+Each tenant record in the CMS stores the following configuration:
+
+- **Branding** — Logo URL, primary/secondary colors, typography tokens, and locale settings that are applied to all surfaces rendered for that tenant.
+- **Enabled domains** — The list of hostnames mapped to the tenant. Requests from these domains are automatically resolved to the tenant without requiring the `x-tenant-slug` header.
+- **Feature entitlements** — Capability flags that gate specific modules. These are returned by `GET /api/bff/tenant/capabilities` and checked by the BFF middleware before routing requests.
+
+## Reading the tenant's current configuration
+
+Use `GET /api/bff/tenant/config` (or `GET /api/bff/tenant`) to read the resolved configuration for a tenant. This endpoint requires no authentication and is safe to call from a public-facing application on page load.
+
+<CodeGroup>
+
+```bash curl
+curl https://cityos.dakkah.city/api/bff/tenant \
+  -H "x-tenant-slug: riyadh-downtown"
+```
+
+```typescript TypeScript
+const res = await fetch('https://cityos.dakkah.city/api/bff/tenant', {
+  headers: { 'x-tenant-slug': 'riyadh-downtown' },
+});
+const { success, data } = await res.json();
+// data contains branding, locale, and resolved capability flags
+```
+
+</CodeGroup>
+
+To read capability flags separately, call `GET /api/bff/tenant/capabilities`:
+
+```bash curl
+curl https://cityos.dakkah.city/api/bff/tenant/capabilities \
+  -H "x-tenant-slug: riyadh-downtown"
+```
+
+A successful response looks like this:
+
+```json
+{
+  "success": true,
+  "data": {
+    "commerceEnabled": true,
+    "logisticsProvider": "fleetbase",
+    "aiEnabled": false,
+    "iotEnabled": true,
+    "workflowEnabled": true,
+    "pushEnabled": true,
+    "ablyEnabled": false,
+    "erpProvider": "tryton"
+  },
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+<Tip>
+  Cache the capabilities response on the client side. The values change only when an administrator updates the tenant record — they do not change per-request.
+</Tip>
+
+## Next steps
+
+Once your tenant is configured, set up authentication so your users can obtain JWTs for authenticated API calls. See [Authenticate API requests](/api/authentication).

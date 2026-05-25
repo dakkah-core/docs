@@ -1,0 +1,72 @@
+---
+title: "CityOS environment variables reference"
+description: "Reference for CityOS environment variables grouped by category — database, auth, URLs, search, and storage — with required and optional status for each."
+---
+
+Every CityOS deployment reads its runtime configuration from environment variables validated at boot. Copy `.env.example` to `.env` to get started, then replace the placeholder values shown below. The tables that follow cover the variables a developer or integrator needs to set — internal infrastructure naming variables are intentionally excluded.
+
+## Database
+
+| Variable | Required | Description | Example |
+|---|---|---|---|
+| `DATABASE_URL` | Required | Primary PostgreSQL connection string used by Payload CMS and the BFF layer. | `postgresql://cityos:pass@postgres:5432/cmsdb?family=4` |
+| `CMS_DATABASE_URL` | Required | Alias for `DATABASE_URL` used by CMS-specific modules. Both must point to the same instance unless you are running a split deployment. | `postgresql://cityos:pass@postgres:5432/cmsdb?family=4` |
+| `MEDUSA_DATABASE_URL` | Required | Separate PostgreSQL connection string for the Medusa commerce backend. | `postgresql://cityos:pass@postgres:5432/medusadb?family=4` |
+
+<Tip>
+  For local development, use `127.0.0.1` as the PostgreSQL host. For Neon PostgreSQL cloud, use the Neon pooled endpoint hostname with `?sslmode=require`.
+</Tip>
+
+## Authentication
+
+| Variable | Required | Description | Example |
+|---|---|---|---|
+| `PAYLOAD_SECRET` | Required | Secret key used by Payload CMS to sign session tokens and encrypt sensitive fields. Must be a long random string. | `replace-me` |
+| `CITYOS_S2S_SECRET` | Required | Service-to-service shared secret. Used to authenticate machine-to-machine calls via the `X-S2S-Key` header and as a fallback for the generic webhook HMAC secret. | `replace-me` |
+| `KEYCLOAK_ISSUER_URL` | Required | Full OIDC issuer URL for your Keycloak realm (e.g. `https://auth.example.com/realms/cityos`). Used to validate JWTs and resolve OIDC endpoints. | `http://127.0.0.1:8080/realms/cityos` |
+| `KEYCLOAK_CLIENT_ID` | Required | Keycloak client ID for the CMS/BFF application. | `payload-cms` |
+| `KEYCLOAK_CLIENT_SECRET` | Required | Keycloak client secret for the CMS/BFF application. Only required for confidential clients. | `your-client-secret` |
+| `KEYCLOAK_URL` | Required | Base URL of your Keycloak server (without the realm path). | `http://127.0.0.1:8080` |
+| `KEYCLOAK_REALM` | Required | Name of the Keycloak realm to use. | `cityos` |
+
+<Warning>
+  Treat `KEYCLOAK_CLIENT_SECRET` and `PAYLOAD_SECRET` as production secrets. Rotate them immediately if they are ever exposed, and never commit them to version control.
+</Warning>
+
+## Application URLs
+
+| Variable | Required | Description | Example |
+|---|---|---|---|
+| `PAYLOAD_PUBLIC_SERVER_URL` | Required | Publicly accessible base URL of the CMS/BFF server. Used to construct absolute URLs in emails, webhooks, and OIDC redirect URIs. | `https://cityos.dakkah.city` |
+| `NEXT_PUBLIC_SERVER_URL` | Required | Same as `PAYLOAD_PUBLIC_SERVER_URL`. Required by the Next.js client-side code. | `https://cityos.dakkah.city` |
+| `MEDUSA_BACKEND_URL` | Required | Base URL of the Medusa commerce backend. Used by BFF routes that proxy commerce operations. | `http://127.0.0.1:9000` |
+
+## Search
+
+| Variable | Required | Description | Example |
+|---|---|---|---|
+| `MEILISEARCH_HOST` | Required | URL of your Meilisearch instance. | `http://127.0.0.1:7700` |
+| `MEILISEARCH_API_KEY` | Required | Meilisearch API key used to authenticate search indexing and query requests. Store this in a secrets manager for production. | `REPLACE_WITH_MEILISEARCH_API_KEY` |
+
+<Note>
+  For cloud Meilisearch, set `USE_CLOUD_MEILISEARCH_IN_DEV=true` and point `MEILISEARCH_HOST` to your cloud URL. The platform will fall back to `MEILISEARCH_LOCAL_URL` when the cloud flag is false.
+</Note>
+
+## Storage
+
+| Variable | Required | Description | Example |
+|---|---|---|---|
+| `MINIO_ENDPOINT` | Required | URL of your MinIO (or S3-compatible) storage endpoint. | `http://cityos-minio:9000` |
+| `MINIO_ACCESS_KEY` | Required | Access key (equivalent to AWS access key ID) for your MinIO instance. | `cityos-admin` |
+| `MINIO_SECRET_KEY` | Required | Secret key (equivalent to AWS secret access key) for your MinIO instance. | _(set in secrets manager)_ |
+| `MINIO_BUCKET` | Required | Name of the bucket used for media and file uploads. | `cityos-media` |
+| `MINIO_USE_SSL` | Optional | Set to `true` when your MinIO endpoint is served over HTTPS. Defaults to `false`. | `false` |
+| `MINIO_REGION` | Optional | S3/MinIO region. Required if connecting to AWS S3 or a region-aware MinIO cluster. | `us-east-1` |
+| `MINIO_BUCKET_PUBLIC` | Optional | When `true`, objects in the media bucket are publicly accessible. Set to `false` to require presigned URLs. Defaults to `true`. | `true` |
+
+## Tenant
+
+| Variable | Required | Description | Example |
+|---|---|---|---|
+| `DEFAULT_TENANT_SLUG` | Required | Slug of the default tenant used when no `x-tenant-slug` header is provided and the domain cannot be resolved to a tenant. | `dakkah` |
+| `CITYOS_DEFAULT_TENANT_ID` | Required | Internal ID of the default tenant. Must match the tenant record in the database. | `01KGZ2JRYX607FWMMYQNQRKVWS` |

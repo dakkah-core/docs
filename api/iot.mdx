@@ -1,0 +1,19 @@
+---
+title: "IoT API endpoints"
+sidebarTitle: "IoT"
+description: "List devices, read telemetry, and send commands through the CityOS IoT BFF endpoints."
+icon: "cpu"
+---
+
+<Note>
+  Sprint 2 deliverable. Endpoint catalog below — detailed payloads to follow.
+</Note>
+
+## Endpoints
+
+| Method | Path | Description |
+| --- | --- | --- |
+| `GET` | `/api/bff/iot/devices` | List IoT devices |
+| `GET` | `/api/bff/iot/devices/{id}` | Get device with latest metrics |
+| `POST` | `/api/bff/iot/devices/{id}/commands` | Send a command to a device |
+| `GET` | `/api/bff/iot/readings` | Query historical readings |

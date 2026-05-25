@@ -1,0 +1,53 @@
+---
+title: "Changelog"
+sidebarTitle: "Changelog"
+description: "Notable changes to the Dakkah CityOS platform and documentation."
+icon: "history"
+---
+
+<Update label="2026-05-25" tags={["docs","restructure"]}>
+  **Docs restructure v4 — polish & automation.**
+
+  Closes the 7-sprint restructure with the final polish pass:
+
+  - **CityOSClient reference** — full constructor options, lifecycle, interceptors, retry config, correlation IDs, logging hooks, React provider.
+  - **BffClient reference** — `request<T>()` primitive, query/path builders, header propagation, error normalisation, custom domain client recipe.
+  - **SDK common types** — `Envelope`, `Pagination`, `Surface`, `ApiError`, `Capabilities`, `SessionData`, `Idempotent`, `MutationOptions`.
+  - **Domain schemas** — per-vertical TypeScript types mirroring `docs/api/openapi.yaml`.
+  - **FAQ** — expanded from 3 to 23 Q&As across getting started, tenancy, auth, surfaces, realtime, webhooks, commerce, bookings, errors, mobile, and support.
+  - **Data model** — full ER diagram covering tenancy, identity, commerce, bookings, citizen, fleet, IoT, storage, plus cross-vertical flows.
+  - **Contributing** — handbook for doc authors: IA, page templates, frontmatter conventions, writing style, cross-link checklist, review checklist.
+</Update>
+
+<Update label="2026-05-25" tags={["docs","restructure"]}>
+  **Docs restructure v3 — long-form content \+ SDK reference \+ ops.**
+
+  - **Guides:** Long-form walkthroughs for fleet, events, and loyalty with cURL, TypeScript, state diagrams, and webhook handlers.
+  - **SDK Reference:** All 9 domain client pages rewritten with method tables, parameter docs, code samples, and error tables.
+  - **Operations:** Deployment page rewritten with topology, 13 ports, Dockerfiles, three run modes, EAS pipeline, and smoke test.
+  - **Realtime:** Full Ably channel catalog across IoT, fleet, bookings, events, commerce.
+  - **Storage:** Signed upload flow against MinIO / S3 / R2 / GCS with tenant prefix isolation.
+  - **Feature flags:** Canonical 11-flag table plus React hook pattern.
+</Update>
+
+<Update label="2026-05-25" tags={["docs","restructure"]}>
+  **Docs restructure v2 — content pass grounded in the open-source repo.**
+
+  Updated against `dakkah-core/dakkah-cityos-cms` README and `docs/api/openapi.yaml`:
+
+  - **Architecture** rewritten with full stack, middleware pipeline diagram, and port table.
+  - **Verticals** (commerce, citizen, bookings, events, loyalty, fleet, iot, governance, healthcare) with real OpenAPI schemas, endpoint tables, and state diagrams.
+  - **Apps overview** lists all 12 production Expo apps with EAS variables.
+  - **Error codes** documents all 15 codes from the OpenAPI enum with retry strategy.
+  - **Glossary** expanded from 6 to 40\+ terms.
+  - **API conventions** documents the full `withBff()` pipeline and standard envelope.
+  - **SDK overview** updated with the canonical 8-surface union and tree-shaking guidance.
+</Update>
+
+<Update label="2026-05-25" tags={["docs","restructure"]}>
+  **Docs restructure v1 — IA scaffolding.**
+
+  - Added 2 tabs (**SDK Reference**, **Changelog**) and 6 groups (Verticals, Apps, Resources, plus 3 SDK groups).
+  - Created 45 new pages.
+  - Alphabetized API Endpoints group; moved mobile guide under Apps.
+</Update>

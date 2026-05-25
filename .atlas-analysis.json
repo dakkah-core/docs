@@ -1,0 +1,125 @@
+{
+  "projectType": "saas",
+  "projectName": "Dakkah CityOS",
+  "projectDescription": "A multi-tenant smart city operating system that unifies commerce, citizen services, fleet logistics, IoT, and government operations across web, mobile, kiosk, and ambient surfaces.",
+  "theme": "luma",
+  "primaryColor": "#0F4C81",
+  "lightColor": "#E8F0FA",
+  "darkColor": "#071E3A",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "environment-setup"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/multi-tenancy",
+              "concepts/surfaces",
+              "concepts/sdui",
+              "concepts/domains"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/authentication",
+              "guides/commerce",
+              "guides/bookings",
+              "guides/mobile-apps",
+              "guides/iot-telemetry"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "integrations/payments",
+              "integrations/identity",
+              "integrations/fleet",
+              "integrations/search"
+            ]
+          },
+          {
+            "group": "Configuration",
+            "pages": [
+              "configuration/environment-variables",
+              "configuration/tenant-setup",
+              "configuration/webhooks"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api/overview",
+              "api/authentication",
+              "api/errors"
+            ]
+          },
+          {
+            "group": "Endpoints",
+            "pages": [
+              "api/auth",
+              "api/citizen",
+              "api/commerce",
+              "api/booking",
+              "api/events",
+              "api/loyalty",
+              "api/search",
+              "api/tenant"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Multi-tenant city hierarchy (Country → Region → City → Zone → POI)",
+    "Server-Driven UI (SDUI) with 380+ blocks across 7 surface types",
+    "Commerce engine with 12 offer archetypes (products, bookings, subscriptions, auctions, tickets, etc.)",
+    "Citizen portal for complaints, permits, transit, and government services",
+    "Fleet & logistics management with real-time driver tracking",
+    "IoT sensor pipeline (air quality, smart bins, water quality, traffic, parking)",
+    "Identity & compliance with Keycloak SSO, Verifiable Credentials, ZATCA e-invoicing",
+    "AI-assisted search, content generation, and recommendation engine",
+    "12 Expo mobile apps (superapp, driver, merchant, kiosk, TV, watch, car)",
+    "Workflow orchestration with Temporal.io for durable cross-system sagas"
+  ],
+  "publicApiSurface": [
+    "POST /api/bff/auth/login",
+    "GET /api/bff/auth/session",
+    "POST /api/bff/auth/logout",
+    "GET /api/bff/booking",
+    "POST /api/bff/booking",
+    "DELETE /api/bff/booking/:id",
+    "GET /api/bff/citizen/complaints",
+    "POST /api/bff/citizen/complaints",
+    "GET /api/bff/citizen/permits",
+    "GET /api/bff/commerce/products",
+    "GET /api/bff/commerce/cart",
+    "POST /api/bff/commerce/checkout",
+    "GET /api/bff/events",
+    "POST /api/bff/events/tickets",
+    "GET /api/bff/loyalty/points",
+    "POST /api/bff/loyalty/enroll",
+    "GET /api/bff/search",
+    "GET /api/bff/tenant/config",
+    "GET /api/bff/system/health",
+    "CityOSClient (TypeScript SDK)",
+    "BffClient / CommerceClient / GovernanceClient / HealthcareClient (domain clients)",
+    "SduiClient (Server-Driven UI renderer client)",
+    "validateSduiPayload() (SDUI protocol utility)"
+  ]
+}

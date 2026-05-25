@@ -1,0 +1,198 @@
+---
+title: "Fleet and logistics integration in CityOS"
+description: "Integrate CityOS fleet dispatch: manage vehicles and shipments with FleetClient, stream real-time driver positions over Ably, and handle SLA alerts."
+---
+
+CityOS integrates Fleetbase as the fleet and logistics backbone. Fleetbase handles driver matching, shipment lifecycle, surge pricing, route optimisation, and real-time position tracking. The platform extends the base Fleetbase installation with 13 custom CityOS controllers and 36 service dispatch workflows that cover the full range of delivery verticals — from food and grocery to healthcare, home services, and ride-hailing.
+
+You interact with the fleet layer through the BFF at `/api/bff/fleet`, or through the `FleetClient` from `@cityos/api-client` for typed TypeScript integrations.
+
+## Delivery domains
+
+CityOS fleet dispatch supports the following verticals. Each maps to a dedicated dispatch workflow:
+
+| Domain | Workflow use case |
+|---|---|
+| Food & grocery | Restaurant and dark kitchen order delivery, grocery slots |
+| Healthcare | Prescription delivery, medical equipment, sample collection |
+| Home services | Plumbing, HVAC, cleaning, home maintenance dispatch |
+| Ride-hailing | Passenger transport, surge pricing, ETA estimation |
+| Warehouse & logistics | B2B multi-leg shipments, container tracking |
+| Parking & valet | Valet dispatch, parking attendant routing |
+
+## Core data types
+
+The fleet SDK exports two primary types you will work with:
+
+```typescript
+// From @cityos/api-client
+
+export interface FleetVehicle {
+  id: string;
+  type: string;
+  make: string;
+  model: string;
+  plateNumber: string;
+  status: string;       // 'available' | 'on_delivery' | 'maintenance' | 'offline'
+  driverId?: string;
+  lat: number;
+  lng: number;
+  fuelLevel: number;    // percentage (0–100)
+  mileage: number;
+}
+
+export interface FleetShipment {
+  id: string;
+  vehicleId: string;
+  origin: string;
+  destination: string;
+  status: string;       // 'pending' | 'dispatched' | 'in_transit' | 'delivered' | 'failed'
+  estimatedArrival: string;
+  weight: number;
+}
+```
+
+## Using FleetClient
+
+Instantiate `FleetClient` from the `@cityos/api-client` package:
+
+```typescript
+import { CityOSClient, FleetClient } from '@cityos/api-client';
+
+const cityosClient = new CityOSClient({
+  baseUrl: 'https://your-city.cityos.dakkah.city',
+  getToken: async () => yourAuthTokenStore.getToken(),
+  tenantId: 'riyadh-downtown',
+});
+
+const fleet = new FleetClient(cityosClient);
+```
+
+All `FleetClient` methods return `BffResponse<T>` — unwrap the `data` field to get the typed payload.
+
+## Listing and inspecting vehicles
+
+```typescript
+// List all vehicles in the tenant fleet
+const response = await fleet.listVehicles();
+const { vehicles } = response.data;
+
+vehicles.forEach((v) => {
+  console.log(`${v.plateNumber} — ${v.status} at (${v.lat}, ${v.lng})`);
+});
+
+// Get a specific vehicle
+const detail = await fleet.getVehicle('veh_01H...');
+console.log(detail.data.vehicle.fuelLevel); // e.g. 78
+```
+
+## Creating and tracking shipments
+
+<Steps>
+  <Step title="Create a shipment via the BFF">
+    ```typescript
+    // Direct HTTP if you are not using the SDK
+    const res = await fetch('/api/bff/fleet/shipments', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'x-tenant-id': 'riyadh-downtown',
+      },
+      body: JSON.stringify({
+        vehicleId: 'veh_01H...',
+        origin: '24.7136° N, 46.6753° E',
+        destination: '24.6877° N, 46.7219° E',
+        weight: 2.5,
+      }),
+    });
+    const { data } = await res.json();
+    const shipmentId = data.shipment.id;
+    ```
+  </Step>
+
+  <Step title="Poll shipment status via the SDK">
+    ```typescript
+    const shipment = await fleet.getShipment(shipmentId);
+    console.log(shipment.data.shipment.status);
+    console.log(shipment.data.shipment.estimatedArrival);
+    ```
+  </Step>
+
+  <Step title="Subscribe to real-time driver position via Ably">
+    CityOS streams live driver positions over Ably. Subscribe to the `fleet:tracking:{shipmentId}` channel to receive position updates as they arrive:
+
+    ```typescript
+    import Ably from 'ably';
+
+    const ably = new Ably.Realtime({ key: process.env.EXPO_PUBLIC_ABLY_KEY });
+    const channel = ably.channels.get(`fleet:tracking:${shipmentId}`);
+
+    channel.subscribe('position', (message) => {
+      const { lat, lng, heading, speed, timestamp } = message.data as {
+        lat: number;
+        lng: number;
+        heading: number;
+        speed: number;
+        timestamp: string;
+      };
+      console.log(`Driver at ${lat}, ${lng} — ${speed} km/h`);
+    });
+
+    // Unsubscribe when done
+    return () => channel.unsubscribe();
+    ```
+
+    <Note>
+      The Ably key for client-side use is the **subscribe-only** key (`EXPO_PUBLIC_ABLY_KEY`). Never expose your publish key on the client.
+    </Note>
+  </Step>
+</Steps>
+
+## Fleet maintenance records
+
+You can fetch scheduled and completed maintenance records for fleet audit purposes:
+
+```typescript
+const maintenance = await fleet.listMaintenance();
+maintenance.data.records.forEach((record) => {
+  console.log(`Vehicle ${record.vehicleId}: ${record.type} on ${record.scheduledDate}`);
+  console.log(`Status: ${record.status}, Cost: ${record.cost} ${record.currency}`);
+});
+```
+
+## Additional fleet endpoints
+
+`FleetClient` exposes several further methods for operational use:
+
+| Method | BFF path | Description |
+|---|---|---|
+| `listGeofences()` | `GET /api/bff/fleet/geofences` | Retrieve configured geofence zones |
+| `listInspections()` | `GET /api/bff/fleet/inspections` | Driver vehicle inspection records |
+| `listFuel()` | `GET /api/bff/fleet/fuel` | Fuel consumption logs per vehicle |
+| `listIncidents()` | `GET /api/bff/fleet/incidents` | Incident reports filed by drivers |
+
+## Merchant and city operator use cases
+
+<CardGroup cols={2}>
+  <Card title="Merchant order dispatch" icon="truck">
+    When a customer places an order, pass the order details to the Fleetbase fulfillment workflow. CityOS matches the nearest available driver and creates a shipment automatically through the `fleetbase-fulfillment` Medusa module.
+  </Card>
+  <Card title="City operator fleet oversight" icon="map">
+    Use `listVehicles()` combined with real-time Ably position updates to build a live fleet map. Filter by `status` to surface vehicles that are available, in transit, or require maintenance.
+  </Card>
+  <Card title="Driver companion app" icon="mobile">
+    The `mobile-driver` Expo app uses the same `FleetClient` and Ably channels. If you are building a custom driver app, use the same patterns — authenticate the driver, subscribe to their assigned channel, and push position updates at your desired interval.
+  </Card>
+  <Card title="SLA monitoring" icon="clock">
+    Subscribe to the `fleet:sla:{tenantId}` Ably channel to receive SLA breach events. These are emitted by the Temporal `sla` task queue when a shipment exceeds its estimated delivery window.
+  </Card>
+</CardGroup>
+
+## Environment variables
+
+| Variable | Surface | Description |
+|---|---|---|
+| `EXPO_PUBLIC_ABLY_KEY` | Mobile / web | Ably subscribe-only key for real-time tracking |
+| `EXPO_PUBLIC_FLEETBASE_KEY` | Mobile / web | Fleetbase API key for direct SDK calls |
+| `FLEETBASE_API_KEY` | Server | Fleetbase API key for server-side dispatch |

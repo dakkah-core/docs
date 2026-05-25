@@ -1,0 +1,84 @@
+---
+title: "CityOS glossary"
+sidebarTitle: "Glossary"
+description: "Definitions for the terms used across the Dakkah CityOS platform and documentation — BFF, SDUI, surfaces, tenancy, commerce, realtime, infrastructure."
+icon: "book-a"
+---
+
+## Platform terms
+
+| Term | Definition |
+| --- | --- |
+| **CityOS** | Dakkah CityOS — the capability-driven surface runtime for smart city commerce, citizen services, and IoT. |
+| **BFF** | Backend-for-Frontend. The CityOS API layer at `/api/bff/*`. |
+| **withBff()** | Middleware wrapper applied to every BFF route. Runs correlation, rate limit, auth, CSRF, RBAC, tenant resolution, NodeContext. |
+| **Envelope** | Standard JSON shape: `{ success, data, meta, pagination, correlationId }`. |
+| **Correlation ID** | UUID returned in every response for distributed tracing. |
+| **Idempotency key** | `X-Idempotency-Key` header for safe mutation retries. |
+| **Surface** | Client form factor: `mobile`, `mobile_large`, `tablet`, `desktop`, `desktop_wide`, `kiosk`, `tv_1080p`, `carplay`. |
+| **SDUI** | Server-Driven UI. Layouts returned as JSON for the renderer to draw. |
+| **SdPayload** | The JSON shape returned by `/api/bff/sdui/{screen}`. |
+| **Domain package** | Self-contained TypeScript library owning collections, hooks, and BFF routes for one vertical (77\+ in CityOS). |
+| **NodeContext** | Spatial scope object propagated through middleware: Country → Region → District → Zone → Sector → Facility → Building → Floor → Unit → POI. |
+| **POI** | Point of Interest — the leaf of the spatial node tree. Restaurants, clinics, kiosks, parking bays. |
+
+## Tenancy
+
+| Term | Definition |
+| --- | --- |
+| **Tenant** | Isolated city/operator namespace. |
+| **Tenant slug** | Human-readable tenant ID sent as `x-tenant-slug`. |
+| **Ownership tier** | `MASTER` → `GLOBAL` → `REGIONAL` → `COUNTRY` → `CITY`. |
+| **Capability flag** | Boolean read from `/api/bff/tenant/capabilities` (e.g. `iotEnabled`). |
+| **Policy inheritance** | Compliance rules cascade down tiers; can be overridden at any level. |
+
+## Auth & identity
+
+| Term | Definition |
+| --- | --- |
+| **JWT** | Bearer token issued by Medusa store-auth or Keycloak OIDC. |
+| **S2S key** | `X-S2S-Key` shared secret for machine-to-machine calls. |
+| **CSRF double-submit** | Cookie \+ header pair validated on mutations. |
+| **Keycloak** | OIDC identity provider (port 8080). |
+| **Walt.id** | Verifiable Credentials issuer (port 7000) used for KYC. |
+| **RBAC** | Role-based access control evaluated by `withBff()`. |
+
+## Commerce
+
+| Term | Definition |
+| --- | --- |
+| **Medusa v2** | Commerce engine backing CityOS commerce (port 9000). |
+| **Sales channel** | Medusa concept for tenant-scoped catalog visibility. |
+| **Archetype** | One of 12 offer types (`simple`, `subscription`, `bundle`, `bnpl`, `ticket`, `booking`, `voucher`, `donation`, `tip`, `deposit`, `pay-what-you-want`, `gift-card`). |
+| **Cart action** | Operation passed to `POST /commerce/cart`: `create`, `retrieve`, `addItem`, `updateItem`, `removeItem`. |
+| **ZATCA** | Saudi e-invoicing mandate handled by payment integrations. |
+
+## Realtime
+
+| Term | Definition |
+| --- | --- |
+| **Ably** | Realtime message broker used for IoT readings, fleet positions, booking events. |
+| **Channel naming** | `cityos:{tenantSlug}:{domain}:{topic}`. |
+| **Token endpoint** | `/api/bff/tenant/ably-token` — issues short-lived Ably tokens. |
+
+## Infrastructure
+
+| Term | Definition |
+| --- | --- |
+| **Payload CMS 3** | App shell \+ collections runtime (port 3000). |
+| **ERPNext** | ERP for `MASTER` / `GLOBAL` / `REGIONAL` tenants (port 8001). |
+| **Tryton** | ERP for `COUNTRY` / `CITY` tenants. |
+| **Fleetbase \+ FleetOps** | Fleet & logistics engine (ports 8000 / 5009). |
+| **Kuzzle Device Manager** | IoT ingestion (port 7512). |
+| **Meilisearch** | Search engine (port 7700). |
+| **Temporal** | Workflow orchestration (port 7233). |
+| **MinIO** | S3-compatible object storage (port 9001). |
+| **PostGIS** | PostgreSQL extension powering geospatial queries. |
+
+## Mobile
+
+| Term | Definition |
+| --- | --- |
+| **Expo / EAS** | Build and deploy pipeline for the 12 mobile apps. |
+| **OTA update** | Over-the-air JS bundle deploy via `eas update`. |
+| **Superapp** | The flagship citizen mobile app. |

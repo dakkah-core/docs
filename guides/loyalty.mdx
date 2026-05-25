@@ -1,0 +1,168 @@
+---
+title: "Run loyalty programs with CityOS"
+sidebarTitle: "Loyalty"
+description: "Enroll citizens, read balances, accrue points on commerce orders, redeem at checkout, and pull transaction history through CityOS loyalty."
+icon: "award"
+---
+
+Loyalty in CityOS is a **cross-domain primitive**: points earned in grocery, fitness, pharmacy, or transit can be redeemed across the platform. The loyalty BFF lives at `/api/bff/commerce/loyalty` and is served by the `loyalty` domain package.
+
+## What you'll build
+
+- Enroll a citizen in a loyalty program
+- Read points balance and tier
+- Accrue points on commerce orders (webhook-driven)
+- Redeem points at checkout
+- Display transaction history
+
+## Prerequisites
+
+```typescript
+import { CityOSClient, createBffClients } from "@cityos/api-client";
+
+const cityos = new CityOSClient({
+  baseUrl: process.env.EXPO_PUBLIC_BFF_URL!,
+  tenantId: "riyadh-downtown",
+  surface: "mobile",
+  getToken: async () => tokenStore.get(),
+});
+
+const { loyalty, tenant } = createBffClients(cityos);
+
+const { data: caps } = await tenant.getCapabilities();
+if (!caps.loyaltyEnabled) throw new Error("Loyalty is not enabled");
+```
+
+## 1. Enroll a citizen
+
+```typescript
+const { data } = await loyalty.enroll({ programId: "pgm_gold_rewards" });
+console.log(data.customerId, data.tier, data.pointsBalance); // 0
+```
+
+```bash cURL
+curl -X POST https://cityos.dakkah.city/api/bff/commerce/loyalty \
+  -H "Authorization: Bearer <token>" \
+  -H "x-tenant-slug: riyadh-downtown" \
+  -H "Content-Type: application/json" \
+  -d '{ "action": "enroll", "programId": "pgm_gold_rewards" }'
+```
+
+## 2. Read balance and tier
+
+```typescript
+const { data } = await loyalty.getAccount();
+//  data: { customerId, pointsBalance, tier, programId }
+
+showTierBadge(data.tier);
+showPoints(data.pointsBalance);
+```
+
+Default tiers (program-specific):
+
+| Tier | Threshold | Typical perks |
+| --- | --- | --- |
+| `bronze` | 0 | 1× points |
+| `silver` | 1,000 lifetime | 1.25× points |
+| `gold` | 5,000 lifetime | 1.5× points \+ free shipping |
+| `platinum` | 25,000 lifetime | 2× points \+ priority support |
+
+## 3. Accrue points on commerce orders
+
+Accrual is webhook-driven. Subscribe to `commerce.order.paid` and credit points through `POST /api/bff/commerce/loyalty`:
+
+```typescript
+export async function POST(req: Request) {
+  const event = await verifyAndParse(req);
+
+  if (event.type === "commerce.order.paid") {
+    const points = Math.floor(event.data.total / 100); // 1 point per major currency unit
+    await loyalty.credit({
+      customerId: event.data.customerId,
+      points,
+      reason: `order:${event.data.orderId}`,
+    }, { idempotencyKey: `accrue_${event.data.orderId}` });
+  }
+
+  return new Response("ok");
+}
+```
+
+<Note>
+  The `idempotencyKey` ensures the same order can't double-credit if the webhook is retried.
+</Note>
+
+## 4. Redeem points at checkout
+
+```typescript
+const { data: account } = await loyalty.getAccount();
+
+if (account.pointsBalance >= 500) {
+  await loyalty.redeem({ points: 500 });
+  // BFF applies the discount to the active cart automatically
+}
+```
+
+```bash cURL
+curl -X POST https://cityos.dakkah.city/api/bff/commerce/loyalty \
+  -H "Authorization: Bearer <token>" \
+  -H "x-tenant-slug: riyadh-downtown" \
+  -H "Content-Type: application/json" \
+  -d '{ "action": "redeem", "points": 500 }'
+```
+
+The BFF resolves the active cart from the session, applies the value as a cart-level discount, and returns the new balance.
+
+## 5. Transaction history
+
+```typescript
+const { data: history } = await loyalty.history();
+
+history.forEach((tx) => {
+  console.log(tx.timestamp, tx.type, tx.points, tx.reason);
+});
+```
+
+Transaction types: `enroll`, `accrue`, `redeem`, `expire`, `adjust`.
+
+## 6. Cross-domain accrual
+
+Loyalty is not limited to commerce orders. Any domain can request a credit:
+
+```typescript
+// e.g. fitness check-in earns 10 points
+await loyalty.credit({ points: 10, reason: "fitness:checkin:gym_42" });
+```
+
+Webhook event types you may want to credit on:
+
+| Event | Suggested credit |
+| --- | --- |
+| `commerce.order.paid` | 1 point per currency unit |
+| `booking.completed` | 50 points |
+| `event.ticket.scanned` | 25 points |
+| `citizen.complaint.resolved` | 100 points |
+
+## Error handling
+
+| Code | Cause |
+| --- | --- |
+| `LOYALTY_ERROR` | Domain-specific failure (e.g. program not found) |
+| `VALIDATION_ERROR` | Missing `points` or `programId` |
+| `CONFLICT` | Already enrolled |
+| `AUTH_ERROR` | Token missing or expired |
+
+## Capability flags
+
+| Flag | What it gates |
+| --- | --- |
+| `loyaltyEnabled` | All loyalty endpoints |
+| `commerceEnabled` | Required for redemption at checkout |
+
+## Related
+
+- [Loyalty vertical overview](/verticals/loyalty)
+- [Loyalty API reference](/api/loyalty)
+- [LoyaltyClient SDK](/sdk/clients/loyalty)
+- [Commerce guide](/guides/commerce)
+- [Webhooks](/configuration/webhooks)
