@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "dakkah-cityos-docs": {
+      "type": "http",
+      "url": "https://dakkahcityos.mintlify.app/mcp"
+    }
+  }
+}
